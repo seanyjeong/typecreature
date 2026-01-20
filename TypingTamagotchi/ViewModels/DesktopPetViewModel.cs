@@ -68,49 +68,49 @@ public partial class DesktopPetViewModel : ViewModelBase
 
     private void OnAnimationTick(object? sender, EventArgs e)
     {
-        // 상태에 따른 애니메이션 (회전 줄임)
+        // 상태에 따른 애니메이션 (회전 없음, 바운스만)
         switch (_pet.State)
         {
             case PetState.Idle:
                 // 살짝 위아래로 떠다니는 효과
-                AnimationOffsetY = Math.Sin(_pet.AnimationFrame) * 3;
-                AnimationRotation = Math.Sin(_pet.AnimationFrame * 0.5) * 2;
+                AnimationOffsetY = Math.Sin(_pet.AnimationFrame) * 2;
+                AnimationRotation = 0;
                 AnimationScale = 1.0;
                 break;
 
             case PetState.Walking:
-                // 걷는 효과 - 바운스 + 약간 기울임
-                AnimationOffsetY = Math.Abs(Math.Sin(_pet.AnimationFrame * 3)) * 6;
-                AnimationRotation = Math.Sin(_pet.AnimationFrame * 3) * 8;
-                AnimationScale = 1.0 + Math.Abs(Math.Sin(_pet.AnimationFrame * 3)) * 0.05;
+                // 걷는 효과 - 바운스만
+                AnimationOffsetY = Math.Abs(Math.Sin(_pet.AnimationFrame * 4)) * 5;
+                AnimationRotation = 0;
+                AnimationScale = 1.0;
                 break;
 
             case PetState.Sitting:
                 // 앉아있기
-                AnimationOffsetY = 4;
+                AnimationOffsetY = 2;
                 AnimationRotation = 0;
                 AnimationScale = 0.95;
                 break;
 
             case PetState.Greeting:
-                // 인사
-                AnimationOffsetY = Math.Sin(_pet.AnimationFrame * 6) * 5;
-                AnimationRotation = IsFacingRight ? 10 : -10;
+                // 인사 - 살짝 숙임
+                AnimationOffsetY = Math.Sin(_pet.AnimationFrame * 6) * 3;
+                AnimationRotation = 0;
                 AnimationScale = 1.0;
                 break;
 
             case PetState.Dragging:
-                // 발버둥
-                AnimationOffsetY = Math.Sin(_pet.AnimationFrame * 8) * 3;
-                AnimationRotation = Math.Sin(_pet.AnimationFrame * 10) * 8;
-                AnimationScale = 1.05;
+                // 발버둥 - 바운스만
+                AnimationOffsetY = Math.Sin(_pet.AnimationFrame * 10) * 4;
+                AnimationRotation = 0;
+                AnimationScale = 1.0;
                 break;
 
             case PetState.Clicked:
                 // 점프
-                AnimationOffsetY = -10 * Math.Sin(_pet.StateTimer * Math.PI / 0.5);
+                AnimationOffsetY = -8 * Math.Sin(_pet.StateTimer * Math.PI / 0.5);
                 AnimationRotation = 0;
-                AnimationScale = 1.1;
+                AnimationScale = 1.05;
                 break;
         }
 
