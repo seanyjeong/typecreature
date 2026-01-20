@@ -25,6 +25,7 @@ public partial class MiniWidget : Window
     private int _dragSourceIndex = -1;
     private Border? _dragSourceBorder;
     private Point _slotDragStart;
+    private bool _hasMoved; // 움직임 있었는지 추적
     private const double DragThreshold = 5.0;
 
     public MiniWidget()
@@ -212,6 +213,8 @@ public partial class MiniWidget : Window
                 _slotDragStart = position;
                 _dragSourceBorder = hitBorder;
                 _dragSourceIndex = slot.SlotIndex;
+                _hasMoved = false; // 초기화
+                _isSlotDragging = false; // 초기화
                 e.Pointer.Capture(this);
                 return;
             }
@@ -230,10 +233,14 @@ public partial class MiniWidget : Window
         var currentPos = e.GetPosition(this);
 
         // 슬롯 드래그 감지
-        if (_dragSourceIndex >= 0 && !_isSlotDragging && !_isWindowDragging)
+        if (_dragSourceIndex >= 0 && !_isWindowDragging)
         {
             var delta = currentPos - _slotDragStart;
-            if (Math.Abs(delta.X) > DragThreshold || Math.Abs(delta.Y) > DragThreshold)
+            if (Math.Abs(delta.X) > 2 || Math.Abs(delta.Y) > 2)
+            {
+                _hasMoved = true; // 움직임 감지
+            }
+            if (!_isSlotDragging && (Math.Abs(delta.X) > DragThreshold || Math.Abs(delta.Y) > DragThreshold))
             {
                 _isSlotDragging = true;
                 if (_dragSourceBorder != null)
@@ -286,9 +293,9 @@ public partial class MiniWidget : Window
             }
             ClearAllHighlights();
         }
-        else if (!_isSlotDragging && !_isWindowDragging && _dragSourceIndex >= 0)
+        else if (!_hasMoved && !_isWindowDragging && _dragSourceIndex >= 0)
         {
-            // 드래그 안 하고 클릭만 한 경우 - 크리처 정보 팝업
+            // 움직임 없이 클릭만 한 경우 - 크리처 정보 팝업
             var slot = _viewModel?.DisplaySlots[_dragSourceIndex];
             if (slot?.HasCreature == true)
             {
@@ -299,6 +306,7 @@ public partial class MiniWidget : Window
         // 상태 초기화
         _isWindowDragging = false;
         _isSlotDragging = false;
+        _hasMoved = false;
         _dragSourceIndex = -1;
         _dragSourceBorder = null;
         e.Pointer.Capture(null);
