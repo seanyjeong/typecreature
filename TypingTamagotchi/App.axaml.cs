@@ -16,9 +16,8 @@ namespace TypingTamagotchi;
 public partial class App : Application
 {
     private TrayIcon? _trayIcon;
-    private MainWindow? _mainWindow;
-    private MainWindowViewModel? _viewModel;
     private MiniWidget? _miniWidget;
+    private MiniWidgetViewModel? _miniWidgetViewModel;
     private DatabaseService? _db;
 
     public override void Initialize()
@@ -33,32 +32,25 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             DisableAvaloniaDataAnnotationValidation();
 
-            // 데이터베이스 초기화
-            _db = new DatabaseService();
-            _db.SeedCreaturesIfEmpty();
-
-            _viewModel = new MainWindowViewModel();
-            _mainWindow = new MainWindow
+            try
             {
-                DataContext = _viewModel,
-            };
+                // 데이터베이스 초기화
+                _db = new DatabaseService();
+                _db.SeedCreaturesIfEmpty();
 
-            desktop.MainWindow = _mainWindow;
-            desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                // 시스템 트레이 설정
+                SetupTrayIcon(desktop);
 
-            // 메인 창 닫기 버튼 클릭 시 숨기기 (트레이로)
-            _mainWindow.Closing += (s, e) =>
+                // 미니 위젯 바로 표시
+                ShowMiniWidget();
+
+                desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            }
+            catch (Exception ex)
             {
-                e.Cancel = true;
-                _mainWindow.Hide();
-            };
-
-            // 시스템 트레이 설정
-            SetupTrayIcon(desktop);
-
-            // 시작 시 미니 위젯 바로 표시
-            ShowMiniWidget();
-            _mainWindow.Hide();
+                Console.WriteLine($"초기화 오류: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -66,20 +58,7 @@ public partial class App : Application
 
     private void SetupTrayIcon(IClassicDesktopStyleApplicationLifetime desktop)
     {
-        var showMenuItem = new NativeMenuItem("창 보이기");
-        showMenuItem.Click += (s, e) =>
-        {
-            _mainWindow?.Show();
-            _mainWindow?.Activate();
-        };
-
-        var collectionMenuItem = new NativeMenuItem("도감 열기");
-        collectionMenuItem.Click += (s, e) =>
-        {
-            OpenCollectionWindow();
-        };
-
-        var widgetMenuItem = new NativeMenuItem("미니 위젯");
+        var widgetMenuItem = new NativeMenuItem("위젯 보이기/숨기기");
         widgetMenuItem.Click += (s, e) =>
         {
             if (_miniWidget == null || !_miniWidget.IsVisible)
@@ -93,6 +72,12 @@ public partial class App : Application
             }
         };
 
+        var collectionMenuItem = new NativeMenuItem("도감 열기");
+        collectionMenuItem.Click += (s, e) =>
+        {
+            OpenCollectionWindow();
+        };
+
         var exitMenuItem = new NativeMenuItem("종료");
         exitMenuItem.Click += (s, e) =>
         {
@@ -102,51 +87,74 @@ public partial class App : Application
         };
 
         var menu = new NativeMenu();
-        menu.Items.Add(showMenuItem);
-        menu.Items.Add(new NativeMenuItemSeparator());
-        menu.Items.Add(collectionMenuItem);
         menu.Items.Add(widgetMenuItem);
+        menu.Items.Add(collectionMenuItem);
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(exitMenuItem);
 
         // 트레이 아이콘 설정
-        var iconUri = new Uri("avares://TypingTamagotchi/Assets/avalonia-logo.ico");
-        using var iconStream = Avalonia.Platform.AssetLoader.Open(iconUri);
-        var icon = new WindowIcon(iconStream);
-
-        _trayIcon = new TrayIcon
+        try
         {
-            ToolTipText = "TypeCreature",
-            Menu = menu,
-            Icon = icon,
-            IsVisible = true
-        };
+            var iconUri = new Uri("avares://TypingTamagotchi/Assets/avalonia-logo.ico");
+            using var iconStream = AssetLoader.Open(iconUri);
+            var icon = new WindowIcon(iconStream);
 
-        // 트레이 아이콘 더블클릭 시 창 표시
-        _trayIcon.Clicked += (s, e) =>
+            _trayIcon = new TrayIcon
+            {
+                ToolTipText = "TypeCreature",
+                Menu = menu,
+                Icon = icon,
+                IsVisible = true
+            };
+
+            // 트레이 아이콘 클릭 시 위젯 표시
+            _trayIcon.Clicked += (s, e) =>
+            {
+                if (_miniWidget == null || !_miniWidget.IsVisible)
+                {
+                    ShowMiniWidget();
+                }
+            };
+        }
+        catch (Exception ex)
         {
-            _mainWindow?.Show();
-            _mainWindow?.Activate();
-        };
+            Console.WriteLine($"트레이 아이콘 설정 오류: {ex.Message}");
+        }
     }
 
     private void ShowMiniWidget()
     {
-        _miniWidget = new MiniWidget
+        try
         {
-            DataContext = new MiniWidgetViewModel()
-        };
-        _miniWidget.Show();
+            _miniWidgetViewModel = new MiniWidgetViewModel();
+            _miniWidget = new MiniWidget
+            {
+                DataContext = _miniWidgetViewModel
+            };
+            _miniWidget.Show();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"위젯 표시 오류: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
     }
 
     private void OpenCollectionWindow()
     {
-        var viewModel = new CollectionViewModel();
-        var collectionWindow = new CollectionWindow
+        try
         {
-            DataContext = viewModel
-        };
-        collectionWindow.Show();
+            var viewModel = new CollectionViewModel();
+            var collectionWindow = new CollectionWindow
+            {
+                DataContext = viewModel
+            };
+            collectionWindow.Show();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"도감 열기 오류: {ex.Message}");
+        }
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
