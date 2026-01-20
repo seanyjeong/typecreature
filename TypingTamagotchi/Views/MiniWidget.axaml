@@ -5,42 +5,270 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="TypingTamagotchi.Views.MiniWidget"
-        x:DataType="vm:MainWindowViewModel"
-        Title="Typing Tamagotchi"
-        Width="150" Height="60"
+        x:DataType="vm:MiniWidgetViewModel"
+        Title="TypeCreature"
+        Width="380" Height="220"
         CanResize="False"
         SystemDecorations="None"
         Topmost="True"
-        Background="#F0FFFFFF"
-        CornerRadius="10">
+        Background="Transparent">
 
-    <Border Background="#F0FFFFFF"
-            CornerRadius="10"
-            BorderBrush="#CCCCCC"
-            BorderThickness="1"
-            Padding="10,5">
-        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
-            <!-- 알 이름 + 퍼센트 -->
-            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="5">
-                <TextBlock Text="🥚" FontSize="14"/>
-                <TextBlock Text="{Binding EggName}"
-                           FontSize="12"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
+    <Border Background="Linear Gradient(135, #2C3E50, #1A252F)"
+            CornerRadius="16"
+            BorderBrush="#4A5568"
+            BorderThickness="2"
+            Padding="14">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" Opacity="0.4" OffsetX="0" OffsetY="6"/>
+        </Border.Effect>
 
-            <TextBlock Grid.Row="0" Grid.Column="1"
-                       Text="{Binding ProgressText}"
-                       FontSize="12"
-                       Foreground="Gray"
-                       VerticalAlignment="Center"/>
+        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
 
-            <!-- 게이지바 -->
-            <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                         Value="{Binding Progress}"
-                         Minimum="0" Maximum="1"
-                         Height="8"
-                         Margin="0,5,0,0"/>
+            <!-- 상단: 시계 위젯 -->
+            <Border Grid.Row="0"
+                    Background="Linear Gradient(90, #1A1A2E, #2D2D4C, #1A1A2E)"
+                    CornerRadius="8"
+                    Padding="8,4"
+                    Margin="0,0,0,8"
+                    HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="🕐"
+                               FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentTime}"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="#E0E0E0"
+                               FontFamily="Consolas, Courier New"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentDate}"
+                               FontSize="10"
+                               Foreground="#888"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 골드 타이틀 -->
+            <Border Grid.Row="1"
+                    Background="Linear Gradient(90, #B8860B, #DAA520, #FFD700, #DAA520, #B8860B)"
+                    CornerRadius="8"
+                    Padding="10,6"
+                    Margin="0,0,0,8">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" Opacity="0.3" OffsetX="0" OffsetY="2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="👑"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0"/>
+                    <TextBlock Text="COLLECTION"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="#1A1A1A"
+                               LetterSpacing="2"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 중앙: 럭셔리 진열장 -->
+            <Border Grid.Row="2"
+                    Background="Linear Gradient(180, #1E1E2E, #12121A)"
+                    CornerRadius="10"
+                    BorderBrush="#3D3D5C"
+                    BorderThickness="2"
+                    Padding="8"
+                    Margin="0,0,0,8">
+
+                <!-- 유리 프레임 -->
+                <Border Background="Linear Gradient(180, #15151F, #0D0D12)"
+                        CornerRadius="8"
+                        Padding="6">
+
+                    <Grid>
+                        <!-- 진열대 선반 (벨벳 느낌) -->
+                        <Border Background="Linear Gradient(180, #2D1F3D, #1A1225)"
+                                CornerRadius="6"
+                                Padding="4">
+
+                            <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="10" Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- 개별 받침대 -->
+                                        <Border Width="32" Height="58"
+                                                Margin="1"
+                                                CornerRadius="4"
+                                                Name="SlotBorder"
+                                                Tag="{Binding SlotIndex}"
+                                                Classes="slot">
+
+                                            <Grid RowDefinitions="*,Auto">
+                                                <!-- 크리처 표시 영역 -->
+                                                <Border Grid.Row="0"
+                                                        Background="{Binding SlotBackground}"
+                                                        CornerRadius="4,4,0,0"
+                                                        Margin="2,2,2,0">
+                                                    <Grid>
+                                                        <!-- 빈 슬롯 표시 -->
+                                                        <Border IsVisible="{Binding IsEmpty}"
+                                                                Background="#20FFFFFF"
+                                                                CornerRadius="4"
+                                                                Opacity="0.3">
+                                                            <TextBlock Text="+"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="18"
+                                                                       Foreground="#4A4A5A"/>
+                                                        </Border>
+
+                                                        <!-- 크리처 이미지 -->
+                                                        <Image Source="{Binding CreatureImage}"
+                                                               IsVisible="{Binding HasCreature}"
+                                                               Width="26" Height="26"
+                                                               Margin="0,2,0,0"
+                                                               VerticalAlignment="Top"
+                                                               Stretch="Uniform"
+                                                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+
+                                                        <!-- 빛 반사 효과 -->
+                                                        <Border IsVisible="{Binding HasCreature}"
+                                                                Background="Linear Gradient(135, #30FFFFFF, #00FFFFFF)"
+                                                                CornerRadius="4"
+                                                                IsHitTestVisible="False"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- 고급 받침대 (금색 테두리 + 등급 보석) -->
+                                                <Border Grid.Row="1"
+                                                        Height="14"
+                                                        Background="Linear Gradient(180, #3D3D5C, #2D2D4C)"
+                                                        CornerRadius="0,0,4,4"
+                                                        BorderBrush="Linear Gradient(90, #8B7355, #D4AF37, #8B7355)"
+                                                        BorderThickness="1,0,1,1"
+                                                        Margin="2,0,2,2">
+                                                    <Grid>
+                                                        <!-- 받침대 금색 라인 -->
+                                                        <Border Background="Linear Gradient(90, #00000000, #40D4AF37, #00000000)"
+                                                                Height="1"
+                                                                VerticalAlignment="Top"/>
+
+                                                        <!-- 등급 보석 -->
+                                                        <Border IsVisible="{Binding HasCreature}"
+                                                                Width="8" Height="8"
+                                                                CornerRadius="4"
+                                                                Background="{Binding RarityColor}"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center">
+                                                            <Border.Effect>
+                                                                <DropShadowEffect BlurRadius="4"
+                                                                                  Opacity="0.8"
+                                                                                  OffsetX="0"
+                                                                                  OffsetY="0"
+                                                                                  Color="White"/>
+                                                            </Border.Effect>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- 툴팁 -->
+                                            <ToolTip.Tip>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding CreatureName}"
+                                                               FontWeight="Bold"
+                                                               Foreground="{Binding RarityColor}"/>
+                                                    <TextBlock Text="{Binding RarityText}"
+                                                               FontSize="10"
+                                                               Foreground="#888"
+                                                               IsVisible="{Binding HasCreature}"/>
+                                                </StackPanel>
+                                            </ToolTip.Tip>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+
+                        <!-- 유리 반사 오버레이 -->
+                        <Border Background="Linear Gradient(135, #15FFFFFF, #05FFFFFF, #00FFFFFF)"
+                                CornerRadius="6"
+                                IsHitTestVisible="False"/>
+                    </Grid>
+                </Border>
+            </Border>
+
+            <!-- 크리쳐 수집 현황 -->
+            <Border Grid.Row="3"
+                    Background="#15FFFFFF"
+                    CornerRadius="6"
+                    Padding="8,4"
+                    Margin="0,0,0,8"
+                    HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="📦"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="수집 현황:"
+                               FontSize="11"
+                               Foreground="#888"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CollectionText}"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="#FFD700"
+                               VerticalAlignment="Center"/>
+                    <ProgressBar Value="{Binding CollectionProgress}"
+                                 Minimum="0" Maximum="1"
+                                 Height="4"
+                                 Width="60"
+                                 VerticalAlignment="Center"
+                                 Foreground="#FFD700"
+                                 Background="#2A2A3A"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 하단: 알 진행 상황 -->
+            <Border Grid.Row="4"
+                    Background="Linear Gradient(90, #2D2D4C, #3D3D5C, #2D2D4C)"
+                    CornerRadius="8"
+                    Padding="10,6">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="🥚" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding EggName}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E0E0E0"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- 프로그레스 바 (금색 그라데이션) -->
+                    <Border Grid.Column="1"
+                            Background="#1A1A2E"
+                            CornerRadius="4"
+                            Height="8"
+                            Margin="12,0"
+                            VerticalAlignment="Center">
+                        <Border Background="Linear Gradient(90, #B8860B, #FFD700, #FFF8DC)"
+                                CornerRadius="4"
+                                HorizontalAlignment="Left"
+                                Width="{Binding ProgressWidth}"/>
+                    </Border>
+
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding ProgressText}"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               Foreground="#FFD700"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
         </Grid>
     </Border>
 </Window>

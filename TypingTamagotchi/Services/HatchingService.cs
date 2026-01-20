@@ -123,4 +123,56 @@ public class HatchingService
         command.CommandText = "SELECT COUNT(DISTINCT creature_id) FROM collection";
         return Convert.ToInt32(command.ExecuteScalar());
     }
+
+    public (int keystrokes, int clicks) GetCurrentProgress()
+    {
+        using var connection = _db.GetConnection();
+
+        var ksCommand = connection.CreateCommand();
+        ksCommand.CommandText = "SELECT value FROM stats WHERE key = 'keystrokes'";
+        var ksResult = ksCommand.ExecuteScalar();
+        var keystrokes = ksResult != null ? Convert.ToInt32(ksResult) : 0;
+
+        var clCommand = connection.CreateCommand();
+        clCommand.CommandText = "SELECT value FROM stats WHERE key = 'clicks'";
+        var clResult = clCommand.ExecuteScalar();
+        var clicks = clResult != null ? Convert.ToInt32(clResult) : 0;
+
+        return (keystrokes, clicks);
+    }
+
+    public void RecordInput(bool isClick)
+    {
+        using var connection = _db.GetConnection();
+        var key = isClick ? "clicks" : "keystrokes";
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+            INSERT INTO stats (key, value) VALUES (@key, 1)
+            ON CONFLICT(key) DO UPDATE SET value = value + 1
+        ";
+        command.Parameters.AddWithValue("@key", key);
+        command.ExecuteNonQuery();
+    }
+
+    public Creature? TryHatch()
+    {
+        var (keystrokes, clicks) = GetCurrentProgress();
+        var totalInputs = keystrokes + clicks;
+
+        if (totalInputs < 500)
+            return null;
+
+        // 진행 상황 리셋
+        using var connection = _db.GetConnection();
+        var resetCommand = connection.CreateCommand();
+        resetCommand.CommandText = @"
+            UPDATE stats SET value = value - 500 WHERE key = 'keystrokes';
+            UPDATE stats SET value = 0 WHERE key = 'clicks';
+        ";
+        resetCommand.ExecuteNonQuery();
+
+        // 부화
+        return Hatch();
+    }
 }
