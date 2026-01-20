@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TypingTamagotchi.Models;
 using TypingTamagotchi.Services;
 
@@ -9,6 +10,8 @@ namespace TypingTamagotchi.ViewModels;
 
 public partial class CollectionViewModel : ViewModelBase
 {
+    private DesktopPetManager? _petManager;
+
     [ObservableProperty]
     private ObservableCollection<CollectionItem> _items = new();
 
@@ -16,11 +19,36 @@ public partial class CollectionViewModel : ViewModelBase
     private string _collectionStatus = "";
 
     [ObservableProperty]
+    private string _petStatus = "";
+
+    [ObservableProperty]
     private CollectionItem? _selectedItem;
 
     public CollectionViewModel()
     {
         LoadCollection();
+    }
+
+    public void SetPetManager(DesktopPetManager petManager)
+    {
+        _petManager = petManager;
+        UpdatePetStatus();
+        RefreshDesktopStatus();
+    }
+
+    private void UpdatePetStatus()
+    {
+        if (_petManager == null) return;
+        PetStatus = $"바탕화면: {_petManager.ActivePetCount}/{_petManager.MaxPets}";
+    }
+
+    private void RefreshDesktopStatus()
+    {
+        if (_petManager == null) return;
+        foreach (var item in Items)
+        {
+            item.IsOnDesktop = _petManager.IsPetOnDesktop(item.Creature.Id);
+        }
     }
 
     private void LoadCollection()
@@ -53,6 +81,32 @@ public partial class CollectionViewModel : ViewModelBase
         CollectionStatus = $"수집: {ownedCount}/{totalCount} ({ownedCount * 100 / totalCount}%)";
     }
 
+    [RelayCommand]
+    private void ToggleDesktop(CollectionItem? item)
+    {
+        if (item == null || !item.IsOwned || _petManager == null) return;
+
+        if (item.IsOnDesktop)
+        {
+            _petManager.RemovePetFromDesktop(item.Creature.Id);
+            item.IsOnDesktop = false;
+        }
+        else
+        {
+            if (!_petManager.CanAddPet())
+            {
+                // 최대 개수 초과 - 나중에 알림 추가 가능
+                return;
+            }
+            var pet = _petManager.AddPetToDesktop(item.Creature);
+            if (pet != null)
+            {
+                item.IsOnDesktop = true;
+            }
+        }
+        UpdatePetStatus();
+    }
+
     private static System.Collections.Generic.List<Creature> GetAllCreatures(DatabaseService db)
     {
         using var connection = db.GetConnection();
@@ -81,15 +135,20 @@ public partial class CollectionViewModel : ViewModelBase
     }
 }
 
-public class CollectionItem
+public partial class CollectionItem : ObservableObject
 {
     public Creature Creature { get; set; } = null!;
     public bool IsOwned { get; set; }
     public int Count { get; set; }
     public DateTime FirstObtained { get; set; }
 
+    [ObservableProperty]
+    private bool _isOnDesktop;
+
     public string DisplayName => IsOwned ? Creature.Name : "???";
     public string RarityText => IsOwned ? Creature.Rarity.ToString() : "";
     public string CountText => IsOwned && Count > 1 ? $"x{Count}" : "";
     public double Opacity => IsOwned ? 1.0 : 0.3;
+    public string DesktopButtonText => IsOnDesktop ? "돌려놓기" : "바탕화면에 꺼내기";
+    public bool CanToggleDesktop => IsOwned;
 }

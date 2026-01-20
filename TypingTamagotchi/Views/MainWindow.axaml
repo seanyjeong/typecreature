@@ -80,15 +80,15 @@
                                FontWeight="Bold"
                                HorizontalAlignment="Center"/>
 
-                    <!-- 크리처 이미지 placeholder -->
+                    <!-- 크리처 이미지 -->
                     <Border Width="80" Height="80"
                             Background="#E8F5E9"
-                            CornerRadius="40"
-                            HorizontalAlignment="Center">
-                        <TextBlock Text="&#x1F423;"
-                                   FontSize="36"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                            CornerRadius="10"
+                            HorizontalAlignment="Center"
+                            ClipToBounds="True">
+                        <Image Source="{Binding HatchedCreature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
+                               Width="72" Height="72"
+                               Stretch="Uniform"/>
                     </Border>
 
                     <TextBlock Text="{Binding HatchedCreature.Name}"

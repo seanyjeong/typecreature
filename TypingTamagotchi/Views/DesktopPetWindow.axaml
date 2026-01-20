@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TypingTamagotchi.ViewModels"
+        x:Class="TypingTamagotchi.Views.DesktopPetWindow"
+        x:DataType="vm:DesktopPetViewModel"
+        Width="80" Height="80"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        SystemDecorations="None"
+        Topmost="True"
+        ShowInTaskbar="False"
+        CanResize="False">
+
+    <Window.Styles>
+        <Style Selector="Window">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <!-- 크리처 이미지 -->
+        <Image Name="CreatureImage"
+               Width="64" Height="64"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               RenderTransformOrigin="0.5,1"/>
+
+        <!-- 우클릭 컨텍스트 메뉴 -->
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{Binding CreatureName}" IsEnabled="False" FontWeight="Bold"/>
+                <Separator/>
+                <MenuItem Header="돌려보내기" Command="{Binding RemoveFromDesktopCommand}"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+    </Grid>
+</Window>

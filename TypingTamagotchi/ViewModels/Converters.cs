@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using TypingTamagotchi.Models;
 
 namespace TypingTamagotchi.ViewModels;
@@ -62,6 +64,33 @@ public class WidgetButtonTextConverter : IValueConverter
             return isVisible ? "위젯 숨기기" : "미니 위젯";
         }
         return "미니 위젯";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class SpritePathToImageConverter : IValueConverter
+{
+    public static readonly SpritePathToImageConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string spritePath && !string.IsNullOrEmpty(spritePath))
+        {
+            try
+            {
+                var uri = new Uri($"avares://TypingTamagotchi/Assets/{spritePath}");
+                return new Bitmap(AssetLoader.Open(uri));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        return null;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
