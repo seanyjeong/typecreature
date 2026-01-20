@@ -159,11 +159,13 @@ public partial class MiniWidgetViewModel : ViewModelBase
         // 임시 저장
         var tempCreature = fromSlot.GetCreature();
         var tempHasCreature = fromSlot.HasCreature;
+        var toCreature = toSlot.GetCreature();
+        var toHasCreature = toSlot.HasCreature;
 
-        // 교환
-        if (toSlot.HasCreature)
+        // UI 교환
+        if (toHasCreature)
         {
-            fromSlot.SetCreature(toSlot.GetCreature()!);
+            fromSlot.SetCreature(toCreature!);
         }
         else
         {
@@ -177,6 +179,25 @@ public partial class MiniWidgetViewModel : ViewModelBase
         else
         {
             toSlot.Clear();
+        }
+
+        // DB 저장
+        if (tempHasCreature && tempCreature != null)
+        {
+            _db.SetDisplaySlot(toIndex, tempCreature.Id);
+        }
+        else
+        {
+            _db.RemoveFromDisplaySlot(toIndex);
+        }
+
+        if (toHasCreature && toCreature != null)
+        {
+            _db.SetDisplaySlot(fromIndex, toCreature.Id);
+        }
+        else
+        {
+            _db.RemoveFromDisplaySlot(fromIndex);
         }
     }
 

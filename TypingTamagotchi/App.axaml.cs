@@ -19,6 +19,7 @@ public partial class App : Application
     private MiniWidget? _miniWidget;
     private MiniWidgetViewModel? _miniWidgetViewModel;
     private DatabaseService? _db;
+    private IInputService? _inputService;
 
     public override void Initialize()
     {
@@ -51,6 +52,9 @@ public partial class App : Application
 
                 // 미니 위젯 바로 표시
                 ShowMiniWidget();
+
+                // 키보드/마우스 입력 감지 시작
+                StartInputService();
 
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             }
@@ -170,6 +174,38 @@ public partial class App : Application
         {
             Console.WriteLine($"도감 열기 오류: {ex.Message}");
         }
+    }
+
+    private void StartInputService()
+    {
+        try
+        {
+            // Windows에서만 전역 키보드 훅 사용
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(
+                System.Runtime.InteropServices.OSPlatform.Windows))
+            {
+                _inputService = new WindowsInputService();
+                _inputService.InputDetected += OnInputDetected;
+                _inputService.Start();
+                Console.WriteLine("[DEBUG] 키보드/마우스 입력 감지 시작됨");
+            }
+            else
+            {
+                Console.WriteLine("[DEBUG] Windows가 아니라서 입력 감지 사용 불가");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"입력 서비스 시작 오류: {ex.Message}");
+        }
+    }
+
+    private void OnInputDetected()
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            _miniWidgetViewModel?.OnInput();
+        });
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
