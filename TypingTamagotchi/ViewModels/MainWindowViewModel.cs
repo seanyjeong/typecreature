@@ -44,7 +44,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
         _eggService = new EggService(_db);
         _hatchingService = new HatchingService(_db);
-        _inputService = new SimulatedInputService();
+
+        // 플랫폼에 맞는 입력 서비스 선택
+        // useSimulated: true = 개발/테스트 모드, false = 실제 전역 후킹
+        _inputService = InputServiceFactory.Create(useSimulated: false);
 
         _eggService.EggUpdated += OnEggUpdated;
         _eggService.EggReady += OnEggReady;
