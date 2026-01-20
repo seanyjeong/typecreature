@@ -3,7 +3,7 @@
         xmlns:vm="using:TypingTamagotchi.ViewModels"
         x:Class="TypingTamagotchi.Views.DesktopPetWindow"
         x:DataType="vm:DesktopPetViewModel"
-        Width="100" Height="100"
+        Width="64" Height="64"
         Background="Transparent"
         TransparencyLevelHint="Transparent"
         SystemDecorations="None"
