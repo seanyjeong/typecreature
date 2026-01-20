@@ -275,15 +275,13 @@ public partial class MiniWidget : Window
 
         if (_isSlotDragging && _dragSourceIndex >= 0 && _viewModel != null)
         {
-            // 드롭 대상 슬롯 찾기
-            var targetBorder = FindSlotBorderAt(e.Source as Visual);
-            if (targetBorder != null)
+            // 드롭 대상 슬롯 찾기 (위치 기반 히트 테스트)
+            var pos = e.GetPosition(this);
+            var targetSlot = FindSlotAtPosition(pos);
+
+            if (targetSlot != null && targetSlot.SlotIndex != _dragSourceIndex)
             {
-                var targetSlot = targetBorder.DataContext as DisplaySlot;
-                if (targetSlot != null && targetSlot.SlotIndex != _dragSourceIndex)
-                {
-                    _viewModel.SwapSlots(_dragSourceIndex, targetSlot.SlotIndex);
-                }
+                _viewModel.SwapSlots(_dragSourceIndex, targetSlot.SlotIndex);
             }
 
             // 드래그 상태 복원
@@ -310,6 +308,28 @@ public partial class MiniWidget : Window
         _dragSourceIndex = -1;
         _dragSourceBorder = null;
         e.Pointer.Capture(null);
+    }
+
+    private DisplaySlot? FindSlotAtPosition(Point pos)
+    {
+        // 모든 슬롯 Border를 찾아서 위치 확인
+        var slotBorders = this.GetVisualDescendants()
+            .OfType<Border>()
+            .Where(b => b.Classes.Contains("slot"));
+
+        foreach (var border in slotBorders)
+        {
+            var slotPos = border.TranslatePoint(new Point(0, 0), this);
+            if (slotPos.HasValue)
+            {
+                var rect = new Rect(slotPos.Value, border.Bounds.Size);
+                if (rect.Contains(pos))
+                {
+                    return border.DataContext as DisplaySlot;
+                }
+            }
+        }
+        return null;
     }
 
     private void ShowCreatureInfo(Creature creature)
