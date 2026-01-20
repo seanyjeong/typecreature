@@ -3,21 +3,21 @@
         xmlns:vm="using:TypingTamagotchi.ViewModels"
         x:Class="TypingTamagotchi.Views.DesktopPetWindow"
         x:DataType="vm:DesktopPetViewModel"
-        Width="80" Height="80"
+        Width="100" Height="100"
         SystemDecorations="None"
         Topmost="True"
         ShowInTaskbar="False"
         CanResize="False"
         ExtendClientAreaToDecorationsHint="True">
 
-    <Grid Background="#AAFFCCCC">
-        <!-- 크리처 이미지 (거의 투명한 배경 + 이미지) -->
+    <Grid>
+        <!-- 크리처 이미지 -->
         <Image Name="CreatureImage"
                Width="64" Height="64"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               RenderTransformOrigin="0.5,1"/>
+               RenderTransformOrigin="0.5,0.5"/>
 
         <!-- 우클릭 컨텍스트 메뉴 -->
         <Grid.ContextMenu>

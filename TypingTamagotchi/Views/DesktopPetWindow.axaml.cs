@@ -46,6 +46,13 @@ public partial class DesktopPetWindow : Window
         }
     }
 
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] [Image] {msg}";
+        Console.WriteLine(line);
+        try { System.IO.File.AppendAllText("pet_debug.log", line + "\n"); } catch { }
+    }
+
     private void LoadCreatureImage()
     {
         if (_viewModel == null || _creatureImage == null) return;
@@ -53,6 +60,8 @@ public partial class DesktopPetWindow : Window
         try
         {
             var spritePath = _viewModel.SpritePath;
+            Log($"Loading sprite: {spritePath}");
+
             if (!string.IsNullOrEmpty(spritePath))
             {
                 // 먼저 avares:// 시도
@@ -60,30 +69,32 @@ public partial class DesktopPetWindow : Window
                 {
                     var uri = new Uri($"avares://TypingTamagotchi/Assets/{spritePath}");
                     _creatureImage.Source = new Bitmap(AssetLoader.Open(uri));
-                    System.Diagnostics.Debug.WriteLine($"Loaded image from avares: {spritePath}");
+                    Log($"SUCCESS avares: {spritePath}");
                     return;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // avares 실패시 파일 경로로 시도
+                    Log($"avares failed: {ex.Message}");
                 }
 
                 // 실행 파일 기준 상대 경로로 시도
                 var basePath = AppContext.BaseDirectory;
                 var filePath = System.IO.Path.Combine(basePath, "Assets", spritePath);
+                Log($"Trying file path: {filePath}");
+
                 if (System.IO.File.Exists(filePath))
                 {
                     _creatureImage.Source = new Bitmap(filePath);
-                    System.Diagnostics.Debug.WriteLine($"Loaded image from file: {filePath}");
+                    Log($"SUCCESS file: {filePath}");
                     return;
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Image not found: {spritePath}");
+                Log($"File not found: {filePath}");
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+            Log($"ERROR: {ex.Message}");
         }
     }
 
