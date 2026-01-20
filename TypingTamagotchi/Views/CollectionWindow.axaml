@@ -24,8 +24,8 @@
         </Border>
 
         <!-- 크리처 그리드 -->
-        <ScrollViewer Grid.Row="1" Padding="10,10,10,20">
-            <ItemsControl ItemsSource="{Binding Items}" Margin="0,0,0,10">
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Items}" Margin="10,10,10,40">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
