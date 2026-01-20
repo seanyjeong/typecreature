@@ -21,6 +21,9 @@ public partial class App : Application
     private DesktopPetManager? _petManager;
     private DatabaseService? _db;
 
+    // 전역 접근용
+    public static DesktopPetManager? PetManager { get; private set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -36,6 +39,7 @@ public partial class App : Application
             // 데이터베이스 및 펫 매니저 초기화
             _db = new DatabaseService();
             _petManager = new DesktopPetManager(_db);
+            PetManager = _petManager;  // 전역 접근용
 
             _viewModel = new MainWindowViewModel();
             _mainWindow = new MainWindow

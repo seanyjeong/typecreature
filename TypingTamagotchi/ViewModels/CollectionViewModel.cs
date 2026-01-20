@@ -26,7 +26,14 @@ public partial class CollectionViewModel : ViewModelBase
 
     public CollectionViewModel()
     {
+        // App에서 전역 PetManager 가져오기
+        _petManager = App.PetManager;
         LoadCollection();
+        if (_petManager != null)
+        {
+            UpdatePetStatus();
+            RefreshDesktopStatus();
+        }
     }
 
     public void SetPetManager(DesktopPetManager petManager)
