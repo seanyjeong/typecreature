@@ -13,11 +13,16 @@
         Topmost="True"
         Background="Transparent">
 
-    <Border Background="Linear Gradient(135, #2C3E50, #1A252F)"
-            CornerRadius="16"
+    <Border CornerRadius="16"
             BorderBrush="#4A5568"
             BorderThickness="2"
             Padding="14">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#2C3E50" Offset="0"/>
+                <GradientStop Color="#1A252F" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
         <Border.Effect>
             <DropShadowEffect BlurRadius="20" Opacity="0.4" OffsetX="0" OffsetY="6"/>
         </Border.Effect>
@@ -26,11 +31,17 @@
 
             <!-- 상단: 시계 위젯 -->
             <Border Grid.Row="0"
-                    Background="Linear Gradient(90, #1A1A2E, #2D2D4C, #1A1A2E)"
                     CornerRadius="8"
                     Padding="8,4"
                     Margin="0,0,0,8"
                     HorizontalAlignment="Center">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#1A1A2E" Offset="0"/>
+                        <GradientStop Color="#2D2D4C" Offset="0.5"/>
+                        <GradientStop Color="#1A1A2E" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <TextBlock Text="🕐"
                                FontSize="16"
@@ -51,10 +62,18 @@
 
             <!-- 골드 타이틀 -->
             <Border Grid.Row="1"
-                    Background="Linear Gradient(90, #B8860B, #DAA520, #FFD700, #DAA520, #B8860B)"
                     CornerRadius="8"
                     Padding="10,6"
                     Margin="0,0,0,8">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#B8860B" Offset="0"/>
+                        <GradientStop Color="#DAA520" Offset="0.25"/>
+                        <GradientStop Color="#FFD700" Offset="0.5"/>
+                        <GradientStop Color="#DAA520" Offset="0.75"/>
+                        <GradientStop Color="#B8860B" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="8" Opacity="0.3" OffsetX="0" OffsetY="2"/>
                 </Border.Effect>
@@ -74,23 +93,38 @@
 
             <!-- 중앙: 럭셔리 진열장 -->
             <Border Grid.Row="2"
-                    Background="Linear Gradient(180, #1E1E2E, #12121A)"
                     CornerRadius="10"
                     BorderBrush="#3D3D5C"
                     BorderThickness="2"
                     Padding="8"
                     Margin="0,0,0,8">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+                        <GradientStop Color="#1E1E2E" Offset="0"/>
+                        <GradientStop Color="#12121A" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
                 <!-- 유리 프레임 -->
-                <Border Background="Linear Gradient(180, #15151F, #0D0D12)"
-                        CornerRadius="8"
+                <Border CornerRadius="8"
                         Padding="6">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+                            <GradientStop Color="#15151F" Offset="0"/>
+                            <GradientStop Color="#0D0D12" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
 
                     <Grid>
                         <!-- 진열대 선반 (벨벳 느낌) -->
-                        <Border Background="Linear Gradient(180, #2D1F3D, #1A1225)"
-                                CornerRadius="6"
+                        <Border CornerRadius="6"
                                 Padding="4">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+                                    <GradientStop Color="#2D1F3D" Offset="0"/>
+                                    <GradientStop Color="#1A1225" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
 
                             <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
                                 <ItemsControl.ItemsPanel>
@@ -138,25 +172,43 @@
 
                                                         <!-- 빛 반사 효과 -->
                                                         <Border IsVisible="{Binding HasCreature}"
-                                                                Background="Linear Gradient(135, #30FFFFFF, #00FFFFFF)"
                                                                 CornerRadius="4"
-                                                                IsHitTestVisible="False"/>
+                                                                IsHitTestVisible="False">
+                                                            <Border.Background>
+                                                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                                                    <GradientStop Color="#30FFFFFF" Offset="0"/>
+                                                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                                                </LinearGradientBrush>
+                                                            </Border.Background>
+                                                        </Border>
                                                     </Grid>
                                                 </Border>
 
                                                 <!-- 고급 받침대 (금색 테두리 + 등급 보석) -->
                                                 <Border Grid.Row="1"
                                                         Height="14"
-                                                        Background="Linear Gradient(180, #3D3D5C, #2D2D4C)"
                                                         CornerRadius="0,0,4,4"
-                                                        BorderBrush="Linear Gradient(90, #8B7355, #D4AF37, #8B7355)"
+                                                        BorderBrush="#D4AF37"
                                                         BorderThickness="1,0,1,1"
                                                         Margin="2,0,2,2">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+                                                            <GradientStop Color="#3D3D5C" Offset="0"/>
+                                                            <GradientStop Color="#2D2D4C" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
                                                     <Grid>
                                                         <!-- 받침대 금색 라인 -->
-                                                        <Border Background="Linear Gradient(90, #00000000, #40D4AF37, #00000000)"
-                                                                Height="1"
-                                                                VerticalAlignment="Top"/>
+                                                        <Border Height="1"
+                                                                VerticalAlignment="Top">
+                                                            <Border.Background>
+                                                                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                                                    <GradientStop Color="#00000000" Offset="0"/>
+                                                                    <GradientStop Color="#40D4AF37" Offset="0.5"/>
+                                                                    <GradientStop Color="#00000000" Offset="1"/>
+                                                                </LinearGradientBrush>
+                                                            </Border.Background>
+                                                        </Border>
 
                                                         <!-- 등급 보석 -->
                                                         <Border IsVisible="{Binding HasCreature}"
@@ -196,9 +248,16 @@
                         </Border>
 
                         <!-- 유리 반사 오버레이 -->
-                        <Border Background="Linear Gradient(135, #15FFFFFF, #05FFFFFF, #00FFFFFF)"
-                                CornerRadius="6"
-                                IsHitTestVisible="False"/>
+                        <Border CornerRadius="6"
+                                IsHitTestVisible="False">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                    <GradientStop Color="#15FFFFFF" Offset="0"/>
+                                    <GradientStop Color="#05FFFFFF" Offset="0.5"/>
+                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
                     </Grid>
                 </Border>
             </Border>
@@ -235,9 +294,15 @@
 
             <!-- 하단: 알 진행 상황 -->
             <Border Grid.Row="4"
-                    Background="Linear Gradient(90, #2D2D4C, #3D3D5C, #2D2D4C)"
                     CornerRadius="8"
                     Padding="10,6">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#2D2D4C" Offset="0"/>
+                        <GradientStop Color="#3D3D5C" Offset="0.5"/>
+                        <GradientStop Color="#2D2D4C" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
                 <Grid ColumnDefinitions="Auto,*,Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="🥚" FontSize="16" VerticalAlignment="Center"/>
@@ -255,10 +320,17 @@
                             Height="8"
                             Margin="12,0"
                             VerticalAlignment="Center">
-                        <Border Background="Linear Gradient(90, #B8860B, #FFD700, #FFF8DC)"
-                                CornerRadius="4"
+                        <Border CornerRadius="4"
                                 HorizontalAlignment="Left"
-                                Width="{Binding ProgressWidth}"/>
+                                Width="{Binding ProgressWidth}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                    <GradientStop Color="#B8860B" Offset="0"/>
+                                    <GradientStop Color="#FFD700" Offset="0.5"/>
+                                    <GradientStop Color="#FFF8DC" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
                     </Border>
 
                     <TextBlock Grid.Column="2"
