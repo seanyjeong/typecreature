@@ -110,16 +110,12 @@ public partial class MiniWidget : Window
             _ => "#4CAF50"
         };
 
-        // 이미지 로드
+        // 이미지 로드 (avares:// 사용)
         Bitmap? creatureImage = null;
         try
         {
-            var basePath = AppContext.BaseDirectory;
-            var filePath = System.IO.Path.Combine(basePath, "Assets", creature.SpritePath);
-            if (System.IO.File.Exists(filePath))
-            {
-                creatureImage = new Bitmap(filePath);
-            }
+            var uri = new Uri($"avares://TypingTamagotchi/Assets/{creature.SpritePath}");
+            creatureImage = new Bitmap(Avalonia.Platform.AssetLoader.Open(uri));
         }
         catch { }
 
@@ -343,16 +339,12 @@ public partial class MiniWidget : Window
             _ => "#4CAF50"
         };
 
-        // 이미지 로드
+        // 이미지 로드 (avares:// 사용)
         Bitmap? creatureImage = null;
         try
         {
-            var basePath = AppContext.BaseDirectory;
-            var filePath = System.IO.Path.Combine(basePath, "Assets", creature.SpritePath);
-            if (System.IO.File.Exists(filePath))
-            {
-                creatureImage = new Bitmap(filePath);
-            }
+            var uri = new Uri($"avares://TypingTamagotchi/Assets/{creature.SpritePath}");
+            creatureImage = new Bitmap(Avalonia.Platform.AssetLoader.Open(uri));
         }
         catch { }
 
