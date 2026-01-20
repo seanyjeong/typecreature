@@ -43,10 +43,16 @@
                            HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <!-- 수집 현황 -->
-            <TextBlock Text="{Binding CollectionStatus, StringFormat='수집: {0}'}"
-                       HorizontalAlignment="Center"
-                       Foreground="Gray"/>
+            <!-- 수집 현황 (클릭하면 도감 열기) -->
+            <Button Command="{Binding OpenCollectionCommand}"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand">
+                <TextBlock Text="{Binding CollectionStatus, StringFormat='수집: {0}'}"
+                           Foreground="Gray"
+                           TextDecorations="Underline"/>
+            </Button>
         </StackPanel>
 
         <!-- 부화 팝업 -->

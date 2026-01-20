@@ -1,0 +1,101 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TypingTamagotchi.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="TypingTamagotchi.Views.CollectionWindow"
+        x:DataType="vm:CollectionViewModel"
+        Title="도감"
+        Width="600" Height="500"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:CollectionViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- 헤더 -->
+        <Border Grid.Row="0" Background="#F5F5F5" Padding="20">
+            <TextBlock Text="{Binding CollectionStatus}"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- 크리처 그리드 -->
+        <ScrollViewer Grid.Row="1" Padding="10">
+            <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="100" Height="120"
+                                Margin="5"
+                                Background="{Binding Creature.Rarity, Converter={x:Static vm:RarityToColorConverter.Instance}}"
+                                CornerRadius="8"
+                                Opacity="{Binding Opacity}"
+                                Padding="5">
+                            <StackPanel VerticalAlignment="Center" Spacing="5">
+                                <!-- 크리처 아이콘 placeholder -->
+                                <Border Width="50" Height="50"
+                                        Background="White"
+                                        CornerRadius="25"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding IsOwned, Converter={x:Static vm:OwnedToEmojiConverter.Instance}}"
+                                               FontSize="24"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 이름 -->
+                                <TextBlock Text="{Binding DisplayName}"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <!-- 희귀도 -->
+                                <TextBlock Text="{Binding RarityText}"
+                                           FontSize="9"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"/>
+
+                                <!-- 개수 -->
+                                <TextBlock Text="{Binding CountText}"
+                                           FontSize="9"
+                                           Foreground="DarkGreen"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- 하단 -->
+        <Border Grid.Row="2" Background="#F5F5F5" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="16" Height="16" Background="#E8F5E9" CornerRadius="3"/>
+                    <TextBlock Text="Common" VerticalAlignment="Center" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="16" Height="16" Background="#E3F2FD" CornerRadius="3"/>
+                    <TextBlock Text="Rare" VerticalAlignment="Center" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="16" Height="16" Background="#F3E5F5" CornerRadius="3"/>
+                    <TextBlock Text="Epic" VerticalAlignment="Center" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="16" Height="16" Background="#FFF8E1" CornerRadius="3"/>
+                    <TextBlock Text="Legendary" VerticalAlignment="Center" FontSize="11"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

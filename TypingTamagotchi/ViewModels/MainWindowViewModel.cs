@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TypingTamagotchi.Models;
@@ -11,6 +12,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly EggService _eggService;
     private readonly HatchingService _hatchingService;
     private readonly IInputService _inputService;
+
+    public event Action? OpenCollectionRequested;
 
     [ObservableProperty]
     private string _eggName = "";
@@ -95,5 +98,11 @@ public partial class MainWindowViewModel : ViewModelBase
         IsHatchPopupVisible = false;
         _eggService.CreateNewEgg();
         _inputService.Start();
+    }
+
+    [RelayCommand]
+    private void OpenCollection()
+    {
+        OpenCollectionRequested?.Invoke();
     }
 }
