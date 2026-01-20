@@ -64,12 +64,18 @@ public partial class CollectionViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleDisplay(CollectionItem? item)
     {
+        Console.WriteLine($"[ToggleDisplay] 호출됨, item: {item?.Creature?.Name ?? "null"}");
+
         if (item == null || !item.IsOwned)
+        {
+            Console.WriteLine("[ToggleDisplay] item이 null이거나 소유하지 않음");
             return;
+        }
 
         if (item.IsInDisplay)
         {
             // 진열장에서 제거
+            Console.WriteLine($"[ToggleDisplay] 진열장에서 제거: {item.Creature.Name}");
             _db.RemoveCreatureFromDisplay(item.Creature.Id);
             item.IsInDisplay = false;
         }
@@ -77,10 +83,16 @@ public partial class CollectionViewModel : ViewModelBase
         {
             // 빈 슬롯 찾기
             var nextSlot = _db.GetNextAvailableSlot();
+            Console.WriteLine($"[ToggleDisplay] 다음 빈 슬롯: {nextSlot}");
             if (nextSlot >= 0)
             {
                 _db.SetDisplaySlot(nextSlot, item.Creature.Id);
                 item.IsInDisplay = true;
+                Console.WriteLine($"[ToggleDisplay] 슬롯 {nextSlot}에 추가됨: {item.Creature.Name}");
+            }
+            else
+            {
+                Console.WriteLine("[ToggleDisplay] 빈 슬롯 없음!");
             }
         }
     }

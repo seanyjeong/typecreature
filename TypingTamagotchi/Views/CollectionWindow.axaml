@@ -73,8 +73,8 @@
 
                                 <!-- 진열장 버튼 -->
                                 <Button Content="{Binding DisplayButtonText}"
-                                        Command="{Binding $parent[ItemsControl].((vm:CollectionViewModel)DataContext).ToggleDisplayCommand}"
-                                        CommandParameter="{Binding}"
+                                        Click="OnToggleDisplayClick"
+                                        Tag="{Binding}"
                                         IsVisible="{Binding IsOwned}"
                                         FontSize="8"
                                         Padding="4,2"
