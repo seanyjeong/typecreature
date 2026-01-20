@@ -53,6 +53,14 @@
                            Foreground="Gray"
                            TextDecorations="Underline"/>
             </Button>
+
+            <!-- 미니 위젯 토글 -->
+            <Button Command="{Binding ToggleWidgetCommand}"
+                    HorizontalAlignment="Center"
+                    Padding="15,5"
+                    Margin="0,5,0,0">
+                <TextBlock Text="{Binding IsWidgetVisible, Converter={x:Static vm:WidgetButtonTextConverter.Instance}}"/>
+            </Button>
         </StackPanel>
 
         <!-- 부화 팝업 -->

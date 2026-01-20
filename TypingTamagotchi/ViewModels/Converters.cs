@@ -50,3 +50,22 @@ public class OwnedToEmojiConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+public class WidgetButtonTextConverter : IValueConverter
+{
+    public static readonly WidgetButtonTextConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool isVisible)
+        {
+            return isVisible ? "위젯 숨기기" : "미니 위젯";
+        }
+        return "미니 위젯";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

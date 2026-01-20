@@ -14,6 +14,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IInputService _inputService;
 
     public event Action? OpenCollectionRequested;
+    public event Action<bool>? ToggleWidgetRequested;
 
     [ObservableProperty]
     private string _eggName = "";
@@ -32,6 +33,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _collectionStatus = "0/50";
+
+    [ObservableProperty]
+    private bool _isWidgetVisible;
 
     public MainWindowViewModel()
     {
@@ -104,5 +108,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private void OpenCollection()
     {
         OpenCollectionRequested?.Invoke();
+    }
+
+    [RelayCommand]
+    private void ToggleWidget()
+    {
+        IsWidgetVisible = !IsWidgetVisible;
+        ToggleWidgetRequested?.Invoke(IsWidgetVisible);
     }
 }
