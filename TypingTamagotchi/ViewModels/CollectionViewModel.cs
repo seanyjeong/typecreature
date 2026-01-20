@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TypingTamagotchi.Models;
 using TypingTamagotchi.Services;
 
@@ -9,6 +10,8 @@ namespace TypingTamagotchi.ViewModels;
 
 public partial class CollectionViewModel : ViewModelBase
 {
+    private readonly DatabaseService _db;
+
     [ObservableProperty]
     private ObservableCollection<CollectionItem> _items = new();
 
@@ -20,20 +23,24 @@ public partial class CollectionViewModel : ViewModelBase
 
     public CollectionViewModel()
     {
+        _db = new DatabaseService();
         LoadCollection();
     }
 
     private void LoadCollection()
     {
-        var db = new DatabaseService();
-        var hatching = new HatchingService(db);
+        var hatching = new HatchingService(_db);
 
         // 모든 크리처 가져오기
-        var allCreatures = GetAllCreatures(db);
+        var allCreatures = GetAllCreatures(_db);
 
         // 획득한 크리처 정보
         var collection = hatching.GetCollection();
         var ownedIds = collection.Select(c => c.creature.Id).ToHashSet();
+
+        // 현재 진열장 상태
+        var displaySlots = _db.GetDisplaySlots();
+        var displayedIds = displaySlots.Select(s => s.creatureId).ToHashSet();
 
         Items.Clear();
         foreach (var creature in allCreatures)
@@ -44,13 +51,38 @@ public partial class CollectionViewModel : ViewModelBase
                 Creature = creature,
                 IsOwned = ownedIds.Contains(creature.Id),
                 Count = owned.count,
-                FirstObtained = owned.firstObtained
+                FirstObtained = owned.firstObtained,
+                IsInDisplay = displayedIds.Contains(creature.Id)
             });
         }
 
         var ownedCount = hatching.GetOwnedCreatureCount();
         var totalCount = hatching.GetTotalCreatureCount();
         CollectionStatus = $"수집: {ownedCount}/{totalCount} ({ownedCount * 100 / totalCount}%)";
+    }
+
+    [RelayCommand]
+    private void ToggleDisplay(CollectionItem? item)
+    {
+        if (item == null || !item.IsOwned)
+            return;
+
+        if (item.IsInDisplay)
+        {
+            // 진열장에서 제거
+            _db.RemoveCreatureFromDisplay(item.Creature.Id);
+            item.IsInDisplay = false;
+        }
+        else
+        {
+            // 빈 슬롯 찾기
+            var nextSlot = _db.GetNextAvailableSlot();
+            if (nextSlot >= 0)
+            {
+                _db.SetDisplaySlot(nextSlot, item.Creature.Id);
+                item.IsInDisplay = true;
+            }
+        }
     }
 
     private static System.Collections.Generic.List<Creature> GetAllCreatures(DatabaseService db)
@@ -88,8 +120,13 @@ public partial class CollectionItem : ObservableObject
     public int Count { get; set; }
     public DateTime FirstObtained { get; set; }
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayButtonText))]
+    private bool _isInDisplay;
+
     public string DisplayName => IsOwned ? Creature.Name : "???";
     public string RarityText => IsOwned ? Creature.Rarity.ToString() : "";
     public string CountText => IsOwned && Count > 1 ? $"x{Count}" : "";
     public double Opacity => IsOwned ? 1.0 : 0.3;
+    public string DisplayButtonText => IsInDisplay ? "진열장에서 제거" : "진열장에 추가";
 }

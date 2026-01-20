@@ -33,13 +33,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="100" Height="120"
+                        <Border Width="100" Height="140"
                                 Margin="5"
                                 Background="{Binding Creature.Rarity, Converter={x:Static vm:RarityToColorConverter.Instance}}"
                                 CornerRadius="8"
                                 Opacity="{Binding Opacity}"
                                 Padding="5">
-                            <StackPanel VerticalAlignment="Center" Spacing="3">
+                            <StackPanel VerticalAlignment="Center" Spacing="2">
                                 <!-- 크리처 이미지 -->
                                 <Border Width="50" Height="50"
                                         Background="White"
@@ -70,6 +70,15 @@
                                            FontSize="9"
                                            Foreground="DarkGreen"
                                            HorizontalAlignment="Center"/>
+
+                                <!-- 진열장 버튼 -->
+                                <Button Content="{Binding DisplayButtonText}"
+                                        Command="{Binding $parent[ItemsControl].((vm:CollectionViewModel)DataContext).ToggleDisplayCommand}"
+                                        CommandParameter="{Binding}"
+                                        IsVisible="{Binding IsOwned}"
+                                        FontSize="8"
+                                        Padding="4,2"
+                                        HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

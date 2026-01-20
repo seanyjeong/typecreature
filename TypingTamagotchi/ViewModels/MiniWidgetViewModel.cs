@@ -80,23 +80,23 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
     public void LoadDisplayCreatures()
     {
+        // 저장된 진열장 슬롯 로드
+        var savedSlots = _db.GetDisplaySlots();
         var collection = _hatching.GetCollection();
-        var owned = collection
-            .OrderByDescending(c => (int)c.creature.Rarity)
-            .ThenByDescending(c => c.firstObtained)
-            .Take(10)
-            .ToList();
+        var creatureMap = collection.ToDictionary(c => c.creature.Id, c => c.creature);
 
-        // 슬롯 업데이트
+        // 모든 슬롯 초기화
         for (int i = 0; i < 10; i++)
         {
-            if (i < owned.Count)
+            DisplaySlots[i].Clear();
+        }
+
+        // 저장된 슬롯에 크리처 배치
+        foreach (var (slotIndex, creatureId) in savedSlots)
+        {
+            if (slotIndex >= 0 && slotIndex < 10 && creatureMap.TryGetValue(creatureId, out var creature))
             {
-                DisplaySlots[i].SetCreature(owned[i].creature);
-            }
-            else
-            {
-                DisplaySlots[i].Clear();
+                DisplaySlots[slotIndex].SetCreature(creature);
             }
         }
 

@@ -49,8 +49,90 @@ public class DatabaseService
                 required_count INTEGER NOT NULL,
                 current_count INTEGER NOT NULL
             );
+
+            CREATE TABLE IF NOT EXISTS display_slots (
+                slot_index INTEGER PRIMARY KEY CHECK (slot_index >= 0 AND slot_index < 10),
+                creature_id INTEGER NOT NULL,
+                FOREIGN KEY (creature_id) REFERENCES creatures(id)
+            );
         ";
         command.ExecuteNonQuery();
+    }
+
+    public List<(int slotIndex, int creatureId)> GetDisplaySlots()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT slot_index, creature_id FROM display_slots ORDER BY slot_index";
+
+        var slots = new List<(int, int)>();
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            slots.Add((reader.GetInt32(0), reader.GetInt32(1)));
+        }
+        return slots;
+    }
+
+    public void SetDisplaySlot(int slotIndex, int creatureId)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+            INSERT OR REPLACE INTO display_slots (slot_index, creature_id)
+            VALUES (@slot, @creature)
+        ";
+        command.Parameters.AddWithValue("@slot", slotIndex);
+        command.Parameters.AddWithValue("@creature", creatureId);
+        command.ExecuteNonQuery();
+    }
+
+    public void RemoveFromDisplaySlot(int slotIndex)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM display_slots WHERE slot_index = @slot";
+        command.Parameters.AddWithValue("@slot", slotIndex);
+        command.ExecuteNonQuery();
+    }
+
+    public void RemoveCreatureFromDisplay(int creatureId)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM display_slots WHERE creature_id = @creature";
+        command.Parameters.AddWithValue("@creature", creatureId);
+        command.ExecuteNonQuery();
+    }
+
+    public int? GetCreatureDisplaySlot(int creatureId)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT slot_index FROM display_slots WHERE creature_id = @creature";
+        command.Parameters.AddWithValue("@creature", creatureId);
+        var result = command.ExecuteScalar();
+        return result != null ? Convert.ToInt32(result) : null;
+    }
+
+    public int GetNextAvailableSlot()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT slot_index FROM display_slots ORDER BY slot_index";
+
+        var usedSlots = new HashSet<int>();
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            usedSlots.Add(reader.GetInt32(0));
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (!usedSlots.Contains(i)) return i;
+        }
+        return -1; // 모든 슬롯이 사용 중
     }
 
     public SqliteConnection GetConnection()
