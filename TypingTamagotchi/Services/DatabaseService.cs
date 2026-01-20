@@ -51,7 +51,7 @@ public class DatabaseService
             );
 
             CREATE TABLE IF NOT EXISTS display_slots (
-                slot_index INTEGER PRIMARY KEY CHECK (slot_index >= 0 AND slot_index < 10),
+                slot_index INTEGER PRIMARY KEY CHECK (slot_index >= 0 AND slot_index < 12),
                 creature_id INTEGER NOT NULL,
                 FOREIGN KEY (creature_id) REFERENCES creatures(id)
             );
@@ -128,7 +128,7 @@ public class DatabaseService
             usedSlots.Add(reader.GetInt32(0));
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 12; i++)
         {
             if (!usedSlots.Contains(i)) return i;
         }

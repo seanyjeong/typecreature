@@ -55,8 +55,8 @@ public partial class MiniWidgetViewModel : ViewModelBase
         _db = new DatabaseService();
         _hatching = new HatchingService(_db);
 
-        // 10개 슬롯 초기화
-        for (int i = 0; i < 10; i++)
+        // 12개 슬롯 초기화 (3x4 그리드)
+        for (int i = 0; i < 12; i++)
         {
             DisplaySlots.Add(new DisplaySlot { SlotIndex = i });
         }
@@ -88,7 +88,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         Console.WriteLine($"[MiniWidget] 저장된 슬롯: {savedSlots.Count}, 컬렉션: {collection.Count}");
 
         // 모든 슬롯 초기화
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 12; i++)
         {
             DisplaySlots[i].Clear();
         }
@@ -97,7 +97,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         foreach (var (slotIndex, creatureId) in savedSlots)
         {
             Console.WriteLine($"[MiniWidget] 슬롯 {slotIndex}에 크리처 ID {creatureId} 배치 시도");
-            if (slotIndex >= 0 && slotIndex < 10 && creatureMap.TryGetValue(creatureId, out var creature))
+            if (slotIndex >= 0 && slotIndex < 12 && creatureMap.TryGetValue(creatureId, out var creature))
             {
                 Console.WriteLine($"[MiniWidget] -> 성공: {creature.Name}");
                 DisplaySlots[slotIndex].SetCreature(creature);
@@ -153,7 +153,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
     public void SwapSlots(int fromIndex, int toIndex)
     {
-        if (fromIndex < 0 || fromIndex >= 10 || toIndex < 0 || toIndex >= 10)
+        if (fromIndex < 0 || fromIndex >= 12 || toIndex < 0 || toIndex >= 12)
             return;
         if (fromIndex == toIndex)
             return;
