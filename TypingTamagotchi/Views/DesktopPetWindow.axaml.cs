@@ -55,9 +55,30 @@ public partial class DesktopPetWindow : Window
             var spritePath = _viewModel.SpritePath;
             if (!string.IsNullOrEmpty(spritePath))
             {
-                // Assets 폴더에서 이미지 로드
-                var uri = new Uri($"avares://TypingTamagotchi/Assets/{spritePath}");
-                _creatureImage.Source = new Bitmap(AssetLoader.Open(uri));
+                // 먼저 avares:// 시도
+                try
+                {
+                    var uri = new Uri($"avares://TypingTamagotchi/Assets/{spritePath}");
+                    _creatureImage.Source = new Bitmap(AssetLoader.Open(uri));
+                    System.Diagnostics.Debug.WriteLine($"Loaded image from avares: {spritePath}");
+                    return;
+                }
+                catch
+                {
+                    // avares 실패시 파일 경로로 시도
+                }
+
+                // 실행 파일 기준 상대 경로로 시도
+                var basePath = AppContext.BaseDirectory;
+                var filePath = System.IO.Path.Combine(basePath, "Assets", spritePath);
+                if (System.IO.File.Exists(filePath))
+                {
+                    _creatureImage.Source = new Bitmap(filePath);
+                    System.Diagnostics.Debug.WriteLine($"Loaded image from file: {filePath}");
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Image not found: {spritePath}");
             }
         }
         catch (Exception ex)

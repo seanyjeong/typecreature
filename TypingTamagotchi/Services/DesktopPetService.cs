@@ -165,7 +165,7 @@ public class DesktopPetService
 
             if (pet.State == PetState.Walking)
             {
-                var speed = 30 * deltaTime;
+                var speed = 100 * deltaTime;  // 30 -> 100 (더 빠르게)
                 pet.X += pet.FacingRight ? speed : -speed;
 
                 // 화면 경계 체크
