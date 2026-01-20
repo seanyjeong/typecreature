@@ -7,7 +7,7 @@
         x:Class="TypingTamagotchi.Views.MiniWidget"
         x:DataType="vm:MiniWidgetViewModel"
         Title="TypeCreature"
-        Width="340" Height="360"
+        Width="340" Height="500"
         CanResize="False"
         SystemDecorations="None"
         Topmost="True"
@@ -100,7 +100,7 @@
                     BorderThickness="2"
                     Padding="8"
                     Margin="0,0,0,8"
-                    MinHeight="140">
+                    MinHeight="280">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
                         <GradientStop Color="#1E1E2E" Offset="0"/>
@@ -132,14 +132,14 @@
                             <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="5" Rows="2"/>
+                                        <UniformGrid Columns="3" Rows="4"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <!-- 개별 받침대 -->
-                                        <Border Width="54" Height="60"
-                                                Margin="2"
+                                        <Border Width="90" Height="85"
+                                                Margin="4"
                                                 CornerRadius="4"
                                                 Name="SlotBorder"
                                                 Tag="{Binding SlotIndex}"
@@ -167,7 +167,7 @@
                                                         <!-- 크리처 이미지 -->
                                                         <Image Source="{Binding CreatureImage}"
                                                                IsVisible="{Binding HasCreature}"
-                                                               Width="40" Height="40"
+                                                               Width="65" Height="65"
                                                                Margin="0,2,0,0"
                                                                VerticalAlignment="Top"
                                                                Stretch="Uniform"

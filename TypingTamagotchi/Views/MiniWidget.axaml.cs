@@ -44,6 +44,19 @@ public partial class MiniWidget : Window
                 );
             }
         };
+
+        // 진열장 변경 이벤트 구독 (실시간 반영)
+        CollectionViewModel.DisplayChanged += OnDisplayChanged;
+
+        Closed += (s, e) =>
+        {
+            CollectionViewModel.DisplayChanged -= OnDisplayChanged;
+        };
+    }
+
+    private void OnDisplayChanged()
+    {
+        Dispatcher.UIThread.Post(() => _viewModel?.Refresh());
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -273,6 +286,15 @@ public partial class MiniWidget : Window
             }
             ClearAllHighlights();
         }
+        else if (!_isSlotDragging && !_isWindowDragging && _dragSourceIndex >= 0)
+        {
+            // 드래그 안 하고 클릭만 한 경우 - 크리처 정보 팝업
+            var slot = _viewModel?.DisplaySlots[_dragSourceIndex];
+            if (slot?.HasCreature == true)
+            {
+                ShowCreatureInfo(slot.GetCreature()!);
+            }
+        }
 
         // 상태 초기화
         _isWindowDragging = false;
@@ -280,6 +302,125 @@ public partial class MiniWidget : Window
         _dragSourceIndex = -1;
         _dragSourceBorder = null;
         e.Pointer.Capture(null);
+    }
+
+    private void ShowCreatureInfo(Creature creature)
+    {
+        // 등급별 색상
+        var rarityColor = creature.Rarity switch
+        {
+            Rarity.Legendary => "#FFD700",
+            Rarity.Epic => "#9C27B0",
+            Rarity.Rare => "#2196F3",
+            _ => "#4CAF50"
+        };
+
+        // 이미지 로드
+        Bitmap? creatureImage = null;
+        try
+        {
+            var basePath = AppContext.BaseDirectory;
+            var filePath = System.IO.Path.Combine(basePath, "Assets", creature.SpritePath);
+            if (System.IO.File.Exists(filePath))
+            {
+                creatureImage = new Bitmap(filePath);
+            }
+        }
+        catch { }
+
+        var popup = new Window
+        {
+            Width = 280,
+            Height = 180,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            SystemDecorations = SystemDecorations.None,
+            Background = Brushes.Transparent,
+            Topmost = true
+        };
+
+        var border = new Border
+        {
+            CornerRadius = new CornerRadius(12),
+            BorderThickness = new Thickness(2),
+            BorderBrush = new SolidColorBrush(Color.Parse(rarityColor)),
+            Background = new SolidColorBrush(Color.Parse("#F0202030")),
+            Padding = new Thickness(15)
+        };
+
+        var mainStack = new StackPanel { Spacing = 10 };
+
+        // 상단: 이미지 + 이름
+        var headerStack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 15,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        if (creatureImage != null)
+        {
+            headerStack.Children.Add(new Image
+            {
+                Source = creatureImage,
+                Width = 70,
+                Height = 70,
+                Stretch = Stretch.Uniform
+            });
+        }
+
+        var nameStack = new StackPanel
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 5
+        };
+
+        nameStack.Children.Add(new TextBlock
+        {
+            Text = creature.Name,
+            FontSize = 20,
+            FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.Parse(rarityColor))
+        });
+
+        nameStack.Children.Add(new TextBlock
+        {
+            Text = creature.Rarity switch
+            {
+                Rarity.Legendary => "★★★★ 전설",
+                Rarity.Epic => "★★★ 영웅",
+                Rarity.Rare => "★★ 희귀",
+                _ => "★ 일반"
+            },
+            FontSize = 12,
+            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA"))
+        });
+
+        headerStack.Children.Add(nameStack);
+        mainStack.Children.Add(headerStack);
+
+        // 설명
+        mainStack.Children.Add(new TextBlock
+        {
+            Text = creature.Description,
+            FontSize = 14,
+            Foreground = Brushes.White,
+            TextWrapping = TextWrapping.Wrap,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
+
+        // 닫기 버튼
+        var closeBtn = new Button
+        {
+            Content = "닫기",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Padding = new Thickness(20, 5)
+        };
+        closeBtn.Click += (s, e) => popup.Close();
+        mainStack.Children.Add(closeBtn);
+
+        border.Child = mainStack;
+        popup.Content = border;
+        popup.Show();
     }
 
     private Border? FindSlotBorderAt(Visual? visual)
