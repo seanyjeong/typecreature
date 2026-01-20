@@ -153,6 +153,7 @@ public partial class DesktopPetWindow : Window
 
         var currentPos = e.GetPosition(this);
         var delta = currentPos - _dragStart;
+        _dragStart = currentPos;  // 매 프레임마다 리셋
 
         var screens = Screens;
         var primaryScreen = screens.Primary;

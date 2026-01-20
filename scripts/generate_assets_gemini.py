@@ -15,8 +15,8 @@ from pathlib import Path
 API_KEY = os.environ.get("GEMINI_API_KEY")
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict"
 
-# 기본 스타일
-BASE_STYLE = "cute pixel art, 64x64 pixels, pastel colors, big eyes, round shape, transparent background, game asset, tamagotchi style, adorable, simple design, white background"
+# 기본 스타일 (투명 배경 강조)
+BASE_STYLE = "cute pixel art creature, 64x64 pixels, pastel colors, big eyes, round shape, isolated on transparent background, PNG with alpha channel, no background, game sprite asset, tamagotchi style, adorable, simple design, single character only, nothing behind the character"
 
 # 크리처 목록 (이름, 프롬프트)
 CREATURES = [
