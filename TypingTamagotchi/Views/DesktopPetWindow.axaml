@@ -7,6 +7,9 @@
         Background="Transparent"
         TransparencyLevelHint="Transparent"
         SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
         Topmost="True"
         ShowInTaskbar="False"
         CanResize="False">

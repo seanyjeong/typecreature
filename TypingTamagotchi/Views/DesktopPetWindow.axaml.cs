@@ -20,6 +20,10 @@ public partial class DesktopPetWindow : Window
         InitializeComponent();
         _creatureImage = this.FindControl<Image>("CreatureImage");
 
+        // 투명 창 설정 강화
+        this.Background = Avalonia.Media.Brushes.Transparent;
+        this.TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
+
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
         PointerReleased += OnPointerReleased;
