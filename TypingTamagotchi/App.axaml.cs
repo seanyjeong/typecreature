@@ -38,6 +38,14 @@ public partial class App : Application
                 _db = new DatabaseService();
                 _db.SeedCreaturesIfEmpty();
 
+                // 디버그: 현재 진열장 상태 출력
+                var displaySlots = _db.GetDisplaySlots();
+                Console.WriteLine($"[DEBUG] 진열장 슬롯 수: {displaySlots.Count}");
+                foreach (var (slot, creatureId) in displaySlots)
+                {
+                    Console.WriteLine($"[DEBUG] 슬롯 {slot}: 크리처 ID {creatureId}");
+                }
+
                 // 시스템 트레이 설정
                 SetupTrayIcon(desktop);
 
@@ -149,6 +157,13 @@ public partial class App : Application
             {
                 DataContext = viewModel
             };
+
+            // 도감 창 닫힐 때 미니위젯 새로고침
+            collectionWindow.Closed += (s, e) =>
+            {
+                _miniWidgetViewModel?.Refresh();
+            };
+
             collectionWindow.Show();
         }
         catch (Exception ex)
