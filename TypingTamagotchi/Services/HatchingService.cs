@@ -160,14 +160,14 @@ public class HatchingService
         var (keystrokes, clicks) = GetCurrentProgress();
         var totalInputs = keystrokes + clicks;
 
-        if (totalInputs < 500)
+        if (totalInputs < 1000) // 2배 느리게
             return null;
 
         // 진행 상황 리셋
         using var connection = _db.GetConnection();
         var resetCommand = connection.CreateCommand();
         resetCommand.CommandText = @"
-            UPDATE stats SET value = value - 500 WHERE key = 'keystrokes';
+            UPDATE stats SET value = value - 1000 WHERE key = 'keystrokes';
             UPDATE stats SET value = 0 WHERE key = 'clicks';
         ";
         resetCommand.ExecuteNonQuery();

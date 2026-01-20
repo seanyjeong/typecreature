@@ -7,7 +7,7 @@
         x:Class="TypingTamagotchi.Views.MiniWidget"
         x:DataType="vm:MiniWidgetViewModel"
         Title="TypeCreature"
-        Width="400" Height="280"
+        Width="340" Height="360"
         CanResize="False"
         SystemDecorations="None"
         Topmost="True"
@@ -60,11 +60,13 @@
                 </StackPanel>
             </Border>
 
-            <!-- 골드 타이틀 -->
+            <!-- 골드 타이틀 (클릭시 도감 열기) -->
             <Border Grid.Row="1"
                     CornerRadius="8"
                     Padding="10,6"
-                    Margin="0,0,0,8">
+                    Margin="0,0,0,8"
+                    Cursor="Hand"
+                    PointerPressed="OnCollectionTitleClick">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
                         <GradientStop Color="#B8860B" Offset="0"/>
@@ -98,7 +100,7 @@
                     BorderThickness="2"
                     Padding="8"
                     Margin="0,0,0,8"
-                    MinHeight="80">
+                    MinHeight="140">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
                         <GradientStop Color="#1E1E2E" Offset="0"/>
@@ -130,14 +132,14 @@
                             <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="10" Rows="1"/>
+                                        <UniformGrid Columns="5" Rows="2"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <!-- 개별 받침대 -->
-                                        <Border Width="32" Height="58"
-                                                Margin="1"
+                                        <Border Width="54" Height="60"
+                                                Margin="2"
                                                 CornerRadius="4"
                                                 Name="SlotBorder"
                                                 Tag="{Binding SlotIndex}"
@@ -165,7 +167,7 @@
                                                         <!-- 크리처 이미지 -->
                                                         <Image Source="{Binding CreatureImage}"
                                                                IsVisible="{Binding HasCreature}"
-                                                               Width="26" Height="26"
+                                                               Width="40" Height="40"
                                                                Margin="0,2,0,0"
                                                                VerticalAlignment="Top"
                                                                Stretch="Uniform"

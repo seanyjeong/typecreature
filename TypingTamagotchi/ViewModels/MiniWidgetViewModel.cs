@@ -117,11 +117,14 @@ public partial class MiniWidgetViewModel : ViewModelBase
         CollectionProgress = (double)totalOwned / totalCreatures;
     }
 
+    // 부화 이벤트 (UI에서 토스트 표시용)
+    public event Action<Creature>? CreatureHatched;
+
     public void UpdateProgress()
     {
         var (keystrokes, clicks) = _hatching.GetCurrentProgress();
         var totalInputs = keystrokes + clicks;
-        var required = 500; // 부화에 필요한 입력
+        var required = 1000; // 부화에 필요한 입력 (2배 느리게)
 
         Progress = Math.Min(1.0, (double)totalInputs / required);
         ProgressText = $"{(int)(Progress * 100)}%";
@@ -141,6 +144,9 @@ public partial class MiniWidgetViewModel : ViewModelBase
             {
                 LoadDisplayCreatures();
                 UpdateProgress();
+
+                // 부화 이벤트 발생 (토스트 표시용)
+                CreatureHatched?.Invoke(creature);
             }
         }
     }

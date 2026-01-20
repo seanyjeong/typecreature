@@ -1,9 +1,15 @@
 using System;
 using System.Linq;
+using System.Timers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
+using TypingTamagotchi.Models;
 using TypingTamagotchi.ViewModels;
 
 namespace TypingTamagotchi.Views;
@@ -44,6 +50,134 @@ public partial class MiniWidget : Window
     {
         base.OnDataContextChanged(e);
         _viewModel = DataContext as MiniWidgetViewModel;
+
+        if (_viewModel != null)
+        {
+            _viewModel.CreatureHatched += OnCreatureHatched;
+        }
+    }
+
+    private void OnCreatureHatched(Creature creature)
+    {
+        Dispatcher.UIThread.Post(() => ShowHatchToast(creature));
+    }
+
+    private void ShowHatchToast(Creature creature)
+    {
+        // 토스트 창 만들기
+        var toast = new Window
+        {
+            Width = 250,
+            Height = 100,
+            WindowStartupLocation = WindowStartupLocation.Manual,
+            SystemDecorations = SystemDecorations.None,
+            Topmost = true,
+            Background = Brushes.Transparent,
+            CanResize = false
+        };
+
+        // 화면 오른쪽 하단에 위치
+        var screen = Screens.Primary;
+        if (screen != null)
+        {
+            var workArea = screen.WorkingArea;
+            toast.Position = new PixelPoint(
+                workArea.Right - 270,
+                workArea.Bottom - 130
+            );
+        }
+
+        // 등급별 색상
+        var rarityColor = creature.Rarity switch
+        {
+            Rarity.Legendary => "#FFD700",
+            Rarity.Epic => "#9C27B0",
+            Rarity.Rare => "#2196F3",
+            _ => "#4CAF50"
+        };
+
+        // 이미지 로드
+        Bitmap? creatureImage = null;
+        try
+        {
+            var basePath = AppContext.BaseDirectory;
+            var filePath = System.IO.Path.Combine(basePath, "Assets", creature.SpritePath);
+            if (System.IO.File.Exists(filePath))
+            {
+                creatureImage = new Bitmap(filePath);
+            }
+        }
+        catch { }
+
+        // 토스트 내용
+        var border = new Border
+        {
+            CornerRadius = new CornerRadius(12),
+            BorderThickness = new Thickness(2),
+            BorderBrush = new SolidColorBrush(Color.Parse(rarityColor)),
+            Background = new SolidColorBrush(Color.Parse("#E0303050")),
+            Padding = new Thickness(15)
+        };
+
+        var stack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 15
+        };
+
+        if (creatureImage != null)
+        {
+            stack.Children.Add(new Image
+            {
+                Source = creatureImage,
+                Width = 60,
+                Height = 60,
+                Stretch = Stretch.Uniform
+            });
+        }
+
+        var textStack = new StackPanel
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 5
+        };
+
+        textStack.Children.Add(new TextBlock
+        {
+            Text = "🎉 부화 성공!",
+            FontSize = 14,
+            Foreground = Brushes.White
+        });
+
+        textStack.Children.Add(new TextBlock
+        {
+            Text = creature.Name,
+            FontSize = 18,
+            FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.Parse(rarityColor))
+        });
+
+        textStack.Children.Add(new TextBlock
+        {
+            Text = creature.Rarity.ToString(),
+            FontSize = 11,
+            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA"))
+        });
+
+        stack.Children.Add(textStack);
+        border.Child = stack;
+        toast.Content = border;
+
+        toast.Show();
+
+        // 3초 후 자동으로 닫기
+        var timer = new Timer(3000);
+        timer.Elapsed += (s, e) =>
+        {
+            timer.Stop();
+            Dispatcher.UIThread.Post(() => toast.Close());
+        };
+        timer.Start();
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -194,5 +328,22 @@ public partial class MiniWidget : Window
     public void OnKeyboardInput()
     {
         _viewModel?.OnInput();
+    }
+
+    private void OnCollectionTitleClick(object? sender, PointerPressedEventArgs e)
+    {
+        // 도감 열기
+        var collectionWindow = new CollectionWindow
+        {
+            DataContext = new CollectionViewModel()
+        };
+
+        collectionWindow.Closed += (s, args) =>
+        {
+            _viewModel?.Refresh();
+        };
+
+        collectionWindow.Show();
+        e.Handled = true; // 창 드래그 방지
     }
 }
