@@ -18,11 +18,8 @@ public partial class App : Application
     private TrayIcon? _trayIcon;
     private MainWindow? _mainWindow;
     private MainWindowViewModel? _viewModel;
-    private DesktopPetManager? _petManager;
+    private MiniWidget? _miniWidget;
     private DatabaseService? _db;
-
-    // 전역 접근용
-    public static DesktopPetManager? PetManager { get; private set; }
 
     public override void Initialize()
     {
@@ -36,10 +33,9 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             DisableAvaloniaDataAnnotationValidation();
 
-            // 데이터베이스 및 펫 매니저 초기화
+            // 데이터베이스 초기화
             _db = new DatabaseService();
-            _petManager = new DesktopPetManager(_db);
-            PetManager = _petManager;  // 전역 접근용
+            _db.SeedCreaturesIfEmpty();
 
             _viewModel = new MainWindowViewModel();
             _mainWindow = new MainWindow
@@ -60,8 +56,9 @@ public partial class App : Application
             // 시스템 트레이 설정
             SetupTrayIcon(desktop);
 
-            // 바탕화면 펫 시작
-            _petManager.Start();
+            // 시작 시 미니 위젯 바로 표시
+            ShowMiniWidget();
+            _mainWindow.Hide();
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -85,24 +82,21 @@ public partial class App : Application
         var widgetMenuItem = new NativeMenuItem("미니 위젯");
         widgetMenuItem.Click += (s, e) =>
         {
-            _viewModel?.ToggleWidgetCommand.Execute(null);
-            // 미니 위젯 활성화 시 메인 창 숨기기
-            if (_viewModel?.IsWidgetVisible == true)
+            if (_miniWidget == null || !_miniWidget.IsVisible)
             {
-                _mainWindow?.Hide();
+                ShowMiniWidget();
             }
-        };
-
-        var petVisibilityMenuItem = new NativeMenuItem("바탕화면 펫 숨기기/보이기");
-        petVisibilityMenuItem.Click += (s, e) =>
-        {
-            _petManager?.ToggleVisibility();
+            else
+            {
+                _miniWidget.Close();
+                _miniWidget = null;
+            }
         };
 
         var exitMenuItem = new NativeMenuItem("종료");
         exitMenuItem.Click += (s, e) =>
         {
-            _petManager?.Stop();
+            _miniWidget?.Close();
             _trayIcon?.Dispose();
             desktop.Shutdown();
         };
@@ -112,7 +106,6 @@ public partial class App : Application
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(collectionMenuItem);
         menu.Items.Add(widgetMenuItem);
-        menu.Items.Add(petVisibilityMenuItem);
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(exitMenuItem);
 
@@ -123,7 +116,7 @@ public partial class App : Application
 
         _trayIcon = new TrayIcon
         {
-            ToolTipText = "Typing Tamagotchi",
+            ToolTipText = "TypeCreature",
             Menu = menu,
             Icon = icon,
             IsVisible = true
@@ -137,13 +130,18 @@ public partial class App : Application
         };
     }
 
+    private void ShowMiniWidget()
+    {
+        _miniWidget = new MiniWidget
+        {
+            DataContext = new MiniWidgetViewModel()
+        };
+        _miniWidget.Show();
+    }
+
     private void OpenCollectionWindow()
     {
         var viewModel = new CollectionViewModel();
-        if (_petManager != null)
-        {
-            viewModel.SetPetManager(_petManager);
-        }
         var collectionWindow = new CollectionWindow
         {
             DataContext = viewModel
