@@ -50,6 +50,11 @@ public partial class MiniWidgetViewModel : ViewModelBase
     [ObservableProperty]
     private double _collectionProgress = 0;
 
+    [ObservableProperty]
+    private double _collectionProgressWidth = 0;
+
+    private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
+
     public MiniWidgetViewModel()
     {
         _db = new DatabaseService();
@@ -115,6 +120,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         // 수집 현황 업데이트
         CollectionText = $"{totalOwned}/{totalCreatures}";
         CollectionProgress = (double)totalOwned / totalCreatures;
+        CollectionProgressWidth = CollectionProgress * COLLECTION_BAR_MAX_WIDTH;
     }
 
     // 부화 이벤트 (UI에서 토스트 표시용)

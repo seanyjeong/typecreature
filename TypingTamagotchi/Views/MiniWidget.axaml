@@ -285,13 +285,22 @@
                                FontWeight="Bold"
                                Foreground="#FFD700"
                                VerticalAlignment="Center"/>
-                    <ProgressBar Value="{Binding CollectionProgress}"
-                                 Minimum="0" Maximum="1"
-                                 Height="4"
-                                 Width="60"
-                                 VerticalAlignment="Center"
-                                 Foreground="#FFD700"
-                                 Background="#2A2A3A"/>
+                    <Border Background="#2A2A3A"
+                            CornerRadius="2"
+                            Height="6"
+                            Width="60"
+                            VerticalAlignment="Center">
+                        <Border CornerRadius="2"
+                                HorizontalAlignment="Left"
+                                Width="{Binding CollectionProgressWidth}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                    <GradientStop Color="#B8860B" Offset="0"/>
+                                    <GradientStop Color="#FFD700" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Border>
                 </StackPanel>
             </Border>
 
