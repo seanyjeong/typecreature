@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Avalonia;
 using Avalonia.Threading;
 using TypingTamagotchi.Models;
@@ -10,6 +11,13 @@ namespace TypingTamagotchi.Services;
 
 public class DesktopPetManager
 {
+    private static void Log(string msg)
+    {
+        var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+        Console.WriteLine(line);
+        try { File.AppendAllText("pet_debug.log", line + "\n"); } catch { }
+    }
+
     private readonly DesktopPetService _petService;
     private readonly Dictionary<int, DesktopPetWindow> _petWindows = new();
     private readonly DispatcherTimer _updateTimer;
@@ -34,12 +42,14 @@ public class DesktopPetManager
 
     public void Start()
     {
+        Log($"Start() called, ActivePets count = {_petService.ActivePets.Count}");
         // 기존에 저장된 펫들의 윈도우 생성
         foreach (var pet in _petService.ActivePets)
         {
             CreatePetWindow(pet);
         }
         _updateTimer.Start();
+        Log("Timer started");
     }
 
     public void Stop()
@@ -81,24 +91,43 @@ public class DesktopPetManager
 
     private void CreatePetWindow(DesktopPet pet)
     {
-        if (_petWindows.ContainsKey(pet.Creature.Id)) return;
+        Log($"CreatePetWindow: {pet.Creature.Name} (ID={pet.Creature.Id})");
 
-        var viewModel = new DesktopPetViewModel(_petService, pet);
-        var window = new DesktopPetWindow
+        if (_petWindows.ContainsKey(pet.Creature.Id))
         {
-            DataContext = viewModel
-        };
+            Log($"Window already exists for {pet.Creature.Name}");
+            return;
+        }
 
-        viewModel.RemoveRequested += () =>
+        try
         {
-            _petWindows.Remove(pet.Creature.Id);
-        };
+            var viewModel = new DesktopPetViewModel(_petService, pet);
+            Log($"ViewModel created for {pet.Creature.Name}");
 
-        _petWindows[pet.Creature.Id] = window;
+            var window = new DesktopPetWindow
+            {
+                DataContext = viewModel
+            };
+            Log($"Window created for {pet.Creature.Name}");
 
-        if (_isVisible)
+            viewModel.RemoveRequested += () =>
+            {
+                _petWindows.Remove(pet.Creature.Id);
+            };
+
+            _petWindows[pet.Creature.Id] = window;
+
+            Log($"Position=({pet.X}, {pet.Y}), isVisible={_isVisible}");
+
+            if (_isVisible)
+            {
+                window.Show();
+                Log($"Window.Show() called for {pet.Creature.Name}");
+            }
+        }
+        catch (Exception ex)
         {
-            window.Show();
+            Log($"ERROR creating window: {ex.Message}");
         }
     }
 
@@ -135,8 +164,11 @@ public class DesktopPetManager
 
     public DesktopPet? AddPetToDesktop(Creature creature)
     {
+        Log($"AddPetToDesktop: {creature.Name} (ID={creature.Id})");
         var screen = GetPrimaryScreenBounds();
-        return _petService.AddPet(creature, screen.Width, screen.Height);
+        var pet = _petService.AddPet(creature, screen.Width, screen.Height);
+        Log($"AddPet result: {(pet != null ? "success" : "null")}");
+        return pet;
     }
 
     public void RemovePetFromDesktop(int creatureId)
