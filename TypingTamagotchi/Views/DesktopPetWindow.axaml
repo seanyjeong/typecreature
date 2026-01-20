@@ -10,7 +10,7 @@
         CanResize="False"
         ExtendClientAreaToDecorationsHint="True">
 
-    <Grid Background="#01FFFFFF">
+    <Grid Background="#AAFFCCCC">
         <!-- 크리처 이미지 (거의 투명한 배경 + 이미지) -->
         <Image Name="CreatureImage"
                Width="64" Height="64"
