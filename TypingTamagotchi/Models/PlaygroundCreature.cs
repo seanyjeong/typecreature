@@ -50,11 +50,18 @@ public partial class PlaygroundCreature : ObservableObject
     public bool IsKnockedOver { get; set; }
     public bool IsSquashed { get; set; }
 
+    // 이동 패턴
+    public enum MovePattern { Walk, Float, Bounce, Idle }
+    public MovePattern CurrentPattern { get; set; } = MovePattern.Walk;
+    public double PatternTimer { get; set; }
+    public double IdleJumpTimer { get; set; }
+
     // 물리 상수
     public const double Gravity = 800; // 중력 가속도
     public const double JumpVelocity = -350; // 점프 초기 속도
     public const double MoveSpeed = 80; // 좌우 이동 속도
     public const double BounceFactor = 0.6; // 바닥 튕김 계수
+    public const double FloatSpeed = 40; // 둥둥 떠다니기 속도
 
     // 크리처 크기 (충돌 검출용)
     public const double Width = 48;
@@ -68,7 +75,6 @@ public partial class PlaygroundCreature : ObservableObject
             RecoveryTimer -= deltaTime;
             if (RecoveryTimer <= 0)
             {
-                // 복구
                 if (IsKnockedOver)
                 {
                     IsKnockedOver = false;
@@ -85,10 +91,8 @@ public partial class PlaygroundCreature : ObservableObject
         // 넘어진 상태면 움직임 제한
         if (IsKnockedOver || IsSquashed)
         {
-            // Y 물리만 적용 (중력)
             VelocityY += Gravity * deltaTime;
             Y += VelocityY * deltaTime;
-
             if (Y >= groundY)
             {
                 Y = groundY;
@@ -98,10 +102,31 @@ public partial class PlaygroundCreature : ObservableObject
             return;
         }
 
-        // 좌우 이동
-        X += VelocityX * deltaTime;
+        // 패턴 타이머 및 전환
+        PatternTimer -= deltaTime;
+        if (PatternTimer <= 0)
+        {
+            ChangePattern();
+        }
 
-        // 벽에 부딪히면 방향 전환
+        // 패턴별 행동
+        switch (CurrentPattern)
+        {
+            case MovePattern.Walk:
+                UpdateWalk(deltaTime, minX, maxX, groundY);
+                break;
+            case MovePattern.Float:
+                UpdateFloat(deltaTime, minX, maxX, groundY);
+                break;
+            case MovePattern.Bounce:
+                UpdateBounce(deltaTime, minX, maxX, groundY);
+                break;
+            case MovePattern.Idle:
+                UpdateIdle(deltaTime, groundY);
+                break;
+        }
+
+        // 벽 충돌 처리 (공통)
         if (X <= minX)
         {
             X = minX;
@@ -115,41 +140,145 @@ public partial class PlaygroundCreature : ObservableObject
             Direction = -1;
         }
 
-        // 중력 적용
+        // 그림자 크기 업데이트
+        double jumpHeight = groundY - Y;
+        ShadowScale = Math.Max(0.3, 1.0 - jumpHeight / 100.0);
+    }
+
+    private void ChangePattern()
+    {
+        var rand = Random.Shared.NextDouble();
+        if (rand < 0.35)
+            CurrentPattern = MovePattern.Walk;
+        else if (rand < 0.55)
+            CurrentPattern = MovePattern.Float;
+        else if (rand < 0.80)
+            CurrentPattern = MovePattern.Bounce;
+        else
+            CurrentPattern = MovePattern.Idle;
+
+        PatternTimer = 2.0 + Random.Shared.NextDouble() * 4.0; // 2~6초
+
+        // 패턴별 초기화
+        if (CurrentPattern == MovePattern.Walk)
+        {
+            VelocityX = (Random.Shared.NextDouble() - 0.5) * MoveSpeed * 2;
+            Direction = VelocityX > 0 ? 1 : -1;
+        }
+        else if (CurrentPattern == MovePattern.Float)
+        {
+            VelocityX = (Random.Shared.NextDouble() - 0.5) * FloatSpeed * 2;
+            VelocityY = -50 - Random.Shared.NextDouble() * 50; // 살짝 위로
+            Direction = VelocityX > 0 ? 1 : -1;
+        }
+        else if (CurrentPattern == MovePattern.Bounce)
+        {
+            VelocityX = (Random.Shared.NextDouble() - 0.5) * MoveSpeed * 1.5;
+            Direction = VelocityX > 0 ? 1 : -1;
+        }
+        else if (CurrentPattern == MovePattern.Idle)
+        {
+            VelocityX = 0;
+            IdleJumpTimer = 0.5 + Random.Shared.NextDouble() * 1.0;
+        }
+    }
+
+    private void UpdateWalk(double deltaTime, double minX, double maxX, double groundY)
+    {
+        // 랜덤 방향 전환 (3% 확률)
+        if (Random.Shared.NextDouble() < 0.03 * deltaTime * 60)
+        {
+            VelocityX = -VelocityX;
+            Direction = VelocityX > 0 ? 1 : -1;
+        }
+
+        X += VelocityX * deltaTime;
         VelocityY += Gravity * deltaTime;
         Y += VelocityY * deltaTime;
 
-        // 바닥 충돌
+        if (Y >= groundY)
+        {
+            Y = groundY;
+            VelocityY = 0;
+            IsOnGround = true;
+
+            // 가끔 점프
+            if (Random.Shared.NextDouble() < 0.01)
+                Jump();
+        }
+        else
+        {
+            IsOnGround = false;
+        }
+    }
+
+    private void UpdateFloat(double deltaTime, double minX, double maxX, double groundY)
+    {
+        // 둥둥 떠다니기 (중력 약함)
+        X += VelocityX * deltaTime;
+        VelocityY += Gravity * 0.1 * deltaTime; // 약한 중력
+        Y += VelocityY * deltaTime;
+
+        // 너무 높이 올라가면 내려오기
+        if (Y < groundY - 80)
+        {
+            VelocityY = Math.Abs(VelocityY) * 0.3;
+        }
+
+        // 바닥 근처면 다시 위로
+        if (Y >= groundY - 20)
+        {
+            Y = groundY - 20;
+            VelocityY = -30 - Random.Shared.NextDouble() * 40;
+        }
+
+        IsOnGround = false;
+    }
+
+    private void UpdateBounce(double deltaTime, double minX, double maxX, double groundY)
+    {
+        X += VelocityX * deltaTime;
+        VelocityY += Gravity * deltaTime;
+        Y += VelocityY * deltaTime;
+
         if (Y >= groundY)
         {
             Y = groundY;
             IsOnGround = true;
+            // 계속 튀기
+            VelocityY = JumpVelocity * (0.6 + Random.Shared.NextDouble() * 0.4);
+            IsOnGround = false;
+        }
+        else
+        {
+            IsOnGround = false;
+        }
+    }
 
-            // 튕기기 (일정 속도 이상이면)
-            if (VelocityY > 100)
+    private void UpdateIdle(double deltaTime, double groundY)
+    {
+        // 제자리에서 가끔 점프
+        VelocityY += Gravity * deltaTime;
+        Y += VelocityY * deltaTime;
+
+        if (Y >= groundY)
+        {
+            Y = groundY;
+            VelocityY = 0;
+            IsOnGround = true;
+
+            IdleJumpTimer -= deltaTime;
+            if (IdleJumpTimer <= 0)
             {
-                VelocityY = -VelocityY * BounceFactor;
+                VelocityY = JumpVelocity * (0.5 + Random.Shared.NextDouble() * 0.3);
                 IsOnGround = false;
-            }
-            else
-            {
-                VelocityY = 0;
-
-                // 바닥에 있을 때 랜덤 점프
-                if (Random.Shared.NextDouble() < 0.02) // 2% 확률로 점프
-                {
-                    Jump();
-                }
+                IdleJumpTimer = 0.8 + Random.Shared.NextDouble() * 1.5;
             }
         }
         else
         {
             IsOnGround = false;
         }
-
-        // 그림자 크기 업데이트 (점프 높이에 따라)
-        double jumpHeight = groundY - Y;
-        ShadowScale = Math.Max(0.3, 1.0 - jumpHeight / 100.0);
     }
 
     public void Jump()
