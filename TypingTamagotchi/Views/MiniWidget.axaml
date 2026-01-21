@@ -100,69 +100,86 @@
                 </StackPanel>
             </Border>
 
-            <!-- 중앙: 로얄 쇼케이스 -->
-            <Grid Grid.Row="2" Margin="0,0,0,8" MinHeight="320">
-                <!-- 쇼케이스 배경 이미지 -->
-                <Image Source="/Assets/UI/showcase_royal.png"
-                       Stretch="Fill"/>
+            <!-- 중앙: 코드 기반 쇼케이스 -->
+            <Border Grid.Row="2"
+                    Margin="0,0,0,8"
+                    CornerRadius="8"
+                    BorderThickness="3"
+                    Padding="8">
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#B8860B" Offset="0"/>
+                        <GradientStop Color="#FFD700" Offset="0.5"/>
+                        <GradientStop Color="#B8860B" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#1A1A2E" Offset="0"/>
+                        <GradientStop Color="#16213E" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-                <!-- 크리처 슬롯 그리드 - 쇼케이스 칸에 맞게 조정 -->
-                <Border Padding="26,55,26,22">
-                    <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="3" Rows="4"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <!-- 슬롯: 받침대 + 크리처 (딱 붙게) -->
-                                <Border Margin="0" Cursor="Hand">
-                                    <Grid RowDefinitions="*,Auto">
-                                        <!-- 크리처 이미지 (받침대 바로 위에) -->
-                                        <Image Grid.Row="0"
-                                               Source="{Binding CreatureImage}"
-                                               IsVisible="{Binding HasCreature}"
-                                               Width="52" Height="52"
-                                               Stretch="Uniform"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Bottom"
-                                               Margin="0,0,0,-4"
-                                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3" Rows="4"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 각 슬롯 -->
+                            <Border Margin="4"
+                                    Padding="4"
+                                    CornerRadius="6"
+                                    Background="#20FFFFFF"
+                                    Cursor="Hand">
+                                <Grid RowDefinitions="*,Auto">
+                                    <!-- 크리처 이미지 -->
+                                    <Image Grid.Row="0"
+                                           Source="{Binding CreatureImage}"
+                                           IsVisible="{Binding HasCreature}"
+                                           Width="50" Height="50"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Bottom"
+                                           Margin="0,0,0,-2"
+                                           RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                                        <!-- 받침대 이미지 (크게) -->
-                                        <Image Grid.Row="1"
-                                               Source="{Binding PedestalImage}"
-                                               IsVisible="{Binding HasCreature}"
-                                               Width="70" Height="24"
-                                               Stretch="Uniform"
-                                               HorizontalAlignment="Center"
-                                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                                    <!-- 받침대 이미지 -->
+                                    <Image Grid.Row="1"
+                                           Source="{Binding PedestalImage}"
+                                           IsVisible="{Binding HasCreature}"
+                                           Width="60" Height="20"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center"
+                                           RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                                        <!-- 빈 슬롯 (투명) -->
-                                        <Border Grid.RowSpan="2"
-                                                IsVisible="{Binding IsEmpty}"
-                                                Opacity="0"/>
-                                    </Grid>
+                                    <!-- 빈 슬롯 표시 -->
+                                    <Border Grid.RowSpan="2"
+                                            IsVisible="{Binding IsEmpty}"
+                                            Background="#10FFFFFF"
+                                            CornerRadius="4"
+                                            Opacity="0.3"/>
+                                </Grid>
 
-                                    <!-- 툴팁 -->
-                                    <ToolTip.Tip>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding CreatureName}"
-                                                       FontWeight="Bold"
-                                                       Foreground="{Binding RarityColor}"/>
-                                            <TextBlock Text="{Binding RarityText}"
-                                                       FontSize="10"
-                                                       Foreground="#888"
-                                                       IsVisible="{Binding HasCreature}"/>
-                                        </StackPanel>
-                                    </ToolTip.Tip>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Border>
-            </Grid>
+                                <!-- 툴팁 -->
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding CreatureName}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{Binding RarityColor}"/>
+                                        <TextBlock Text="{Binding RarityText}"
+                                                   FontSize="10"
+                                                   Foreground="#888"
+                                                   IsVisible="{Binding HasCreature}"/>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
 
             <!-- 크리쳐 수집 현황 -->
             <Border Grid.Row="3"
