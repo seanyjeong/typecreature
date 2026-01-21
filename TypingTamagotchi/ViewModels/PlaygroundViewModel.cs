@@ -123,11 +123,10 @@ public partial class PlaygroundViewModel : ViewModelBase
                 var a = creatureList[i];
                 var b = creatureList[j];
 
-                // 이미 넘어져 있거나 면역 상태면 스킵
+                // 넘어져 있으면 충돌 무시
                 if (a.IsKnockedOver || b.IsKnockedOver) continue;
-                if (a.IsImmune || b.IsImmune) continue;
 
-                // 충돌 박스 체크 (Y는 발 위치, 중심은 Y - Height/2)
+                // 충돌 박스 체크
                 var aCenterX = a.X + PlaygroundCreature.Width / 2;
                 var bCenterX = b.X + PlaygroundCreature.Width / 2;
                 var aCenterY = a.Y - PlaygroundCreature.Height / 2;
@@ -136,48 +135,66 @@ public partial class PlaygroundViewModel : ViewModelBase
                 var dx = Math.Abs(aCenterX - bCenterX);
                 var dy = Math.Abs(aCenterY - bCenterY);
 
-                if (dx < PlaygroundCreature.Width * 0.7 && dy < PlaygroundCreature.Height * 0.7)
+                // 충돌 감지 (겹침 방지)
+                if (dx < PlaygroundCreature.Width * 0.6 && dy < PlaygroundCreature.Height * 0.8)
                 {
-                    // 충돌 발생!
-                    // 위에서 밟은 건지 옆에서 부딪힌 건지 판단
-
-                    // A가 B보다 위에 있고 (Y 작음) 내려오는 중이면 밟기
-                    if (a.VelocityY > 0 && aCenterY < bCenterY - 10 && !a.IsOnGround)
+                    // 위에서 밟기 (점프 중인 크리처가 다른 크리처를 밟음)
+                    if (a.VelocityY > 0 && aCenterY < bCenterY - 20 && !a.IsOnGround)
                     {
-                        // A가 B를 밟음
                         b.Squash();
                         a.BounceUp();
                         SpawnEffect((aCenterX + bCenterX) / 2, bCenterY);
                     }
-                    // B가 A보다 위에 있고 내려오는 중이면 밟기
-                    else if (b.VelocityY > 0 && bCenterY < aCenterY - 10 && !b.IsOnGround)
+                    else if (b.VelocityY > 0 && bCenterY < aCenterY - 20 && !b.IsOnGround)
                     {
-                        // B가 A를 밟음
                         a.Squash();
                         b.BounceUp();
                         SpawnEffect((aCenterX + bCenterX) / 2, aCenterY);
                     }
-                    // 옆에서 부딪힘
-                    else if (a.IsOnGround && b.IsOnGround)
+                    // 옆에서 부딪힘 - 겹치지 않게 밀어내고 방향 전환
+                    else
                     {
-                        a.KnockOver();
-                        b.KnockOver();
-                        SpawnEffect((aCenterX + bCenterX) / 2, (aCenterY + bCenterY) / 2);
+                        // 겹침 해제 - 서로 밀어냄
+                        double overlap = PlaygroundCreature.Width * 0.6 - dx;
+                        if (overlap > 0)
+                        {
+                            double push = overlap / 2 + 2;
+                            if (a.X < b.X)
+                            {
+                                a.X -= push;
+                                b.X += push;
+                            }
+                            else
+                            {
+                                a.X += push;
+                                b.X -= push;
+                            }
+                        }
 
-                        // 서로 반대 방향으로 강하게 튕김
+                        // 방향 전환 (서로 반대로)
                         if (a.X < b.X)
                         {
-                            a.VelocityX = -120;
-                            b.VelocityX = 120;
+                            a.VelocityX = -Math.Abs(a.VelocityX) - 20;
+                            b.VelocityX = Math.Abs(b.VelocityX) + 20;
+                            a.Direction = -1;
+                            b.Direction = 1;
                         }
                         else
                         {
-                            a.VelocityX = 120;
-                            b.VelocityX = -120;
+                            a.VelocityX = Math.Abs(a.VelocityX) + 20;
+                            b.VelocityX = -Math.Abs(b.VelocityX) - 20;
+                            a.Direction = 1;
+                            b.Direction = -1;
                         }
-                        // 살짝 위로도 튕김
-                        a.VelocityY = -100;
-                        b.VelocityY = -100;
+
+                        // 가끔 한 마리가 점프해서 넘어감 (30% 확률)
+                        if (Random.Shared.NextDouble() < 0.3)
+                        {
+                            if (Random.Shared.NextDouble() < 0.5)
+                                a.Jump();
+                            else
+                                b.Jump();
+                        }
                     }
                 }
             }
