@@ -117,32 +117,33 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <!-- 심플 슬롯 - 쇼케이스 칸에 맞게 -->
+                                <!-- 슬롯: 받침대 + 크리처 -->
                                 <Border Margin="2" Cursor="Hand">
-                                    <Grid>
-                                        <!-- 크리처 이미지 -->
-                                        <Image Source="{Binding CreatureImage}"
+                                    <Grid RowDefinitions="*,Auto">
+                                        <!-- 크리처 이미지 (정중앙) -->
+                                        <Image Grid.Row="0"
+                                               Source="{Binding CreatureImage}"
                                                IsVisible="{Binding HasCreature}"
-                                               Width="58" Height="58"
+                                               Width="46" Height="46"
                                                Stretch="Uniform"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Bottom"
+                                               Margin="0,0,0,2"
+                                               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+
+                                        <!-- 받침대 이미지 (희귀도별) -->
+                                        <Image Grid.Row="1"
+                                               Source="{Binding PedestalImage}"
+                                               IsVisible="{Binding HasCreature}"
+                                               Width="50" Height="18"
+                                               Stretch="Uniform"
+                                               HorizontalAlignment="Center"
                                                RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
                                         <!-- 빈 슬롯 (투명) -->
-                                        <Border IsVisible="{Binding IsEmpty}"
+                                        <Border Grid.RowSpan="2"
+                                                IsVisible="{Binding IsEmpty}"
                                                 Opacity="0"/>
-
-                                        <!-- 등급 보석 (우하단) -->
-                                        <Border IsVisible="{Binding HasCreature}"
-                                                Width="10" Height="10"
-                                                CornerRadius="5"
-                                                Background="{Binding RarityColor}"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Bottom"
-                                                Margin="0,0,2,2">
-                                            <Border.Effect>
-                                                <DropShadowEffect BlurRadius="3" Opacity="0.6"/>
-                                            </Border.Effect>
-                                        </Border>
                                     </Grid>
 
                                     <!-- 툴팁 -->

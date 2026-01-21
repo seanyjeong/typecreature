@@ -243,6 +243,9 @@ public partial class DisplaySlot : ObservableObject
     private Bitmap? _creatureImage;
 
     [ObservableProperty]
+    private Bitmap? _pedestalImage;
+
+    [ObservableProperty]
     private IBrush _slotBackground = new SolidColorBrush(Color.Parse("#20FFFFFF"));
 
     [ObservableProperty]
@@ -365,6 +368,39 @@ public partial class DisplaySlot : ObservableObject
 
         // 이미지 로드
         LoadImage(creature.SpritePath);
+
+        // 받침대 이미지 로드 (희귀도별)
+        var pedestalName = creature.Rarity switch
+        {
+            Rarity.Legendary => "pedestal_legendary.png",
+            Rarity.Epic => "pedestal_epic.png",
+            Rarity.Rare => "pedestal_rare.png",
+            _ => "pedestal_common.png"
+        };
+        LoadPedestalImage(pedestalName);
+    }
+
+    private void LoadPedestalImage(string pedestalName)
+    {
+        try
+        {
+            var basePath = AppContext.BaseDirectory;
+            var filePath = System.IO.Path.Combine(basePath, "Assets", "UI", pedestalName);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                PedestalImage = new Bitmap(filePath);
+            }
+            else
+            {
+                var uri = new Uri($"avares://TypingTamagotchi/Assets/UI/{pedestalName}");
+                PedestalImage = new Bitmap(Avalonia.Platform.AssetLoader.Open(uri));
+            }
+        }
+        catch
+        {
+            PedestalImage = null;
+        }
     }
 
     private void LoadImage(string spritePath)
@@ -399,6 +435,7 @@ public partial class DisplaySlot : ObservableObject
         CreatureName = "빈 슬롯";
         RarityText = "";
         CreatureImage = null;
+        PedestalImage = null;
         SlotBackground = new SolidColorBrush(Color.Parse("#20FFFFFF"));
         RarityColor = new SolidColorBrush(Color.Parse("#666666"));
     }
