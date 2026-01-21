@@ -102,7 +102,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         var collection = _hatching.GetCollection();
         var creatureMap = collection.ToDictionary(c => c.creature.Id, c => c.creature);
 
-        Console.WriteLine($"[MiniWidget] 저장된 슬롯: {savedSlots.Count}, 컬렉션: {collection.Count}");
+        Console.WriteLine($"[MiniWidget] Saved slots: {savedSlots.Count}, Collection: {collection.Count}");
 
         // 모든 슬롯 초기화
         for (int i = 0; i < 12; i++)
@@ -113,15 +113,15 @@ public partial class MiniWidgetViewModel : ViewModelBase
         // 저장된 슬롯에 크리처 배치
         foreach (var (slotIndex, creatureId) in savedSlots)
         {
-            Console.WriteLine($"[MiniWidget] 슬롯 {slotIndex}에 크리처 ID {creatureId} 배치 시도");
+            Console.WriteLine($"[MiniWidget] Placing creature ID {creatureId} in slot {slotIndex}");
             if (slotIndex >= 0 && slotIndex < 12 && creatureMap.TryGetValue(creatureId, out var creature))
             {
-                Console.WriteLine($"[MiniWidget] -> 성공: {creature.Name}");
+                Console.WriteLine($"[MiniWidget] -> Success: {creature.Name}");
                 DisplaySlots[slotIndex].SetCreature(creature);
             }
             else
             {
-                Console.WriteLine($"[MiniWidget] -> 실패: 크리처 맵에 없음");
+                Console.WriteLine($"[MiniWidget] -> Failed: creature not in map");
             }
         }
 

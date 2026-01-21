@@ -41,10 +41,10 @@ public partial class App : Application
 
                 // 디버그: 현재 진열장 상태 출력
                 var displaySlots = _db.GetDisplaySlots();
-                Console.WriteLine($"[DEBUG] 진열장 슬롯 수: {displaySlots.Count}");
+                Console.WriteLine($"[DEBUG] Display slots count: {displaySlots.Count}");
                 foreach (var (slot, creatureId) in displaySlots)
                 {
-                    Console.WriteLine($"[DEBUG] 슬롯 {slot}: 크리처 ID {creatureId}");
+                    Console.WriteLine($"[DEBUG] Slot {slot}: creature ID {creatureId}");
                 }
 
                 // 시스템 트레이 설정
@@ -60,7 +60,7 @@ public partial class App : Application
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"초기화 오류: {ex.Message}");
+                Console.WriteLine($"Init error: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
         }
@@ -130,7 +130,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"트레이 아이콘 설정 오류: {ex.Message}");
+            Console.WriteLine($"Tray icon error: {ex.Message}");
         }
     }
 
@@ -147,7 +147,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"위젯 표시 오류: {ex.Message}");
+            Console.WriteLine($"Widget display error: {ex.Message}");
             Console.WriteLine(ex.StackTrace);
         }
     }
@@ -172,7 +172,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"도감 열기 오류: {ex.Message}");
+            Console.WriteLine($"Collection open error: {ex.Message}");
         }
     }
 
@@ -187,16 +187,16 @@ public partial class App : Application
                 _inputService = new WindowsInputService();
                 _inputService.InputDetected += OnInputDetected;
                 _inputService.Start();
-                Console.WriteLine("[DEBUG] 키보드/마우스 입력 감지 시작됨");
+                Console.WriteLine("[DEBUG] Keyboard/mouse input detection started");
             }
             else
             {
-                Console.WriteLine("[DEBUG] Windows가 아니라서 입력 감지 사용 불가");
+                Console.WriteLine("[DEBUG] Input detection unavailable (not Windows)");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"입력 서비스 시작 오류: {ex.Message}");
+            Console.WriteLine($"Input service start error: {ex.Message}");
         }
     }
 
