@@ -177,17 +177,10 @@
                             <!-- 각 슬롯 -->
                             <Border Margin="3"
                                     CornerRadius="6"
-                                    Background="{Binding SlotBackground}"
+                                    Background="#20FFFFFF"
                                     Cursor="Hand"
                                     Classes="slot">
                                 <Grid>
-                                    <!-- 등급별 아우라 효과 -->
-                                    <Ellipse Width="80" Height="80"
-                                             Fill="{Binding AuraBrush}"
-                                             IsVisible="{Binding HasAura}"
-                                             HorizontalAlignment="Center"
-                                             VerticalAlignment="Center"/>
-
                                     <!-- 크리처 이미지 (1.5배 = 72x72) -->
                                     <Image Source="{Binding CreatureImage}"
                                            IsVisible="{Binding HasCreature}"
