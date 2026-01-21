@@ -126,26 +126,27 @@ public partial class PlaygroundViewModel : ViewModelBase
                 // 이미 넘어져 있으면 스킵
                 if (a.IsKnockedOver || b.IsKnockedOver) continue;
 
-                // 충돌 박스 체크
-                var dx = Math.Abs((a.X + PlaygroundCreature.Width / 2) - (b.X + PlaygroundCreature.Width / 2));
-                var dy = Math.Abs((a.Y + PlaygroundCreature.Height / 2) - (b.Y + PlaygroundCreature.Height / 2));
+                // 충돌 박스 체크 (Y는 발 위치, 중심은 Y - Height/2)
+                var aCenterX = a.X + PlaygroundCreature.Width / 2;
+                var bCenterX = b.X + PlaygroundCreature.Width / 2;
+                var aCenterY = a.Y - PlaygroundCreature.Height / 2;
+                var bCenterY = b.Y - PlaygroundCreature.Height / 2;
+
+                var dx = Math.Abs(aCenterX - bCenterX);
+                var dy = Math.Abs(aCenterY - bCenterY);
 
                 if (dx < PlaygroundCreature.Width * 0.7 && dy < PlaygroundCreature.Height * 0.7)
                 {
                     // 충돌 발생!
                     // 위에서 밟은 건지 옆에서 부딪힌 건지 판단
-                    var aBottom = a.Y + PlaygroundCreature.Height;
-                    var bBottom = b.Y + PlaygroundCreature.Height;
-                    var aCenterY = a.Y + PlaygroundCreature.Height / 2;
-                    var bCenterY = b.Y + PlaygroundCreature.Height / 2;
 
-                    // A가 B보다 위에 있고 내려오는 중이면 밟기
+                    // A가 B보다 위에 있고 (Y 작음) 내려오는 중이면 밟기
                     if (a.VelocityY > 0 && aCenterY < bCenterY - 10 && !a.IsOnGround)
                     {
                         // A가 B를 밟음
                         b.Squash();
                         a.BounceUp();
-                        SpawnEffect((a.X + b.X) / 2 + PlaygroundCreature.Width / 2, b.Y);
+                        SpawnEffect((aCenterX + bCenterX) / 2, bCenterY);
                     }
                     // B가 A보다 위에 있고 내려오는 중이면 밟기
                     else if (b.VelocityY > 0 && bCenterY < aCenterY - 10 && !b.IsOnGround)
@@ -153,15 +154,14 @@ public partial class PlaygroundViewModel : ViewModelBase
                         // B가 A를 밟음
                         a.Squash();
                         b.BounceUp();
-                        SpawnEffect((a.X + b.X) / 2 + PlaygroundCreature.Width / 2, a.Y);
+                        SpawnEffect((aCenterX + bCenterX) / 2, aCenterY);
                     }
                     // 옆에서 부딪힘
                     else if (a.IsOnGround && b.IsOnGround)
                     {
                         a.KnockOver();
                         b.KnockOver();
-                        SpawnEffect((a.X + b.X) / 2 + PlaygroundCreature.Width / 2,
-                                    (a.Y + b.Y) / 2 + PlaygroundCreature.Height / 2);
+                        SpawnEffect((aCenterX + bCenterX) / 2, (aCenterY + bCenterY) / 2);
 
                         // 서로 반대 방향으로 튕김
                         if (a.X < b.X)

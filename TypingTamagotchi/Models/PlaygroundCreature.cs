@@ -42,9 +42,25 @@ public partial class PlaygroundCreature : ObservableObject
     // 그림자 X 위치 (크리처 중앙 아래)
     public double ShadowX => X + 4; // 그림자 중앙 맞추기
 
+    // 그림자 Y 위치 (바닥 - 그림자 높이의 절반)
+    public double ShadowY => GroundY - 6;
+
+    // 시각적 Y 위치 (스프라이트 상단 기준)
+    public double VisualY => Y - Height;
+
     partial void OnXChanged(double value)
     {
         OnPropertyChanged(nameof(ShadowX));
+    }
+
+    partial void OnYChanged(double value)
+    {
+        OnPropertyChanged(nameof(VisualY));
+    }
+
+    partial void OnGroundYChanged(double value)
+    {
+        OnPropertyChanged(nameof(ShadowY));
     }
 
     // 충돌 복구 타이머
@@ -145,9 +161,9 @@ public partial class PlaygroundCreature : ObservableObject
             Direction = -1;
         }
 
-        // 그림자 크기 업데이트
-        double jumpHeight = groundY - Y;
-        ShadowScale = Math.Max(0.3, 1.0 - jumpHeight / 100.0);
+        // 그림자 크기 업데이트 (점프 높이에 따라)
+        double jumpHeight = Math.Max(0, groundY - Y);
+        ShadowScale = Math.Max(0.3, 1.0 - jumpHeight / 80.0);
     }
 
     private void ChangePattern()
@@ -173,7 +189,7 @@ public partial class PlaygroundCreature : ObservableObject
         else if (CurrentPattern == MovePattern.Float)
         {
             VelocityX = (Random.Shared.NextDouble() - 0.5) * FloatSpeed * 2;
-            VelocityY = -50 - Random.Shared.NextDouble() * 50; // 살짝 위로
+            // VelocityY는 그대로 유지 (부드러운 전환)
             Direction = VelocityX > 0 ? 1 : -1;
         }
         else if (CurrentPattern == MovePattern.Bounce)
@@ -222,27 +238,26 @@ public partial class PlaygroundCreature : ObservableObject
         // 둥둥 떠다니기 (부드럽게)
         X += VelocityX * deltaTime;
 
-        // 사인파로 위아래 부드럽게
-        VelocityY += Gravity * 0.15 * deltaTime;
+        // 부드러운 위아래 움직임
+        double targetY = groundY - 30; // 바닥에서 30px 위가 목표
+        double diff = targetY - Y;
+
+        // 목표 위치로 부드럽게 이동 (스프링 효과)
+        VelocityY += diff * 3 * deltaTime; // 스프링 힘
+        VelocityY *= 0.98; // 감쇠
+
         Y += VelocityY * deltaTime;
 
-        // 너무 높이 올라가면 부드럽게 내려오기
-        if (Y < groundY - 60)
+        // 범위 제한 (부드럽게)
+        if (Y < groundY - 70)
         {
-            VelocityY += 100 * deltaTime; // 부드럽게 아래로
+            Y = groundY - 70;
+            VelocityY = Math.Max(0, VelocityY);
         }
-
-        // 바닥 근처면 부드럽게 위로
-        if (Y >= groundY - 10)
-        {
-            VelocityY = -40;
-        }
-
-        // 바닥 아래로 못가게
         if (Y > groundY)
         {
             Y = groundY;
-            VelocityY = -50;
+            VelocityY = Math.Min(0, VelocityY);
         }
 
         IsOnGround = false;

@@ -24,6 +24,19 @@ public partial class PlaygroundWindow : Window
 
         // 화면 하단(작업표시줄 위)에 위치시키기
         PositionAtBottom();
+
+        // 창 크기 변경 감지
+        PropertyChanged += (s, e) =>
+        {
+            if (e.Property == WidthProperty && Width > 0)
+            {
+                _viewModel.PlaygroundWidth = Width;
+            }
+            else if (e.Property == HeightProperty && Height > 0)
+            {
+                _viewModel.PlaygroundHeight = Height;
+            }
+        };
     }
 
     private void LoadSavedSize()

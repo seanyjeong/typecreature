@@ -46,7 +46,7 @@
                             <Ellipse.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
-                                    <TranslateTransform X="{Binding ShadowX}" Y="{Binding GroundY}"/>
+                                    <TranslateTransform X="{Binding ShadowX}" Y="{Binding ShadowY}"/>
                                 </TransformGroup>
                             </Ellipse.RenderTransform>
                         </Ellipse>
@@ -70,7 +70,7 @@
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
                                     <RotateTransform Angle="{Binding Rotation}"/>
-                                    <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                                    <TranslateTransform X="{Binding X}" Y="{Binding VisualY}"/>
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
