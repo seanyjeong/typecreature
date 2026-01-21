@@ -342,9 +342,7 @@ public partial class MiniWidget : Window
                     {
                         isSpinning = false;
                         spinTimer.Stop();
-
-                        // 최종 선택된 알 설정
-                        _viewModel?.SetEggByIndex(currentIndex);
+                        finalIndex = currentIndex; // 최종 인덱스 저장 (팝업 닫을 때 적용)
 
                         // 버튼 텍스트 변경
                         Dispatcher.UIThread.Post(() =>
@@ -394,8 +392,10 @@ public partial class MiniWidget : Window
                 stopBtn.IsEnabled = false;
                 stopBtn.Content = "멈추는 중...";
             }
-            else if (!isSpinning)
+            else if (!isSpinning && finalIndex >= 0)
             {
+                // 팝업 닫을 때 최종 알 설정
+                _viewModel?.SetEggByIndex(finalIndex);
                 popup.Close();
             }
         };
