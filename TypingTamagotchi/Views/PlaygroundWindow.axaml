@@ -31,6 +31,29 @@
             <Image Source="/Assets/Playground/background.png"
                    Stretch="Fill"/>
 
+            <!-- 그림자들 (바닥에 고정) -->
+            <ItemsControl ItemsSource="{Binding Creatures}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="40" Height="12"
+                                 Fill="#40000000"
+                                 RenderTransformOrigin="0.5,0.5">
+                            <Ellipse.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
+                                    <TranslateTransform X="{Binding ShadowX}" Y="{Binding GroundY}"/>
+                                </TransformGroup>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <!-- 크리처들 -->
             <ItemsControl ItemsSource="{Binding Creatures}">
                 <ItemsControl.ItemsPanel>
@@ -40,36 +63,17 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Panel Width="48" Height="56">
-                            <!-- 그림자 -->
-                            <Ellipse Width="40" Height="12"
-                                     Fill="#40000000"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Bottom"
-                                     RenderTransformOrigin="0.5,0.5">
-                                <Ellipse.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
-                                </Ellipse.RenderTransform>
-                            </Ellipse>
-
-                            <!-- 크리처 이미지 -->
-                            <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
-                                   Width="48" Height="48"
-                                   VerticalAlignment="Top"
-                                   RenderTransformOrigin="0.5,1">
-                                <Image.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
-                                        <RotateTransform Angle="{Binding Rotation}"/>
-                                    </TransformGroup>
-                                </Image.RenderTransform>
-                            </Image>
-
-                            <!-- Canvas 위치 설정 -->
-                            <Panel.RenderTransform>
-                                <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
-                            </Panel.RenderTransform>
-                        </Panel>
+                        <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
+                               Width="48" Height="48"
+                               RenderTransformOrigin="0.5,1">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
+                                    <RotateTransform Angle="{Binding Rotation}"/>
+                                    <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

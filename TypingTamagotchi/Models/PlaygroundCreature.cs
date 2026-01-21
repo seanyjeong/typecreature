@@ -37,6 +37,14 @@ public partial class PlaygroundCreature : ObservableObject
     [ObservableProperty]
     private double _shadowScale = 1.0;
 
+    // 그림자 X 위치 (크리처 중앙 아래)
+    public double ShadowX => X + 4; // 그림자 중앙 맞추기
+
+    partial void OnXChanged(double value)
+    {
+        OnPropertyChanged(nameof(ShadowX));
+    }
+
     // 충돌 복구 타이머
     public double RecoveryTimer { get; set; }
     public bool IsKnockedOver { get; set; }
