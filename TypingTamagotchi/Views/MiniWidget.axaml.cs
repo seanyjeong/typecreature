@@ -73,34 +73,11 @@ public partial class MiniWidget : Window
 
     private void OnCreatureHatched(Creature creature)
     {
-        Dispatcher.UIThread.Post(() => ShowHatchToast(creature));
+        Dispatcher.UIThread.Post(() => ShowHatchPopup(creature));
     }
 
-    private void ShowHatchToast(Creature creature)
+    private void ShowHatchPopup(Creature creature)
     {
-        // 토스트 창 만들기
-        var toast = new Window
-        {
-            Width = 250,
-            Height = 100,
-            WindowStartupLocation = WindowStartupLocation.Manual,
-            SystemDecorations = SystemDecorations.None,
-            Topmost = true,
-            Background = Brushes.Transparent,
-            CanResize = false
-        };
-
-        // 화면 오른쪽 하단에 위치
-        var screen = Screens.Primary;
-        if (screen != null)
-        {
-            var workArea = screen.WorkingArea;
-            toast.Position = new PixelPoint(
-                workArea.Right - 270,
-                workArea.Bottom - 130
-            );
-        }
-
         // 등급별 색상
         var rarityColor = creature.Rarity switch
         {
@@ -110,7 +87,15 @@ public partial class MiniWidget : Window
             _ => "#4CAF50"
         };
 
-        // 이미지 로드 (avares:// 사용)
+        var rarityText = creature.Rarity switch
+        {
+            Rarity.Legendary => "★★★★ 전설",
+            Rarity.Epic => "★★★ 영웅",
+            Rarity.Rare => "★★ 희귀",
+            _ => "★ 일반"
+        };
+
+        // 이미지 로드
         Bitmap? creatureImage = null;
         try
         {
@@ -119,75 +104,100 @@ public partial class MiniWidget : Window
         }
         catch { }
 
-        // 토스트 내용
+        // 팝업 창
+        var popup = new Window
+        {
+            Width = 300,
+            Height = 280,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            SystemDecorations = SystemDecorations.None,
+            Background = Brushes.Transparent,
+            Topmost = true,
+            CanResize = false
+        };
+
+        // 메인 컨테이너
         var border = new Border
         {
-            CornerRadius = new CornerRadius(12),
-            BorderThickness = new Thickness(2),
+            CornerRadius = new CornerRadius(16),
+            BorderThickness = new Thickness(3),
             BorderBrush = new SolidColorBrush(Color.Parse(rarityColor)),
-            Background = new SolidColorBrush(Color.Parse("#E0303050")),
-            Padding = new Thickness(15)
+            Padding = new Thickness(20)
         };
 
-        var stack = new StackPanel
+        // 배경 그라데이션
+        border.Background = new LinearGradientBrush
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 15
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse("#2C3E50"), 0),
+                new GradientStop(Color.Parse("#1A252F"), 1)
+            }
         };
 
+        var mainStack = new StackPanel { Spacing = 15 };
+
+        // 타이틀
+        mainStack.Children.Add(new TextBlock
+        {
+            Text = "🎉 부화 성공!",
+            FontSize = 22,
+            FontWeight = FontWeight.Bold,
+            Foreground = Brushes.White,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
+
+        // 크리처 이미지
         if (creatureImage != null)
         {
-            stack.Children.Add(new Image
+            mainStack.Children.Add(new Image
             {
                 Source = creatureImage,
-                Width = 60,
-                Height = 60,
-                Stretch = Stretch.Uniform
+                Width = 100,
+                Height = 100,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Center
             });
         }
 
-        var textStack = new StackPanel
-        {
-            VerticalAlignment = VerticalAlignment.Center,
-            Spacing = 5
-        };
-
-        textStack.Children.Add(new TextBlock
-        {
-            Text = "🎉 부화 성공!",
-            FontSize = 14,
-            Foreground = Brushes.White
-        });
-
-        textStack.Children.Add(new TextBlock
+        // 크리처 이름
+        mainStack.Children.Add(new TextBlock
         {
             Text = creature.Name,
-            FontSize = 18,
+            FontSize = 24,
             FontWeight = FontWeight.Bold,
-            Foreground = new SolidColorBrush(Color.Parse(rarityColor))
+            Foreground = new SolidColorBrush(Color.Parse(rarityColor)),
+            HorizontalAlignment = HorizontalAlignment.Center
         });
 
-        textStack.Children.Add(new TextBlock
+        // 등급
+        mainStack.Children.Add(new TextBlock
         {
-            Text = creature.Rarity.ToString(),
-            FontSize = 11,
-            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA"))
+            Text = rarityText,
+            FontSize = 14,
+            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA")),
+            HorizontalAlignment = HorizontalAlignment.Center
         });
 
-        stack.Children.Add(textStack);
-        border.Child = stack;
-        toast.Content = border;
-
-        toast.Show();
-
-        // 3초 후 자동으로 닫기
-        var timer = new Timer(3000);
-        timer.Elapsed += (s, e) =>
+        // 확인 버튼
+        var confirmBtn = new Button
         {
-            timer.Stop();
-            Dispatcher.UIThread.Post(() => toast.Close());
+            Content = "확인",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Padding = new Thickness(30, 8),
+            FontSize = 14,
+            Background = new SolidColorBrush(Color.Parse(rarityColor)),
+            Foreground = Brushes.Black,
+            FontWeight = FontWeight.Bold
         };
-        timer.Start();
+        confirmBtn.Click += (s, e) => popup.Close();
+        mainStack.Children.Add(confirmBtn);
+
+        border.Child = mainStack;
+        popup.Content = border;
+        popup.Show();
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -506,5 +516,14 @@ public partial class MiniWidget : Window
 
         collectionWindow.Show();
         e.Handled = true; // 창 드래그 방지
+    }
+
+    private void OnShowcaseToggle(object? sender, PointerPressedEventArgs e)
+    {
+        if (_viewModel != null)
+        {
+            _viewModel.IsShowcaseVisible = !_viewModel.IsShowcaseVisible;
+        }
+        e.Handled = true;
     }
 }

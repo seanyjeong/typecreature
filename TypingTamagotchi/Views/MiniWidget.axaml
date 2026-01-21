@@ -67,45 +67,58 @@
                 </StackPanel>
             </Border>
 
-            <!-- 골드 타이틀 (클릭시 도감 열기) -->
-            <Border Grid.Row="1"
-                    CornerRadius="8"
-                    Padding="10,6"
-                    Margin="0,0,0,8"
-                    Cursor="Hand"
-                    PointerPressed="OnCollectionTitleClick">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#B8860B" Offset="0"/>
-                        <GradientStop Color="#DAA520" Offset="0.25"/>
-                        <GradientStop Color="#FFD700" Offset="0.5"/>
-                        <GradientStop Color="#DAA520" Offset="0.75"/>
-                        <GradientStop Color="#B8860B" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="8" Opacity="0.3" OffsetX="0" OffsetY="2"/>
-                </Border.Effect>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="👑"
-                               FontSize="14"
-                               VerticalAlignment="Center"
-                               Margin="0,0,6,0"/>
-                    <TextBlock Text="COLLECTION"
-                               FontSize="13"
+            <!-- 진열장 토글 버튼 + 도감 열기 -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                <!-- 토글 버튼 (진열장 접기/펼치기) -->
+                <Border Grid.Column="0"
+                        CornerRadius="8"
+                        Padding="10,6"
+                        Cursor="Hand"
+                        PointerPressed="OnShowcaseToggle">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                            <GradientStop Color="#3D5A80" Offset="0"/>
+                            <GradientStop Color="#4A6FA5" Offset="0.5"/>
+                            <GradientStop Color="#3D5A80" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="📦 진열장"
+                                   FontSize="12"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 도감 열기 버튼 -->
+                <Border Grid.Column="1"
+                        CornerRadius="8"
+                        Padding="10,6"
+                        Margin="6,0,0,0"
+                        Cursor="Hand"
+                        PointerPressed="OnCollectionTitleClick">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                            <GradientStop Color="#B8860B" Offset="0"/>
+                            <GradientStop Color="#FFD700" Offset="0.5"/>
+                            <GradientStop Color="#B8860B" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock Text="👑 도감"
+                               FontSize="12"
                                FontWeight="Bold"
                                Foreground="#1A1A1A"
-                               LetterSpacing="2"
                                VerticalAlignment="Center"/>
-                </StackPanel>
-            </Border>
+                </Border>
+            </Grid>
 
             <!-- 중앙: 코드 기반 쇼케이스 -->
             <Border Grid.Row="2"
                     Margin="0,0,0,8"
                     CornerRadius="8"
                     BorderThickness="3"
-                    Padding="8">
+                    Padding="8"
+                    IsVisible="{Binding IsShowcaseVisible}">
                 <Border.BorderBrush>
                     <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="#B8860B" Offset="0"/>
@@ -139,18 +152,18 @@
                                     <Image Grid.Row="0"
                                            Source="{Binding CreatureImage}"
                                            IsVisible="{Binding HasCreature}"
-                                           Width="50" Height="50"
+                                           Width="48" Height="48"
                                            Stretch="Uniform"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Bottom"
-                                           Margin="0,0,0,-2"
+                                           Margin="0,0,0,-8"
                                            RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
                                     <!-- 받침대 이미지 -->
                                     <Image Grid.Row="1"
                                            Source="{Binding PedestalImage}"
                                            IsVisible="{Binding HasCreature}"
-                                           Width="60" Height="20"
+                                           Width="70" Height="24"
                                            Stretch="Uniform"
                                            HorizontalAlignment="Center"
                                            RenderOptions.BitmapInterpolationMode="HighQuality"/>

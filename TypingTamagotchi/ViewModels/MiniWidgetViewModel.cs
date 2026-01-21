@@ -53,6 +53,10 @@ public partial class MiniWidgetViewModel : ViewModelBase
     [ObservableProperty]
     private double _collectionProgressWidth = 0;
 
+    // 진열장 토글
+    [ObservableProperty]
+    private bool _isShowcaseVisible = true;
+
     private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
 
     public MiniWidgetViewModel()
