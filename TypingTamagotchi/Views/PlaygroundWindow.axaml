@@ -117,6 +117,59 @@
                     CornerRadius="12"
                     Click="OnRefreshClick"
                     ToolTip.Tip="새로고침"/>
+
+            <!-- 리사이즈 핸들들 -->
+            <!-- 좌하단 -->
+            <Border Width="16" Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Cursor="BottomLeftCorner"
+                    Background="Transparent"
+                    PointerPressed="OnResizePointerPressed"
+                    Tag="BottomLeft"/>
+
+            <!-- 우하단 (삼각형 표시) -->
+            <Canvas Width="16" Height="16"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Cursor="BottomRightCorner"
+                    PointerPressed="OnResizePointerPressed"
+                    Tag="BottomRight">
+                <Polygon Points="16,0 16,16 0,16"
+                         Fill="#60FFFFFF"
+                         Stroke="#80FFFFFF"
+                         StrokeThickness="1"/>
+            </Canvas>
+
+            <!-- 하단 가장자리 -->
+            <Border Height="6"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    Margin="16,0,16,0"
+                    Cursor="SizeNorthSouth"
+                    Background="Transparent"
+                    PointerPressed="OnResizePointerPressed"
+                    Tag="Bottom"/>
+
+            <!-- 좌측 가장자리 -->
+            <Border Width="6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Margin="0,28,0,16"
+                    Cursor="SizeWestEast"
+                    Background="Transparent"
+                    PointerPressed="OnResizePointerPressed"
+                    Tag="Left"/>
+
+            <!-- 우측 가장자리 -->
+            <Border Width="6"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch"
+                    Margin="0,28,0,16"
+                    Cursor="SizeWestEast"
+                    Background="Transparent"
+                    PointerPressed="OnResizePointerPressed"
+                    Tag="Right"/>
         </Grid>
     </Border>
 </Window>

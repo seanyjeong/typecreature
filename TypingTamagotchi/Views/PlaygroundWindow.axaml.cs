@@ -56,6 +56,25 @@ public partial class PlaygroundWindow : Window
         _viewModel.Refresh();
     }
 
+    private void OnResizePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Control control && control.Tag is string edge)
+        {
+            var windowEdge = edge switch
+            {
+                "BottomLeft" => WindowEdge.SouthWest,
+                "BottomRight" => WindowEdge.SouthEast,
+                "Bottom" => WindowEdge.South,
+                "Left" => WindowEdge.West,
+                "Right" => WindowEdge.East,
+                _ => WindowEdge.South
+            };
+
+            BeginResizeDrag(windowEdge, e);
+            e.Handled = true;
+        }
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         _viewModel.Stop();

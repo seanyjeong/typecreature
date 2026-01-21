@@ -20,7 +20,13 @@
       "Bash(ie4uinit.exe -show)",
       "Bash(git add:*)",
       "Bash(export GEMINI_API_KEY)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Skill(superpowers:brainstorming)",
+      "Bash(find:*)",
+      "Bash(source venv/bin/activate)",
+      "Bash(export GEMINI_API_KEY=AIzaSyB5l-_YoF-HAe95EIdje7SftzS--7Y6xGA)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
