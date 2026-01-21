@@ -350,6 +350,12 @@ public partial class DisplaySlot : ObservableObject
     [ObservableProperty]
     private bool _isDragOver = false;
 
+    [ObservableProperty]
+    private IBrush? _auraBrush = null;
+
+    [ObservableProperty]
+    private bool _hasAura = false;
+
     public Creature? GetCreature() => _creature;
 
     public void SetCreature(Creature creature)
@@ -474,6 +480,46 @@ public partial class DisplaySlot : ObservableObject
             _ => "pedestal_common.png"
         };
         LoadPedestalImage(pedestalName);
+
+        // 등급별 아우라 효과
+        HasAura = creature.Rarity != Rarity.Common;
+        AuraBrush = creature.Rarity switch
+        {
+            Rarity.Legendary => new RadialGradientBrush
+            {
+                Center = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientStops = new GradientStops
+                {
+                    new GradientStop(Color.Parse("#80FFD700"), 0),
+                    new GradientStop(Color.Parse("#40FFD700"), 0.5),
+                    new GradientStop(Color.Parse("#00FFD700"), 1)
+                }
+            },
+            Rarity.Epic => new RadialGradientBrush
+            {
+                Center = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientStops = new GradientStops
+                {
+                    new GradientStop(Color.Parse("#609C27B0"), 0),
+                    new GradientStop(Color.Parse("#309C27B0"), 0.5),
+                    new GradientStop(Color.Parse("#009C27B0"), 1)
+                }
+            },
+            Rarity.Rare => new RadialGradientBrush
+            {
+                Center = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative),
+                GradientStops = new GradientStops
+                {
+                    new GradientStop(Color.Parse("#402196F3"), 0),
+                    new GradientStop(Color.Parse("#202196F3"), 0.5),
+                    new GradientStop(Color.Parse("#002196F3"), 1)
+                }
+            },
+            _ => null
+        };
     }
 
     private void LoadPedestalImage(string pedestalName)
@@ -534,5 +580,7 @@ public partial class DisplaySlot : ObservableObject
         PedestalImage = null;
         SlotBackground = new SolidColorBrush(Color.Parse("#20FFFFFF"));
         RarityColor = new SolidColorBrush(Color.Parse("#666666"));
+        AuraBrush = null;
+        HasAura = false;
     }
 }
