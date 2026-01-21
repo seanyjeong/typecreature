@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(code --install-extension:*)",
+      "Bash(dotnet build:*)",
+      "Bash(where:*)",
+      "Bash(winget install:*)",
+      "Bash(\"C:\\\\Program Files \\(x86\\)\\\\Inno Setup 6\\\\ISCC.exe\" c:/projects/typecreature/installer.iss)",
+      "Bash(\"/c/Program Files \\(x86\\)/Inno Setup 6/ISCC.exe\" c:/projects/typecreature/installer.iss)",
+      "Bash(cmd.exe /c \"where iscc\")",
+      "Bash(cmd.exe /c \"dir /s /b C:\\\\*ISCC.exe 2>nul\")",
+      "Bash(cmd.exe /c \"dir \"\"C:\\\\Users\\\\%USERNAME%\\\\AppData\\\\Local\\\\Programs\"\" 2>nul\")",
+      "Bash(~/AppData/Local/Programs/\"Inno Setup 6\"/ISCC.exe c:/projects/typecreature/installer.iss)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(ie4uinit.exe -show)",
+      "Bash(git add:*)"
+    ]
+  }
+}
