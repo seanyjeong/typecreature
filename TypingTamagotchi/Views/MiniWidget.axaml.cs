@@ -869,7 +869,7 @@ public partial class MiniWidget : Window
             // 창 크기 조절 (아래쪽 고정, 위로 줄어들게)
             // 시계가 메인박스 위에 있으므로 높이 조정 필요
             var oldHeight = Height;
-            var newHeight = _viewModel.IsShowcaseVisible ? 540 : 185;
+            var newHeight = _viewModel.IsShowcaseVisible ? 540 : 220;
             var heightDiff = newHeight - oldHeight;
 
             Height = newHeight;

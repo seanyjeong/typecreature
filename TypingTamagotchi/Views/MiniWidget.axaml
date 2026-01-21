@@ -141,15 +141,15 @@
             <!-- 미니모드: 크리처 스트립 (접혔을 때만 표시) -->
             <Border Grid.Row="1"
                     Background="#15FFFFFF"
-                    CornerRadius="6"
-                    Padding="6,4"
+                    CornerRadius="8"
+                    Padding="10,8"
                     Margin="0,0,0,8"
                     HorizontalAlignment="Stretch"
                     IsVisible="{Binding IsMiniMode}">
                 <ItemsControl ItemsSource="{Binding DisplaySlots}" HorizontalAlignment="Center">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="2"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
