@@ -85,14 +85,10 @@ public partial class MiniWidgetViewModel : ViewModelBase
     // 미니모드 (접힌 상태)
     public bool IsMiniMode => !IsShowcaseVisible;
 
-    // 창 높이 (접기/펼치기에 따라 변경)
-    public double WindowHeight => IsShowcaseVisible ? 540 : 180;
-
     partial void OnIsShowcaseVisibleChanged(bool value)
     {
         OnPropertyChanged(nameof(ToggleButtonText));
         OnPropertyChanged(nameof(IsMiniMode));
-        OnPropertyChanged(nameof(WindowHeight));
     }
 
     private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
