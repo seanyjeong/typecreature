@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using TypingTamagotchi.ViewModels;
 
 namespace TypingTamagotchi.Views;
@@ -29,17 +31,57 @@ public partial class CollectionWindow : Window
                 var msgBox = new Window
                 {
                     Title = "알림",
-                    Width = 300,
-                    Height = 100,
+                    Width = 320,
+                    Height = 140,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Content = new TextBlock
-                    {
-                        Text = message,
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                        FontSize = 14
-                    }
+                    SystemDecorations = SystemDecorations.None,
+                    Background = Brushes.Transparent
                 };
+
+                var border = new Border
+                {
+                    CornerRadius = new Avalonia.CornerRadius(12),
+                    Padding = new Avalonia.Thickness(20),
+                    Background = new LinearGradientBrush
+                    {
+                        StartPoint = new Avalonia.RelativePoint(0, 0, Avalonia.RelativeUnit.Relative),
+                        EndPoint = new Avalonia.RelativePoint(0, 1, Avalonia.RelativeUnit.Relative),
+                        GradientStops = new GradientStops
+                        {
+                            new GradientStop(Color.Parse("#2C3E50"), 0),
+                            new GradientStop(Color.Parse("#1A252F"), 1)
+                        }
+                    },
+                    BorderBrush = new SolidColorBrush(Color.Parse("#4A5568")),
+                    BorderThickness = new Avalonia.Thickness(2)
+                };
+
+                var stack = new StackPanel { Spacing = 15 };
+
+                stack.Children.Add(new TextBlock
+                {
+                    Text = message,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    FontSize = 14,
+                    Foreground = Brushes.White,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center
+                });
+
+                var closeBtn = new Button
+                {
+                    Content = "확인",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Padding = new Avalonia.Thickness(30, 8),
+                    Background = new SolidColorBrush(Color.Parse("#4A6FA5")),
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeight.Bold
+                };
+                closeBtn.Click += (s, args) => msgBox.Close();
+                stack.Children.Add(closeBtn);
+
+                border.Child = stack;
+                msgBox.Content = border;
                 await msgBox.ShowDialog(this);
             }
         }
