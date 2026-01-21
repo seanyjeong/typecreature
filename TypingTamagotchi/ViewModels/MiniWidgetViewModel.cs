@@ -19,18 +19,20 @@ public partial class MiniWidgetViewModel : ViewModelBase
     private readonly Random _random = new();
     private const double PROGRESS_BAR_MAX_WIDTH = 180.0;
 
-    // 알 종류 (이름, 이미지 파일명, 이모지)
-    private static readonly (string name, string image, string emoji)[] EggTypes = new[]
+    // 알 종류 (이름, 이미지 파일명, 이모지, 레전더리 여부)
+    private static readonly (string name, string image, string emoji, bool isLegendary)[] EggTypes = new[]
     {
-        ("불꽃알", "불꽃알.png", "🔥"),
-        ("물방울알", "물방울알.png", "💧"),
-        ("바람알", "바람알.png", "🌿"),
-        ("대지알", "대지알.png", "🪨"),
-        ("번개알", "번개알.png", "⚡")
+        ("불꽃알", "불꽃알.png", "🔥", false),
+        ("물방울알", "물방울알.png", "💧", false),
+        ("바람알", "바람알.png", "🌿", false),
+        ("대지알", "대지알.png", "🪨", false),
+        ("번개알", "번개알.png", "⚡", false),
+        ("전설알", "전설알.png", "👑", true)  // 5% 확률, 레전더리 확정
     };
 
     private int _currentEggTypeIndex = 0;
     private Element _currentEggElement = Element.Fire;
+    private bool _isLegendaryEgg = false;
 
     [ObservableProperty]
     private string _eggName = "불꽃알";
@@ -112,20 +114,38 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
     private void RandomizeEgg()
     {
-        _currentEggTypeIndex = _random.Next(EggTypes.Length);
+        // 5% 확률로 레전더리 알
+        if (_random.Next(100) < 5)
+        {
+            _currentEggTypeIndex = 5; // 전설알
+            _isLegendaryEgg = true;
+        }
+        else
+        {
+            _currentEggTypeIndex = _random.Next(5); // 일반 알 (0-4)
+            _isLegendaryEgg = false;
+        }
+
         var egg = EggTypes[_currentEggTypeIndex];
         EggName = egg.name;
 
-        // 알 종류에 따른 속성 설정
-        _currentEggElement = _currentEggTypeIndex switch
+        // 알 종류에 따른 속성 설정 (레전더리는 랜덤)
+        if (_isLegendaryEgg)
         {
-            0 => Element.Fire,      // 불꽃알
-            1 => Element.Water,     // 물방울알
-            2 => Element.Wind,      // 바람알
-            3 => Element.Earth,     // 대지알
-            4 => Element.Lightning, // 번개알
-            _ => Element.Fire
-        };
+            _currentEggElement = (Element)_random.Next(5);
+        }
+        else
+        {
+            _currentEggElement = _currentEggTypeIndex switch
+            {
+                0 => Element.Fire,      // 불꽃알
+                1 => Element.Water,     // 물방울알
+                2 => Element.Wind,      // 바람알
+                3 => Element.Earth,     // 대지알
+                4 => Element.Lightning, // 번개알
+                _ => Element.Fire
+            };
+        }
 
         // 알 이미지 로드
         try
@@ -208,7 +228,19 @@ public partial class MiniWidgetViewModel : ViewModelBase
         // 부화 체크
         if (Progress >= 1.0)
         {
-            var creature = _hatching.TryHatchByElement(_currentEggElement);
+            Creature? creature;
+
+            if (_isLegendaryEgg)
+            {
+                // 레전더리 알이면 레전더리 크리처 확정
+                creature = _hatching.TryHatchLegendary();
+            }
+            else
+            {
+                // 일반 알이면 속성별 부화
+                creature = _hatching.TryHatchByElement(_currentEggElement);
+            }
+
             if (creature != null)
             {
                 LoadDisplayCreatures();

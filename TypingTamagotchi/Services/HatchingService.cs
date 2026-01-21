@@ -292,4 +292,35 @@ public class HatchingService
         // 속성별 부화
         return HatchByElement(element);
     }
+
+    // 레전더리 부화 (확정)
+    public Creature HatchLegendary()
+    {
+        var creature = GetRandomCreatureByRarity(Rarity.Legendary);
+        SaveToCollection(creature);
+        CreatureHatched?.Invoke(creature);
+        return creature;
+    }
+
+    // 레전더리 부화 시도
+    public Creature? TryHatchLegendary()
+    {
+        var (keystrokes, clicks) = GetCurrentProgress();
+        var totalInputs = keystrokes + clicks;
+
+        if (totalInputs < 1500)
+            return null;
+
+        // 진행 상황 리셋
+        using var connection = _db.GetConnection();
+        var resetCommand = connection.CreateCommand();
+        resetCommand.CommandText = @"
+            UPDATE stats SET value = CASE WHEN value >= 1500 THEN value - 1500 ELSE 0 END WHERE key = 'keystrokes';
+            UPDATE stats SET value = 0 WHERE key = 'clicks';
+        ";
+        resetCommand.ExecuteNonQuery();
+
+        // 레전더리 부화 확정
+        return HatchLegendary();
+    }
 }
