@@ -795,18 +795,26 @@ public partial class MiniWidget : Window
 
     private void OnCollectionTitleClick(object? sender, PointerPressedEventArgs e)
     {
-        // 도감 열기
-        var collectionWindow = new CollectionWindow
+        try
         {
-            DataContext = new CollectionViewModel()
-        };
+            // 도감 열기
+            var collectionWindow = new CollectionWindow
+            {
+                DataContext = new CollectionViewModel()
+            };
 
-        collectionWindow.Closed += (s, args) =>
+            collectionWindow.Closed += (s, args) =>
+            {
+                _viewModel?.Refresh();
+            };
+
+            collectionWindow.Show();
+        }
+        catch (Exception ex)
         {
-            _viewModel?.Refresh();
-        };
-
-        collectionWindow.Show();
+            Console.WriteLine($"도감 열기 에러: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
         e.Handled = true; // 창 드래그 방지
     }
 
