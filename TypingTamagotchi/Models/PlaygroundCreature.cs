@@ -48,9 +48,14 @@ public partial class PlaygroundCreature : ObservableObject
     // 시각적 Y 위치 (스프라이트 상단 기준)
     public double VisualY => Y - Height;
 
+    // 시각적 X 위치 (Direction에 따른 보정)
+    // ScaleX=-1로 뒤집으면 이미지가 왼쪽으로 48px 이동하므로 보정
+    public double VisualX => Direction < 0 ? X + Width : X;
+
     partial void OnXChanged(double value)
     {
         OnPropertyChanged(nameof(ShadowX));
+        OnPropertyChanged(nameof(VisualX));
     }
 
     partial void OnYChanged(double value)
@@ -61,6 +66,11 @@ public partial class PlaygroundCreature : ObservableObject
     partial void OnGroundYChanged(double value)
     {
         OnPropertyChanged(nameof(ShadowY));
+    }
+
+    partial void OnDirectionChanged(double value)
+    {
+        OnPropertyChanged(nameof(VisualX));
     }
 
     // 충돌 복구 타이머

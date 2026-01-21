@@ -65,12 +65,12 @@
                     <DataTemplate>
                         <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
                                Width="48" Height="48"
-                               RenderTransformOrigin="0.5,1">
+                               RenderTransformOrigin="0,1">
                             <Image.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
                                     <RotateTransform Angle="{Binding Rotation}"/>
-                                    <TranslateTransform X="{Binding X}" Y="{Binding VisualY}"/>
+                                    <TranslateTransform X="{Binding VisualX}" Y="{Binding VisualY}"/>
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
