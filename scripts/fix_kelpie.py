@@ -12,13 +12,13 @@ API_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fa
 
 # 켈피 프롬프트 - 앞다리만 있고 뒷다리 대신 물고기 꼬리
 KELPIE_PROMPT = """cute pixel art hippocampus sea horse creature, 64x64 pixels,
-ONLY TWO FRONT LEGS, ABSOLUTELY NO BACK LEGS,
-lower body is completely a large fish tail fin like a mermaid,
-horse head and chest with two front hooves,
-body transitions into big colorful fish tail at the waist,
-blue-green scales on tail, flowing seaweed mane,
-half horse half fish mythical creature,
-game asset, transparent background, tamagotchi style, adorable big eyes"""
+ONLY TWO FRONT LEGS, NO BACK LEGS AT ALL,
+lower body is a big curved fish tail like a mermaid,
+horse head and front body, fish tail lower body,
+light cream colored belly, blue-green scales on tail,
+green seaweed flowing mane, water theme,
+simple solid colors, no transparency inside the creature,
+game asset, white background, tamagotchi kawaii style, big cute eyes"""
 
 OUTPUT_PATH = Path(__file__).parent.parent / "TypingTamagotchi" / "Assets" / "Creatures" / "46.png"
 
