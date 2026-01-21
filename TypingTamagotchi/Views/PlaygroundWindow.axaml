@@ -40,7 +40,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Ellipse Width="40" Height="12"
+                        <Ellipse Width="80" Height="20"
                                  Fill="#40000000"
                                  RenderTransformOrigin="0.5,0.5">
                             <Ellipse.RenderTransform>
@@ -64,7 +64,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
-                               Width="48" Height="48"
+                               Width="96" Height="96"
                                RenderTransformOrigin="0,1">
                             <Image.RenderTransform>
                                 <TransformGroup>
