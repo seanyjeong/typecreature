@@ -31,67 +31,68 @@
             <Image Source="/Assets/Playground/background.png"
                    Stretch="Fill"/>
 
-            <!-- 크리처들 캔버스 -->
-            <Canvas Name="CreaturesCanvas">
-                <ItemsControl ItemsSource="{Binding Creatures}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Canvas>
-                                <!-- 그림자 -->
-                                <Ellipse Width="40" Height="12"
-                                         Fill="#40000000"
-                                         Canvas.Left="{Binding X}"
-                                         Canvas.Top="{Binding GroundY}"
-                                         RenderTransformOrigin="0.5,0.5">
-                                    <Ellipse.RenderTransform>
-                                        <TransformGroup>
-                                            <TranslateTransform X="4" Y="40"/>
-                                            <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
-                                        </TransformGroup>
-                                    </Ellipse.RenderTransform>
-                                </Ellipse>
+            <!-- 크리처들 -->
+            <ItemsControl ItemsSource="{Binding Creatures}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Panel Width="48" Height="56">
+                            <!-- 그림자 -->
+                            <Ellipse Width="40" Height="12"
+                                     Fill="#40000000"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Bottom"
+                                     RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform>
+                                    <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
 
-                                <!-- 크리처 이미지 -->
-                                <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
-                                       Width="48" Height="48"
-                                       Canvas.Left="{Binding X}"
-                                       Canvas.Top="{Binding Y}"
-                                       RenderTransformOrigin="0.5,1">
-                                    <Image.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
-                                            <RotateTransform Angle="{Binding Rotation}"/>
-                                        </TransformGroup>
-                                    </Image.RenderTransform>
-                                </Image>
-                            </Canvas>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                            <!-- 크리처 이미지 -->
+                            <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
+                                   Width="48" Height="48"
+                                   VerticalAlignment="Top"
+                                   RenderTransformOrigin="0.5,1">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
+                                        <RotateTransform Angle="{Binding Rotation}"/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
 
-                <!-- 이펙트들 -->
-                <ItemsControl ItemsSource="{Binding Effects}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Image Source="/Assets/Playground/bump_effect.png"
-                                   Width="64" Height="64"
-                                   Canvas.Left="{Binding X}"
-                                   Canvas.Top="{Binding Y}"
-                                   Opacity="{Binding Opacity}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Canvas>
+                            <!-- Canvas 위치 설정 -->
+                            <Panel.RenderTransform>
+                                <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                            </Panel.RenderTransform>
+                        </Panel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- 이펙트들 -->
+            <ItemsControl ItemsSource="{Binding Effects}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="/Assets/Playground/bump_effect.png"
+                               Width="64" Height="64"
+                               Opacity="{Binding Opacity}">
+                            <Image.RenderTransform>
+                                <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                            </Image.RenderTransform>
+                        </Image>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <!-- 닫기 버튼 -->
             <Button Content="✕"
