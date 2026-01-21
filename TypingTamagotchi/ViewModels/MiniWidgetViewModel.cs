@@ -16,10 +16,26 @@ public partial class MiniWidgetViewModel : ViewModelBase
     private readonly DatabaseService _db;
     private readonly HatchingService _hatching;
     private readonly Timer _clockTimer;
+    private readonly Random _random = new();
     private const double PROGRESS_BAR_MAX_WIDTH = 180.0;
 
+    // 알 종류 (이름, 이미지 파일명, 이모지)
+    private static readonly (string name, string image, string emoji)[] EggTypes = new[]
+    {
+        ("불꽃알", "불꽃알.png", "🔥"),
+        ("물방울알", "물방울알.png", "💧"),
+        ("바람알", "바람알.png", "🌿"),
+        ("대지알", "대지알.png", "🪨"),
+        ("번개알", "번개알.png", "⚡")
+    };
+
+    private int _currentEggTypeIndex = 0;
+
     [ObservableProperty]
-    private string _eggName = "신비한 알";
+    private string _eggName = "🔥 불꽃알";
+
+    [ObservableProperty]
+    private Bitmap? _eggImage;
 
     [ObservableProperty]
     private double _progress;
@@ -90,6 +106,25 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
         LoadDisplayCreatures();
         UpdateProgress();
+        RandomizeEgg(); // 초기 알 종류 설정
+    }
+
+    private void RandomizeEgg()
+    {
+        _currentEggTypeIndex = _random.Next(EggTypes.Length);
+        var egg = EggTypes[_currentEggTypeIndex];
+        EggName = $"{egg.emoji} {egg.name}";
+
+        // 알 이미지 로드
+        try
+        {
+            var uri = new Uri($"avares://TypingTamagotchi/Assets/Eggs/{egg.image}");
+            EggImage = new Bitmap(Avalonia.Platform.AssetLoader.Open(uri));
+        }
+        catch
+        {
+            EggImage = null;
+        }
     }
 
     private void UpdateClock()
@@ -166,6 +201,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
             {
                 LoadDisplayCreatures();
                 UpdateProgress();
+                RandomizeEgg(); // 새로운 알 종류 랜덤 선택
 
                 // 부화 이벤트 발생 (토스트 표시용)
                 CreatureHatched?.Invoke(creature);
