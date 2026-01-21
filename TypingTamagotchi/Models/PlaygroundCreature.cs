@@ -20,7 +20,9 @@ public partial class PlaygroundCreature : ObservableObject
 
     // 점프 관련
     public bool IsOnGround { get; set; } = true;
-    public double GroundY { get; set; }
+
+    [ObservableProperty]
+    private double _groundY;
 
     // 방향 (1: 오른쪽, -1: 왼쪽)
     [ObservableProperty]
@@ -69,6 +71,9 @@ public partial class PlaygroundCreature : ObservableObject
 
     public void Update(double deltaTime, double minX, double maxX, double groundY)
     {
+        // 바닥 Y 위치 업데이트 (그림자 바인딩용)
+        GroundY = groundY;
+
         // 복구 타이머 처리
         if (RecoveryTimer > 0)
         {
@@ -214,22 +219,30 @@ public partial class PlaygroundCreature : ObservableObject
 
     private void UpdateFloat(double deltaTime, double minX, double maxX, double groundY)
     {
-        // 둥둥 떠다니기 (중력 약함)
+        // 둥둥 떠다니기 (부드럽게)
         X += VelocityX * deltaTime;
-        VelocityY += Gravity * 0.1 * deltaTime; // 약한 중력
+
+        // 사인파로 위아래 부드럽게
+        VelocityY += Gravity * 0.15 * deltaTime;
         Y += VelocityY * deltaTime;
 
-        // 너무 높이 올라가면 내려오기
-        if (Y < groundY - 80)
+        // 너무 높이 올라가면 부드럽게 내려오기
+        if (Y < groundY - 60)
         {
-            VelocityY = Math.Abs(VelocityY) * 0.3;
+            VelocityY += 100 * deltaTime; // 부드럽게 아래로
         }
 
-        // 바닥 근처면 다시 위로
-        if (Y >= groundY - 20)
+        // 바닥 근처면 부드럽게 위로
+        if (Y >= groundY - 10)
         {
-            Y = groundY - 20;
-            VelocityY = -30 - Random.Shared.NextDouble() * 40;
+            VelocityY = -40;
+        }
+
+        // 바닥 아래로 못가게
+        if (Y > groundY)
+        {
+            Y = groundY;
+            VelocityY = -50;
         }
 
         IsOnGround = false;
