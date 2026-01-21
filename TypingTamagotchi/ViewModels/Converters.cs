@@ -98,3 +98,41 @@ public class SpritePathToImageConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+public class BoolToColorConverter : IValueConverter
+{
+    public static readonly BoolToColorConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool isActive && isActive)
+        {
+            return new SolidColorBrush(Color.Parse("#FFD700")); // 금색 (활성화)
+        }
+        return new SolidColorBrush(Color.Parse("#E0E0E0")); // 회색 (비활성화)
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class BoolToPlaygroundColorConverter : IValueConverter
+{
+    public static readonly BoolToPlaygroundColorConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool isActive && isActive)
+        {
+            return new SolidColorBrush(Color.Parse("#90EE90")); // 연두색 (활성화)
+        }
+        return new SolidColorBrush(Color.Parse("#E0E0E0")); // 회색 (비활성화)
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

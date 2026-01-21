@@ -61,6 +61,12 @@ public class DatabaseService
                 creature_id INTEGER NOT NULL,
                 FOREIGN KEY (creature_id) REFERENCES creatures(id)
             );
+
+            CREATE TABLE IF NOT EXISTS playground_creatures (
+                slot INTEGER PRIMARY KEY CHECK (slot >= 0 AND slot < 4),
+                creature_id INTEGER NOT NULL,
+                FOREIGN KEY (creature_id) REFERENCES creatures(id)
+            );
         ";
         command.ExecuteNonQuery();
     }
@@ -139,6 +145,84 @@ public class DatabaseService
             if (!usedSlots.Contains(i)) return i;
         }
         return -1;
+    }
+
+    // === Playground 관련 메서드 ===
+
+    public List<(int slot, int creatureId)> GetPlaygroundCreatures()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT slot, creature_id FROM playground_creatures ORDER BY slot";
+
+        var creatures = new List<(int, int)>();
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            creatures.Add((reader.GetInt32(0), reader.GetInt32(1)));
+        }
+        return creatures;
+    }
+
+    public void AddToPlayground(int creatureId)
+    {
+        using var connection = GetConnection();
+
+        // 빈 슬롯 찾기
+        var findCommand = connection.CreateCommand();
+        findCommand.CommandText = "SELECT slot FROM playground_creatures ORDER BY slot";
+        var usedSlots = new HashSet<int>();
+        using (var reader = findCommand.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                usedSlots.Add(reader.GetInt32(0));
+            }
+        }
+
+        int nextSlot = -1;
+        for (int i = 0; i < 4; i++)
+        {
+            if (!usedSlots.Contains(i))
+            {
+                nextSlot = i;
+                break;
+            }
+        }
+
+        if (nextSlot < 0) return; // 슬롯 가득 참
+
+        var command = connection.CreateCommand();
+        command.CommandText = "INSERT INTO playground_creatures (slot, creature_id) VALUES (@slot, @creature)";
+        command.Parameters.AddWithValue("@slot", nextSlot);
+        command.Parameters.AddWithValue("@creature", creatureId);
+        command.ExecuteNonQuery();
+    }
+
+    public void RemoveFromPlayground(int creatureId)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM playground_creatures WHERE creature_id = @creature";
+        command.Parameters.AddWithValue("@creature", creatureId);
+        command.ExecuteNonQuery();
+    }
+
+    public bool IsInPlayground(int creatureId)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM playground_creatures WHERE creature_id = @creature";
+        command.Parameters.AddWithValue("@creature", creatureId);
+        return Convert.ToInt32(command.ExecuteScalar()) > 0;
+    }
+
+    public int GetPlaygroundCount()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM playground_creatures";
+        return Convert.ToInt32(command.ExecuteScalar());
     }
 
     public SqliteConnection GetConnection()

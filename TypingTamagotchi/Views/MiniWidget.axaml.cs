@@ -31,6 +31,9 @@ public partial class MiniWidget : Window
     // 도감 창 참조 (토글용)
     private CollectionWindow? _collectionWindow;
 
+    // 놀이터 창 참조 (토글용)
+    private PlaygroundWindow? _playgroundWindow;
+
     public MiniWidget()
     {
         InitializeComponent();
@@ -61,15 +64,30 @@ public partial class MiniWidget : Window
         // 진열장 변경 이벤트 구독 (실시간 반영)
         CollectionViewModel.DisplayChanged += OnDisplayChanged;
 
+        // 놀이터 변경 이벤트 구독 (실시간 반영)
+        CollectionViewModel.PlaygroundChanged += OnPlaygroundChanged;
+
         Closed += (s, e) =>
         {
             CollectionViewModel.DisplayChanged -= OnDisplayChanged;
+            CollectionViewModel.PlaygroundChanged -= OnPlaygroundChanged;
         };
     }
 
     private void OnDisplayChanged()
     {
         Dispatcher.UIThread.Post(() => _viewModel?.Refresh());
+    }
+
+    private void OnPlaygroundChanged()
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_playgroundWindow?.DataContext is PlaygroundViewModel vm)
+            {
+                vm.Refresh();
+            }
+        });
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -855,6 +873,38 @@ public partial class MiniWidget : Window
 
             Height = newHeight;
             Position = new PixelPoint(Position.X, Position.Y - (int)heightDiff);
+        }
+        e.Handled = true;
+    }
+
+    private void OnPlaygroundClick(object? sender, PointerPressedEventArgs e)
+    {
+        try
+        {
+            // 놀이터가 이미 열려있으면 닫기
+            if (_playgroundWindow != null)
+            {
+                _playgroundWindow.Close();
+                _playgroundWindow = null;
+                e.Handled = true;
+                return;
+            }
+
+            // 놀이터 열기
+            _playgroundWindow = new PlaygroundWindow();
+
+            _playgroundWindow.Closed += (s, args) =>
+            {
+                _playgroundWindow = null;
+            };
+
+            _playgroundWindow.Show();
+            _playgroundWindow.Activate();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"놀이터 열기 에러: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
         e.Handled = true;
     }

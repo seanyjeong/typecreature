@@ -15,6 +15,9 @@ public partial class CollectionViewModel : ViewModelBase
     // 진열장 변경 이벤트 (MiniWidget에서 구독)
     public static event Action? DisplayChanged;
 
+    // 놀이터 변경 이벤트
+    public static event Action? PlaygroundChanged;
+
     [ObservableProperty]
     private ObservableCollection<CollectionItem> _items = new();
 
@@ -54,6 +57,10 @@ public partial class CollectionViewModel : ViewModelBase
         var displaySlots = _db.GetDisplaySlots();
         var displayedIds = displaySlots.Select(s => s.creatureId).ToHashSet();
 
+        // 현재 놀이터 상태
+        var playgroundCreatures = _db.GetPlaygroundCreatures();
+        var playgroundIds = playgroundCreatures.Select(p => p.creatureId).ToHashSet();
+
         Items.Clear();
         foreach (var creature in allCreatures)
         {
@@ -64,7 +71,8 @@ public partial class CollectionViewModel : ViewModelBase
                 IsOwned = ownedIds.Contains(creature.Id),
                 Count = owned.count,
                 FirstObtained = owned.firstObtained,
-                IsInDisplay = displayedIds.Contains(creature.Id)
+                IsInDisplay = displayedIds.Contains(creature.Id),
+                IsInPlayground = playgroundIds.Contains(creature.Id)
             });
         }
 
@@ -77,6 +85,10 @@ public partial class CollectionViewModel : ViewModelBase
     private void ToggleDisplay(CollectionItem? item)
     {
         if (item == null || !item.IsOwned)
+            return;
+
+        // 놀이터에 있으면 진열장에 추가 불가
+        if (item.IsInPlayground && !item.IsInDisplay)
             return;
 
         if (item.IsInDisplay)
@@ -98,6 +110,36 @@ public partial class CollectionViewModel : ViewModelBase
 
         // 진열장 실시간 업데이트
         DisplayChanged?.Invoke();
+    }
+
+    [RelayCommand]
+    private void TogglePlayground(CollectionItem? item)
+    {
+        if (item == null || !item.IsOwned)
+            return;
+
+        // 진열장에 있으면 놀이터에 추가 불가
+        if (item.IsInDisplay && !item.IsInPlayground)
+            return;
+
+        if (item.IsInPlayground)
+        {
+            // 놀이터에서 제거
+            _db.RemoveFromPlayground(item.Creature.Id);
+            item.IsInPlayground = false;
+        }
+        else
+        {
+            // 놀이터 슬롯 확인 (최대 4마리)
+            if (_db.GetPlaygroundCount() < 4)
+            {
+                _db.AddToPlayground(item.Creature.Id);
+                item.IsInPlayground = true;
+            }
+        }
+
+        // 놀이터 실시간 업데이트
+        PlaygroundChanged?.Invoke();
     }
 
     private static System.Collections.Generic.List<Creature> GetAllCreatures(DatabaseService db)
@@ -144,11 +186,20 @@ public partial class CollectionItem : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(DisplayButtonText))]
+    [NotifyPropertyChangedFor(nameof(CanSendToPlayground))]
     private bool _isInDisplay;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PlaygroundButtonText))]
+    [NotifyPropertyChangedFor(nameof(CanSendToDisplay))]
+    private bool _isInPlayground;
 
     public string DisplayName => IsOwned ? Creature.Name : "???";
     public string RarityText => IsOwned ? Creature.Rarity.ToString() : "";
     public string CountText => IsOwned && Count > 1 ? $"x{Count}" : "";
     public double Opacity => IsOwned ? 1.0 : 0.3;
     public string DisplayButtonText => IsInDisplay ? "진열장에서 제거" : "진열장에 추가";
+    public string PlaygroundButtonText => IsInPlayground ? "놀이터에서 제거" : "놀러 보내기";
+    public bool CanSendToDisplay => !IsInPlayground;
+    public bool CanSendToPlayground => !IsInDisplay;
 }

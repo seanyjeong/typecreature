@@ -68,8 +68,8 @@
                 </StackPanel>
             </Border>
 
-            <!-- 진열장 토글 버튼 + 도감 열기 -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+            <!-- 진열장 토글 버튼 + 도감 열기 + 놀이터 -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
                 <!-- 토글 버튼 (진열장 접기/펼치기) -->
                 <Border Grid.Column="0"
                         CornerRadius="8"
@@ -109,6 +109,28 @@
                                FontSize="12"
                                FontWeight="Bold"
                                Foreground="#1A1A1A"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- 놀이터 열기 버튼 (전체 모드에서만 표시) -->
+                <Border Grid.Column="2"
+                        CornerRadius="8"
+                        Padding="10,6"
+                        Margin="6,0,0,0"
+                        Cursor="Hand"
+                        PointerPressed="OnPlaygroundClick"
+                        IsVisible="{Binding IsShowcaseVisible}">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                            <GradientStop Color="#2E7D32" Offset="0"/>
+                            <GradientStop Color="#4CAF50" Offset="0.5"/>
+                            <GradientStop Color="#2E7D32" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock Text="🌳 놀이터"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               Foreground="White"
                                VerticalAlignment="Center"/>
                 </Border>
             </Grid>

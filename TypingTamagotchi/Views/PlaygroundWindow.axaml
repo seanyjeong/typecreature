@@ -1,0 +1,122 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TypingTamagotchi.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="TypingTamagotchi.Views.PlaygroundWindow"
+        x:DataType="vm:PlaygroundViewModel"
+        Title="놀이터"
+        Width="{Binding PlaygroundWidth}"
+        Height="{Binding PlaygroundHeight}"
+        MinWidth="300"
+        MinHeight="120"
+        CanResize="True"
+        SystemDecorations="None"
+        Topmost="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="Window">
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+    </Window.Styles>
+
+    <Border CornerRadius="12"
+            ClipToBounds="True"
+            PointerPressed="OnPointerPressed">
+        <Grid>
+            <!-- 배경 이미지 -->
+            <Image Source="/Assets/Playground/background.png"
+                   Stretch="Fill"/>
+
+            <!-- 크리처들 캔버스 -->
+            <Canvas Name="CreaturesCanvas">
+                <ItemsControl ItemsSource="{Binding Creatures}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Canvas>
+                                <!-- 그림자 -->
+                                <Ellipse Width="40" Height="12"
+                                         Fill="#40000000"
+                                         Canvas.Left="{Binding X}"
+                                         Canvas.Top="{Binding GroundY}"
+                                         RenderTransformOrigin="0.5,0.5">
+                                    <Ellipse.RenderTransform>
+                                        <TransformGroup>
+                                            <TranslateTransform X="4" Y="40"/>
+                                            <ScaleTransform ScaleX="{Binding ShadowScale}" ScaleY="{Binding ShadowScale}"/>
+                                        </TransformGroup>
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+
+                                <!-- 크리처 이미지 -->
+                                <Image Source="{Binding Creature.SpritePath, Converter={x:Static vm:SpritePathToImageConverter.Instance}}"
+                                       Width="48" Height="48"
+                                       Canvas.Left="{Binding X}"
+                                       Canvas.Top="{Binding Y}"
+                                       RenderTransformOrigin="0.5,1">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
+                                            <RotateTransform Angle="{Binding Rotation}"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Canvas>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- 이펙트들 -->
+                <ItemsControl ItemsSource="{Binding Effects}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="/Assets/Playground/bump_effect.png"
+                                   Width="64" Height="64"
+                                   Canvas.Left="{Binding X}"
+                                   Canvas.Top="{Binding Y}"
+                                   Opacity="{Binding Opacity}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Canvas>
+
+            <!-- 닫기 버튼 -->
+            <Button Content="✕"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,4,4,0"
+                    Width="24" Height="24"
+                    FontSize="12"
+                    Background="#80000000"
+                    Foreground="White"
+                    CornerRadius="12"
+                    Click="OnCloseClick"/>
+
+            <!-- 새로고침 버튼 -->
+            <Button Content="🔄"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,4,32,0"
+                    Width="24" Height="24"
+                    FontSize="12"
+                    Background="#80000000"
+                    Foreground="White"
+                    CornerRadius="12"
+                    Click="OnRefreshClick"
+                    ToolTip.Tip="새로고침"/>
+        </Grid>
+    </Border>
+</Window>

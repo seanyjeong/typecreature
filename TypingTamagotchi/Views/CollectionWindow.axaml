@@ -71,14 +71,28 @@
                                            Foreground="DarkGreen"
                                            HorizontalAlignment="Center"/>
 
-                                <!-- 진열장 버튼 -->
-                                <Button Content="{Binding DisplayButtonText}"
-                                        Click="OnToggleDisplayClick"
-                                        Tag="{Binding}"
-                                        IsVisible="{Binding IsOwned}"
-                                        FontSize="8"
-                                        Padding="4,2"
-                                        HorizontalAlignment="Center"/>
+                                <!-- 버튼들 -->
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="2"
+                                            IsVisible="{Binding IsOwned}">
+                                    <!-- 진열장 버튼 -->
+                                    <Button Content="진열"
+                                            Click="OnToggleDisplayClick"
+                                            Tag="{Binding}"
+                                            IsEnabled="{Binding CanSendToDisplay}"
+                                            FontSize="8"
+                                            Padding="4,2"
+                                            Background="{Binding IsInDisplay, Converter={x:Static vm:BoolToColorConverter.Instance}}"/>
+                                    <!-- 놀이터 버튼 -->
+                                    <Button Content="놀이터"
+                                            Click="OnTogglePlaygroundClick"
+                                            Tag="{Binding}"
+                                            IsEnabled="{Binding CanSendToPlayground}"
+                                            FontSize="8"
+                                            Padding="4,2"
+                                            Background="{Binding IsInPlayground, Converter={x:Static vm:BoolToPlaygroundColorConverter.Instance}}"/>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
