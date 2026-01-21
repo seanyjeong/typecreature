@@ -6,14 +6,18 @@ import requests
 from pathlib import Path
 from rembg import remove
 
-API_KEY = "AIzaSyAFFQXloNgkKYR5Yewiq1qbLfEWlVth9cA"
+import os
+API_KEY = os.environ.get("GEMINI_API_KEY")
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict"
 
 # 켈피 프롬프트 - 앞다리만 있고 뒷다리 대신 물고기 꼬리
-KELPIE_PROMPT = """cute pixel art kelpie mythical water horse, 64x64 pixels,
-front horse legs only, fish tail instead of back legs like a hippocampus or mermaid horse,
-blue-green colors, seaweed flowing mane, water droplets,
-mystical underwater creature, no hind legs,
+KELPIE_PROMPT = """cute pixel art hippocampus sea horse creature, 64x64 pixels,
+ONLY TWO FRONT LEGS, ABSOLUTELY NO BACK LEGS,
+lower body is completely a large fish tail fin like a mermaid,
+horse head and chest with two front hooves,
+body transitions into big colorful fish tail at the waist,
+blue-green scales on tail, flowing seaweed mane,
+half horse half fish mythical creature,
 game asset, transparent background, tamagotchi style, adorable big eyes"""
 
 OUTPUT_PATH = Path(__file__).parent.parent / "TypingTamagotchi" / "Assets" / "Creatures" / "46.png"

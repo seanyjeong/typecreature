@@ -13,7 +13,7 @@ from pathlib import Path
 from rembg import remove
 
 # Gemini API 설정
-API_KEY = "AIzaSyAFFQXloNgkKYR5Yewiq1qbLfEWlVth9cA"
+API_KEY = os.environ.get("GEMINI_API_KEY")
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict"
 
 # 경로 설정
