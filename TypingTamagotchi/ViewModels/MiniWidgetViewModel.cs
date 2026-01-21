@@ -142,7 +142,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     {
         var (keystrokes, clicks) = _hatching.GetCurrentProgress();
         var totalInputs = keystrokes + clicks;
-        var required = 1500; // 부화에 필요한 입력 (1.5배 더 느리게)
+        var required = 500; // 부화에 필요한 입력
 
         Progress = Math.Min(1.0, (double)totalInputs / required);
         ProgressText = $"{(int)(Progress * 100)}%";

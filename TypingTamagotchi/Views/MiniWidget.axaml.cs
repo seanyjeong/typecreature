@@ -108,7 +108,7 @@ public partial class MiniWidget : Window
         var popup = new Window
         {
             Width = 300,
-            Height = 280,
+            Height = 260,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             SystemDecorations = SystemDecorations.None,
             Background = Brushes.Transparent,
@@ -155,8 +155,8 @@ public partial class MiniWidget : Window
             mainStack.Children.Add(new Image
             {
                 Source = creatureImage,
-                Width = 100,
-                Height = 100,
+                Width = 70,
+                Height = 70,
                 Stretch = Stretch.Uniform,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
