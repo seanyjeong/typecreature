@@ -30,6 +30,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     };
 
     private int _currentEggTypeIndex = 0;
+    private Element _currentEggElement = Element.Fire;
 
     [ObservableProperty]
     private string _eggName = "불꽃알";
@@ -115,6 +116,17 @@ public partial class MiniWidgetViewModel : ViewModelBase
         var egg = EggTypes[_currentEggTypeIndex];
         EggName = egg.name;
 
+        // 알 종류에 따른 속성 설정
+        _currentEggElement = _currentEggTypeIndex switch
+        {
+            0 => Element.Fire,      // 불꽃알
+            1 => Element.Water,     // 물방울알
+            2 => Element.Wind,      // 바람알
+            3 => Element.Earth,     // 대지알
+            4 => Element.Lightning, // 번개알
+            _ => Element.Fire
+        };
+
         // 알 이미지 로드
         try
         {
@@ -181,7 +193,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     {
         var (keystrokes, clicks) = _hatching.GetCurrentProgress();
         var totalInputs = keystrokes + clicks;
-        var required = 500; // 부화에 필요한 입력
+        var required = 1500; // 부화에 필요한 입력
 
         Progress = Math.Min(1.0, (double)totalInputs / required);
         ProgressText = $"{(int)(Progress * 100)}%";
@@ -196,7 +208,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         // 부화 체크
         if (Progress >= 1.0)
         {
-            var creature = _hatching.TryHatch();
+            var creature = _hatching.TryHatchByElement(_currentEggElement);
             if (creature != null)
             {
                 LoadDisplayCreatures();
