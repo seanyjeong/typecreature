@@ -108,7 +108,7 @@ public partial class MiniWidget : Window
         var popup = new Window
         {
             Width = 300,
-            Height = 260,
+            Height = 320,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             SystemDecorations = SystemDecorations.None,
             Background = Brushes.Transparent,
@@ -186,7 +186,8 @@ public partial class MiniWidget : Window
         {
             Content = "확인",
             HorizontalAlignment = HorizontalAlignment.Center,
-            Padding = new Thickness(30, 8),
+            Padding = new Thickness(30, 10),
+            Margin = new Thickness(0, 10, 0, 0),
             FontSize = 14,
             Background = new SolidColorBrush(Color.Parse(rarityColor)),
             Foreground = Brushes.Black,
