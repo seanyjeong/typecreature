@@ -26,8 +26,17 @@ public partial class CollectionViewModel : ViewModelBase
 
     public CollectionViewModel()
     {
-        _db = new DatabaseService();
-        LoadCollection();
+        try
+        {
+            _db = new DatabaseService();
+            LoadCollection();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"CollectionViewModel 초기화 에러: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            CollectionStatus = "로딩 실패";
+        }
     }
 
     private void LoadCollection()
