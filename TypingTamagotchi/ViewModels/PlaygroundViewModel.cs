@@ -53,17 +53,20 @@ public partial class PlaygroundViewModel : ViewModelBase
 
     private void LoadCreatures()
     {
+        var logPath = System.IO.Path.Combine(AppContext.BaseDirectory, "playground_debug.log");
+        var log = new System.Collections.Generic.List<string>();
+
         var playgroundData = _db.GetPlaygroundCreatures();
-        Console.WriteLine($"[Playground] LoadCreatures: {playgroundData.Count} creatures in DB");
+        log.Add($"[{DateTime.Now}] LoadCreatures: {playgroundData.Count} creatures in DB");
         Creatures.Clear();
 
         foreach (var (slot, creatureId) in playgroundData)
         {
-            Console.WriteLine($"[Playground] Loading slot {slot}, creatureId {creatureId}");
+            log.Add($"Loading slot {slot}, creatureId {creatureId}");
             var creature = GetCreatureById(creatureId);
             if (creature != null)
             {
-                Console.WriteLine($"[Playground] Found creature: {creature.Name}, sprite: {creature.SpritePath}");
+                log.Add($"Found creature: {creature.Name}, sprite: {creature.SpritePath}");
                 var pc = new PlaygroundCreature
                 {
                     Creature = creature,
@@ -74,14 +77,17 @@ public partial class PlaygroundViewModel : ViewModelBase
                 };
                 pc.GroundY = GroundY;
                 Creatures.Add(pc);
-                Console.WriteLine($"[Playground] Added creature at X={pc.X}, Y={pc.Y}, GroundY={pc.GroundY}");
+                log.Add($"Added at X={pc.X:F1}, Y={pc.Y:F1}, GroundY={pc.GroundY:F1}");
             }
             else
             {
-                Console.WriteLine($"[Playground] Creature NOT FOUND for id {creatureId}");
+                log.Add($"*** Creature NOT FOUND for id {creatureId} ***");
             }
         }
-        Console.WriteLine($"[Playground] Total creatures loaded: {Creatures.Count}");
+        log.Add($"Total creatures loaded: {Creatures.Count}");
+        log.Add($"PlaygroundWidth={PlaygroundWidth}, PlaygroundHeight={PlaygroundHeight}, GroundY={GroundY}");
+
+        System.IO.File.WriteAllLines(logPath, log);
     }
 
     private void OnGameTick(object? sender, EventArgs e)
