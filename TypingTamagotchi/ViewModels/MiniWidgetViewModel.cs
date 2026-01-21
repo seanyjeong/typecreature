@@ -32,7 +32,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     private int _currentEggTypeIndex = 0;
 
     [ObservableProperty]
-    private string _eggName = "🔥 불꽃알";
+    private string _eggName = "불꽃알";
 
     [ObservableProperty]
     private Bitmap? _eggImage;
@@ -113,7 +113,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     {
         _currentEggTypeIndex = _random.Next(EggTypes.Length);
         var egg = EggTypes[_currentEggTypeIndex];
-        EggName = $"{egg.emoji} {egg.name}";
+        EggName = egg.name;
 
         // 알 이미지 로드
         try
