@@ -104,10 +104,10 @@ public partial class App : Application
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(exitMenuItem);
 
-        // 트레이 아이콘 설정
+        // 트레이 아이콘 설정 (1번 크리처 - 슬라임)
         try
         {
-            var iconUri = new Uri("avares://TypingTamagotchi/Assets/avalonia-logo.ico");
+            var iconUri = new Uri("avares://TypingTamagotchi/Assets/Creatures/1.png");
             using var iconStream = AssetLoader.Open(iconUri);
             var icon = new WindowIcon(iconStream);
 

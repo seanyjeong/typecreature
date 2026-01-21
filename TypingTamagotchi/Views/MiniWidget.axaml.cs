@@ -32,6 +32,15 @@ public partial class MiniWidget : Window
     {
         InitializeComponent();
 
+        // 작업표시줄 아이콘 설정 (1번 크리처 - 슬라임)
+        try
+        {
+            var iconUri = new Uri("avares://TypingTamagotchi/Assets/Creatures/1.png");
+            using var stream = Avalonia.Platform.AssetLoader.Open(iconUri);
+            Icon = new WindowIcon(stream);
+        }
+        catch { }
+
         // 화면 오른쪽 하단에 위치
         Opened += (s, e) =>
         {
