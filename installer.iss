@@ -1,13 +1,13 @@
 ; Inno Setup Script for TypingTamagotchi
 
 [Setup]
-AppName=TypingTamagotchi
-AppVersion=1.0
-AppPublisher=TypingTamagotchi
-DefaultDirName={autopf}\TypingTamagotchi
-DefaultGroupName=TypingTamagotchi
+AppName=TypeCreature
+AppVersion=1.1
+AppPublisher=Sean
+DefaultDirName={autopf}\TypeCreature
+DefaultGroupName=TypeCreature
 OutputDir=installer_output
-OutputBaseFilename=TypingTamagotchi_Setup
+OutputBaseFilename=TypeCreature_Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -24,11 +24,11 @@ Source: "TypingTamagotchi\publish\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "TypingTamagotchi\Assets\*"; DestDir: "{app}\Assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\TypingTamagotchi"; Filename: "{app}\TypingTamagotchi.exe"
-Name: "{autodesktop}\TypingTamagotchi"; Filename: "{app}\TypingTamagotchi.exe"; Tasks: desktopicon
+Name: "{group}\TypeCreature"; Filename: "{app}\TypingTamagotchi.exe"; IconFilename: "{app}\Assets\app.ico"
+Name: "{autodesktop}\TypeCreature"; Filename: "{app}\TypingTamagotchi.exe"; IconFilename: "{app}\Assets\app.ico"; Tasks: desktopicon
 
 [Tasks]
-Name: "desktopicon"; Description: "바탕화면에 바로가기 만들기"; GroupDescription: "추가 아이콘:"
+Name: "desktopicon"; Description: "바탕화면에 바로가기 만들기"; GroupDescription: "추가 아이콘:"; Flags: checked
 
 [Run]
-Filename: "{app}\TypingTamagotchi.exe"; Description: "TypingTamagotchi 실행"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\TypingTamagotchi.exe"; Description: "TypeCreature 실행"; Flags: nowait postinstall skipifsilent

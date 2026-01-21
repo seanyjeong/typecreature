@@ -130,8 +130,8 @@ public partial class CollectionViewModel : ViewModelBase
         }
         else
         {
-            // 놀이터 슬롯 확인 (최대 4마리)
-            if (_db.GetPlaygroundCount() < 4)
+            // 놀이터 슬롯 확인 (최대 5마리)
+            if (_db.GetPlaygroundCount() < 5)
             {
                 _db.AddToPlayground(item.Creature.Id);
                 item.IsInPlayground = true;
