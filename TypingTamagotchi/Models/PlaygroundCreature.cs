@@ -78,6 +78,10 @@ public partial class PlaygroundCreature : ObservableObject
     public bool IsKnockedOver { get; set; }
     public bool IsSquashed { get; set; }
 
+    // 충돌 면역 타이머 (복구 후 잠시 동안 충돌 무시)
+    public double CollisionImmunityTimer { get; set; }
+    public bool IsImmune => CollisionImmunityTimer > 0;
+
     // 이동 패턴
     public enum MovePattern { Walk, Float, Bounce, Idle }
     public MovePattern CurrentPattern { get; set; } = MovePattern.Walk;
@@ -100,6 +104,12 @@ public partial class PlaygroundCreature : ObservableObject
         // 바닥 Y 위치 업데이트 (그림자 바인딩용)
         GroundY = groundY;
 
+        // 충돌 면역 타이머 처리
+        if (CollisionImmunityTimer > 0)
+        {
+            CollisionImmunityTimer -= deltaTime;
+        }
+
         // 복구 타이머 처리
         if (RecoveryTimer > 0)
         {
@@ -110,11 +120,13 @@ public partial class PlaygroundCreature : ObservableObject
                 {
                     IsKnockedOver = false;
                     Rotation = 0;
+                    CollisionImmunityTimer = 2.0; // 복구 후 2초간 충돌 면역
                 }
                 if (IsSquashed)
                 {
                     IsSquashed = false;
                     ScaleY = 1.0;
+                    CollisionImmunityTimer = 1.0; // 복구 후 1초간 충돌 면역
                 }
             }
         }

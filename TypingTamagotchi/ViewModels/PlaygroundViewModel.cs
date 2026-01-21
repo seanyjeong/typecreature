@@ -123,8 +123,9 @@ public partial class PlaygroundViewModel : ViewModelBase
                 var a = creatureList[i];
                 var b = creatureList[j];
 
-                // 이미 넘어져 있으면 스킵
+                // 이미 넘어져 있거나 면역 상태면 스킵
                 if (a.IsKnockedOver || b.IsKnockedOver) continue;
+                if (a.IsImmune || b.IsImmune) continue;
 
                 // 충돌 박스 체크 (Y는 발 위치, 중심은 Y - Height/2)
                 var aCenterX = a.X + PlaygroundCreature.Width / 2;
@@ -163,17 +164,20 @@ public partial class PlaygroundViewModel : ViewModelBase
                         b.KnockOver();
                         SpawnEffect((aCenterX + bCenterX) / 2, (aCenterY + bCenterY) / 2);
 
-                        // 서로 반대 방향으로 튕김
+                        // 서로 반대 방향으로 강하게 튕김
                         if (a.X < b.X)
                         {
-                            a.VelocityX = -50;
-                            b.VelocityX = 50;
+                            a.VelocityX = -120;
+                            b.VelocityX = 120;
                         }
                         else
                         {
-                            a.VelocityX = 50;
-                            b.VelocityX = -50;
+                            a.VelocityX = 120;
+                            b.VelocityX = -120;
                         }
+                        // 살짝 위로도 튕김
+                        a.VelocityY = -100;
+                        b.VelocityY = -100;
                     }
                 }
             }
