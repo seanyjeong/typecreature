@@ -40,10 +40,10 @@ public partial class PlaygroundCreature : ObservableObject
     private double _shadowScale = 1.0;
 
     // 그림자 X 위치 (크리처 중앙 아래)
-    public double ShadowX => X + 8; // 그림자 중앙 맞추기 (96px 크리처, 80px 그림자)
+    public double ShadowX => X + 6; // 그림자 중앙 맞추기 (72px 크리처, 60px 그림자)
 
     // 그림자 Y 위치 (바닥 - 그림자 높이의 절반)
-    public double ShadowY => GroundY - 10;
+    public double ShadowY => GroundY - 8;
 
     // 시각적 Y 위치 (스프라이트 상단 기준)
     public double VisualY => Y - Height;
@@ -91,9 +91,9 @@ public partial class PlaygroundCreature : ObservableObject
     public const double BounceFactor = 0.6; // 바닥 튕김 계수
     public const double FloatSpeed = 40; // 둥둥 떠다니기 속도
 
-    // 크리처 크기 (충돌 검출용) - 놀이터에서 2배 크기
-    public const double Width = 96;
-    public const double Height = 96;
+    // 크리처 크기 (충돌 검출용) - 놀이터에서 1.5배 크기
+    public const double Width = 72;
+    public const double Height = 72;
 
     public void Update(double deltaTime, double minX, double maxX, double groundY)
     {
