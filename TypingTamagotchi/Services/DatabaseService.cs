@@ -67,8 +67,35 @@ public class DatabaseService
                 creature_id INTEGER NOT NULL,
                 FOREIGN KEY (creature_id) REFERENCES creatures(id)
             );
+
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
         ";
         command.ExecuteNonQuery();
+    }
+
+    // 설정 저장/로드
+    public void SaveSetting(string key, string value)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+            INSERT OR REPLACE INTO settings (key, value) VALUES (@key, @value)
+        ";
+        command.Parameters.AddWithValue("@key", key);
+        command.Parameters.AddWithValue("@value", value);
+        command.ExecuteNonQuery();
+    }
+
+    public string? GetSetting(string key)
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT value FROM settings WHERE key = @key";
+        command.Parameters.AddWithValue("@key", key);
+        return command.ExecuteScalar() as string;
     }
 
     public List<(int slotIndex, int creatureId)> GetDisplaySlots()

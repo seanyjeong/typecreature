@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using TypingTamagotchi.Services;
 using TypingTamagotchi.ViewModels;
 
 namespace TypingTamagotchi.Views;
@@ -9,15 +10,43 @@ namespace TypingTamagotchi.Views;
 public partial class PlaygroundWindow : Window
 {
     private readonly PlaygroundViewModel _viewModel;
+    private readonly DatabaseService _db;
 
     public PlaygroundWindow()
     {
         InitializeComponent();
         _viewModel = new PlaygroundViewModel();
+        _db = new DatabaseService();
         DataContext = _viewModel;
+
+        // 저장된 크기 로드
+        LoadSavedSize();
 
         // 화면 하단(작업표시줄 위)에 위치시키기
         PositionAtBottom();
+    }
+
+    private void LoadSavedSize()
+    {
+        var savedWidth = _db.GetSetting("playground_width");
+        var savedHeight = _db.GetSetting("playground_height");
+
+        if (double.TryParse(savedWidth, out var width) && width >= MinWidth)
+        {
+            Width = width;
+            _viewModel.PlaygroundWidth = width;
+        }
+        if (double.TryParse(savedHeight, out var height) && height >= MinHeight)
+        {
+            Height = height;
+            _viewModel.PlaygroundHeight = height;
+        }
+    }
+
+    private void SaveSize()
+    {
+        _db.SaveSetting("playground_width", Width.ToString());
+        _db.SaveSetting("playground_height", Height.ToString());
     }
 
     private void PositionAtBottom()
@@ -77,6 +106,8 @@ public partial class PlaygroundWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        // 크기 저장
+        SaveSize();
         _viewModel.Stop();
         base.OnClosed(e);
     }
