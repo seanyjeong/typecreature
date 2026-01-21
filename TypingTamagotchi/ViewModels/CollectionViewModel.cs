@@ -96,7 +96,8 @@ public partial class CollectionViewModel : ViewModelBase
         using var connection = db.GetConnection();
         var command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT id, name, rarity, sprite_path, description
+            SELECT id, name, rarity, element, sprite_path, description,
+                   age, gender, favorite_food, dislikes, background
             FROM creatures
             ORDER BY rarity DESC, name
         ";
@@ -110,8 +111,14 @@ public partial class CollectionViewModel : ViewModelBase
                 Id = reader.GetInt32(0),
                 Name = reader.GetString(1),
                 Rarity = (Rarity)reader.GetInt32(2),
-                SpritePath = reader.GetString(3),
-                Description = reader.GetString(4)
+                Element = (Element)reader.GetInt32(3),
+                SpritePath = reader.GetString(4),
+                Description = reader.GetString(5),
+                Age = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                Gender = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                FavoriteFood = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                Dislikes = reader.IsDBNull(9) ? "" : reader.GetString(9),
+                Background = reader.IsDBNull(10) ? "" : reader.GetString(10)
             });
         }
 
