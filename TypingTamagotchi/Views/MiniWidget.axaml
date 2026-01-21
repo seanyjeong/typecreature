@@ -107,7 +107,7 @@
                        Stretch="Fill"/>
 
                 <!-- 크리처 슬롯 그리드 - 쇼케이스 칸에 맞게 조정 -->
-                <Border Padding="18,28,18,12">
+                <Border Padding="26,55,26,22">
                     <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
