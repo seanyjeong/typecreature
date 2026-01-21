@@ -7,7 +7,7 @@
         x:Class="TypingTamagotchi.Views.MiniWidget"
         x:DataType="vm:MiniWidgetViewModel"
         Title="TypeCreature"
-        Width="340" Height="540"
+        Width="340" Height="{Binding WindowHeight}"
         CanResize="False"
         SystemDecorations="None"
         Topmost="True"
