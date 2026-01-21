@@ -104,11 +104,10 @@
             <Grid Grid.Row="2" Margin="0,0,0,8" MinHeight="320">
                 <!-- 쇼케이스 배경 이미지 -->
                 <Image Source="/Assets/UI/showcase_royal.png"
-                       Stretch="Fill"
-                       Margin="-10"/>
+                       Stretch="Fill"/>
 
-                <!-- 크리처 슬롯 그리드 -->
-                <Border Padding="24,32,24,20">
+                <!-- 크리처 슬롯 그리드 - 쇼케이스 칸에 맞게 조정 -->
+                <Border Padding="18,28,18,12">
                     <ItemsControl ItemsSource="{Binding DisplaySlots}" Name="SlotsContainer">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -117,25 +116,25 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <!-- 슬롯: 받침대 + 크리처 -->
-                                <Border Margin="2" Cursor="Hand">
+                                <!-- 슬롯: 받침대 + 크리처 (딱 붙게) -->
+                                <Border Margin="0" Cursor="Hand">
                                     <Grid RowDefinitions="*,Auto">
-                                        <!-- 크리처 이미지 (정중앙) -->
+                                        <!-- 크리처 이미지 (받침대 바로 위에) -->
                                         <Image Grid.Row="0"
                                                Source="{Binding CreatureImage}"
                                                IsVisible="{Binding HasCreature}"
-                                               Width="46" Height="46"
+                                               Width="52" Height="52"
                                                Stretch="Uniform"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Bottom"
-                                               Margin="0,0,0,2"
+                                               Margin="0,0,0,-4"
                                                RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                                        <!-- 받침대 이미지 (희귀도별) -->
+                                        <!-- 받침대 이미지 (크게) -->
                                         <Image Grid.Row="1"
                                                Source="{Binding PedestalImage}"
                                                IsVisible="{Binding HasCreature}"
-                                               Width="50" Height="18"
+                                               Width="70" Height="24"
                                                Stretch="Uniform"
                                                HorizontalAlignment="Center"
                                                RenderOptions.BitmapInterpolationMode="HighQuality"/>
