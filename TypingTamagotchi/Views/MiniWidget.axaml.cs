@@ -32,10 +32,10 @@ public partial class MiniWidget : Window
     {
         InitializeComponent();
 
-        // 작업표시줄 아이콘 설정 (48번 크리처 - 황금드래곤)
+        // 작업표시줄 아이콘 설정 (황금드래곤 - 트림된 버전)
         try
         {
-            var iconUri = new Uri("avares://TypingTamagotchi/Assets/Creatures/48.png");
+            var iconUri = new Uri("avares://TypingTamagotchi/Assets/UI/app_icon.png");
             using var stream = Avalonia.Platform.AssetLoader.Open(iconUri);
             Icon = new WindowIcon(stream);
         }

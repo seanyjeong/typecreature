@@ -104,10 +104,10 @@ public partial class App : Application
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(exitMenuItem);
 
-        // 트레이 아이콘 설정 (48번 크리처 - 황금드래곤)
+        // 트레이 아이콘 설정 (황금드래곤 - 트림된 버전)
         try
         {
-            var iconUri = new Uri("avares://TypingTamagotchi/Assets/Creatures/48.png");
+            var iconUri = new Uri("avares://TypingTamagotchi/Assets/UI/app_icon.png");
             using var iconStream = AssetLoader.Open(iconUri);
             var icon = new WindowIcon(iconStream);
 
