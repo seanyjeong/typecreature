@@ -41,6 +41,9 @@ public partial class MiniWidgetViewModel : ViewModelBase
     private Bitmap? _eggImage;
 
     [ObservableProperty]
+    private bool _isEggVisible = true; // 슬롯머신 완료 전까지 숨김
+
+    [ObservableProperty]
     private double _progress;
 
     [ObservableProperty]
@@ -116,8 +119,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         {
             // 첫 실행 - 슬롯머신으로 알 선택 (이벤트는 View에서 구독 후 발생)
             _isFirstRun = true;
-            // 임시로 기본 알 표시
-            SetEggByIndex(0);
+            IsEggVisible = false; // 슬롯머신 완료 전까지 알 숨김
         }
         else
         {
@@ -146,6 +148,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
     {
         _currentEggTypeIndex = index;
         _isLegendaryEgg = EggTypes[index].isLegendary;
+        IsEggVisible = true; // 알 표시
 
         var egg = EggTypes[index];
         EggName = egg.name;

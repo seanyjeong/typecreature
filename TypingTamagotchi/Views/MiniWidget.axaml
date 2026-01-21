@@ -274,7 +274,8 @@
                     </LinearGradientBrush>
                 </Border.Background>
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6"
+                                IsVisible="{Binding IsEggVisible}">
                         <Image Source="{Binding EggImage}"
                                Width="24" Height="24"
                                Stretch="Uniform"

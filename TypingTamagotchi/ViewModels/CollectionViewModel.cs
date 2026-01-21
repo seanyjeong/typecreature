@@ -10,7 +10,7 @@ namespace TypingTamagotchi.ViewModels;
 
 public partial class CollectionViewModel : ViewModelBase
 {
-    private readonly DatabaseService _db;
+    private readonly DatabaseService _db = null!;
 
     // 진열장 변경 이벤트 (MiniWidget에서 구독)
     public static event Action? DisplayChanged;

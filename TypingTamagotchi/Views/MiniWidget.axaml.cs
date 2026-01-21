@@ -28,6 +28,9 @@ public partial class MiniWidget : Window
     private bool _hasMoved; // 움직임 있었는지 추적
     private const double DragThreshold = 5.0;
 
+    // 도감 창 참조 (토글용)
+    private CollectionWindow? _collectionWindow;
+
     public MiniWidget()
     {
         InitializeComponent();
@@ -806,18 +809,30 @@ public partial class MiniWidget : Window
     {
         try
         {
-            // 도감 열기
-            var collectionWindow = new CollectionWindow
+            // 도감이 이미 열려있으면 닫기
+            if (_collectionWindow != null)
             {
-                DataContext = new CollectionViewModel()
+                _collectionWindow.Close();
+                _collectionWindow = null;
+                e.Handled = true;
+                return;
+            }
+
+            // 도감 열기
+            _collectionWindow = new CollectionWindow
+            {
+                DataContext = new CollectionViewModel(),
+                Topmost = true // 항상 위에 표시
             };
 
-            collectionWindow.Closed += (s, args) =>
+            _collectionWindow.Closed += (s, args) =>
             {
+                _collectionWindow = null;
                 _viewModel?.Refresh();
             };
 
-            collectionWindow.Show();
+            _collectionWindow.Show();
+            _collectionWindow.Activate(); // 창을 앞으로 가져오기
         }
         catch (Exception ex)
         {
