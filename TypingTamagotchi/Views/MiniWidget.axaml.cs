@@ -181,14 +181,39 @@ public partial class MiniWidget : Window
             HorizontalAlignment = HorizontalAlignment.Center
         });
 
-        // 등급
-        mainStack.Children.Add(new TextBlock
+        // 속성 + 등급
+        var infoStack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Spacing = 10
+        };
+
+        infoStack.Children.Add(new TextBlock
+        {
+            Text = $"{creature.ElementEmoji} {creature.ElementName}",
+            FontSize = 14,
+            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA")),
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        infoStack.Children.Add(new TextBlock
+        {
+            Text = "|",
+            FontSize = 14,
+            Foreground = new SolidColorBrush(Color.Parse("#555555")),
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        infoStack.Children.Add(new TextBlock
         {
             Text = rarityText,
             FontSize = 14,
             Foreground = new SolidColorBrush(Color.Parse("#AAAAAA")),
-            HorizontalAlignment = HorizontalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center
         });
+
+        mainStack.Children.Add(infoStack);
 
         // 확인 버튼
         var confirmBtn = new Button
@@ -434,6 +459,13 @@ public partial class MiniWidget : Window
 
         nameStack.Children.Add(new TextBlock
         {
+            Text = $"{creature.ElementEmoji} {creature.ElementName}",
+            FontSize = 12,
+            Foreground = new SolidColorBrush(Color.Parse("#AAAAAA"))
+        });
+
+        nameStack.Children.Add(new TextBlock
+        {
             Text = creature.Rarity switch
             {
                 Rarity.Legendary => "★★★★ 전설",
@@ -460,7 +492,7 @@ public partial class MiniWidget : Window
         var infoGrid = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("Auto,*"),
-            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto")
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto")
         };
 
         void AddInfoRow(int row, string label, string value)
@@ -488,10 +520,11 @@ public partial class MiniWidget : Window
             infoGrid.Children.Add(valueBlock);
         }
 
-        AddInfoRow(0, "나이:", creature.Age);
-        AddInfoRow(1, "성별:", creature.Gender);
-        AddInfoRow(2, "좋아하는 음식:", creature.FavoriteFood);
-        AddInfoRow(3, "싫어하는 것:", creature.Dislikes);
+        AddInfoRow(0, "속성:", $"{creature.ElementEmoji} {creature.ElementName}");
+        AddInfoRow(1, "나이:", creature.Age);
+        AddInfoRow(2, "성별:", creature.Gender);
+        AddInfoRow(3, "좋아하는 음식:", creature.FavoriteFood);
+        AddInfoRow(4, "싫어하는 것:", creature.Dislikes);
 
         mainStack.Children.Add(infoGrid);
 
