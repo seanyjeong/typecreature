@@ -349,7 +349,7 @@ public partial class MiniWidget : Window
             _ => "#4CAF50"
         };
 
-        // 이미지 로드 (avares:// 사용)
+        // 이미지 로드
         Bitmap? creatureImage = null;
         try
         {
@@ -360,8 +360,8 @@ public partial class MiniWidget : Window
 
         var popup = new Window
         {
-            Width = 280,
-            Height = 180,
+            Width = 340,
+            Height = 420,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             SystemDecorations = SystemDecorations.None,
             Background = Brushes.Transparent,
@@ -370,16 +370,26 @@ public partial class MiniWidget : Window
 
         var border = new Border
         {
-            CornerRadius = new CornerRadius(12),
-            BorderThickness = new Thickness(2),
+            CornerRadius = new CornerRadius(16),
+            BorderThickness = new Thickness(3),
             BorderBrush = new SolidColorBrush(Color.Parse(rarityColor)),
-            Background = new SolidColorBrush(Color.Parse("#F0202030")),
-            Padding = new Thickness(15)
+            Padding = new Thickness(20)
         };
 
-        var mainStack = new StackPanel { Spacing = 10 };
+        border.Background = new LinearGradientBrush
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse("#2C3E50"), 0),
+                new GradientStop(Color.Parse("#1A252F"), 1)
+            }
+        };
 
-        // 상단: 이미지 + 이름
+        var mainStack = new StackPanel { Spacing = 12 };
+
+        // 상단: 이미지 + 기본정보
         var headerStack = new StackPanel
         {
             Orientation = Orientation.Horizontal,
@@ -392,8 +402,8 @@ public partial class MiniWidget : Window
             headerStack.Children.Add(new Image
             {
                 Source = creatureImage,
-                Width = 70,
-                Height = 70,
+                Width = 80,
+                Height = 80,
                 Stretch = Stretch.Uniform
             });
         }
@@ -401,13 +411,13 @@ public partial class MiniWidget : Window
         var nameStack = new StackPanel
         {
             VerticalAlignment = VerticalAlignment.Center,
-            Spacing = 5
+            Spacing = 4
         };
 
         nameStack.Children.Add(new TextBlock
         {
             Text = creature.Name,
-            FontSize = 20,
+            FontSize = 22,
             FontWeight = FontWeight.Bold,
             Foreground = new SolidColorBrush(Color.Parse(rarityColor))
         });
@@ -428,14 +438,71 @@ public partial class MiniWidget : Window
         headerStack.Children.Add(nameStack);
         mainStack.Children.Add(headerStack);
 
-        // 설명
+        // 구분선
+        mainStack.Children.Add(new Border
+        {
+            Height = 1,
+            Background = new SolidColorBrush(Color.Parse("#40FFFFFF")),
+            Margin = new Thickness(0, 5, 0, 5)
+        });
+
+        // 상세 정보 그리드
+        var infoGrid = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto")
+        };
+
+        void AddInfoRow(int row, string label, string value)
+        {
+            var labelBlock = new TextBlock
+            {
+                Text = label,
+                FontSize = 12,
+                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                Margin = new Thickness(0, 3, 15, 3)
+            };
+            Grid.SetRow(labelBlock, row);
+            Grid.SetColumn(labelBlock, 0);
+            infoGrid.Children.Add(labelBlock);
+
+            var valueBlock = new TextBlock
+            {
+                Text = value,
+                FontSize = 12,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 3, 0, 3)
+            };
+            Grid.SetRow(valueBlock, row);
+            Grid.SetColumn(valueBlock, 1);
+            infoGrid.Children.Add(valueBlock);
+        }
+
+        AddInfoRow(0, "나이:", creature.Age);
+        AddInfoRow(1, "성별:", creature.Gender);
+        AddInfoRow(2, "좋아하는 음식:", creature.FavoriteFood);
+        AddInfoRow(3, "싫어하는 것:", creature.Dislikes);
+
+        mainStack.Children.Add(infoGrid);
+
+        // 성장배경 라벨
         mainStack.Children.Add(new TextBlock
         {
-            Text = creature.Description,
-            FontSize = 14,
+            Text = "성장배경",
+            FontSize = 12,
+            FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.Parse(rarityColor)),
+            Margin = new Thickness(0, 5, 0, 0)
+        });
+
+        // 성장배경 내용
+        mainStack.Children.Add(new TextBlock
+        {
+            Text = creature.Background,
+            FontSize = 12,
             Foreground = Brushes.White,
             TextWrapping = TextWrapping.Wrap,
-            HorizontalAlignment = HorizontalAlignment.Center
+            LineHeight = 18
         });
 
         // 닫기 버튼
@@ -443,7 +510,11 @@ public partial class MiniWidget : Window
         {
             Content = "닫기",
             HorizontalAlignment = HorizontalAlignment.Center,
-            Padding = new Thickness(20, 5)
+            Padding = new Thickness(30, 8),
+            Margin = new Thickness(0, 10, 0, 0),
+            Background = new SolidColorBrush(Color.Parse(rarityColor)),
+            Foreground = Brushes.Black,
+            FontWeight = FontWeight.Bold
         };
         closeBtn.Click += (s, e) => popup.Close();
         mainStack.Children.Add(closeBtn);
@@ -523,6 +594,16 @@ public partial class MiniWidget : Window
         if (_viewModel != null)
         {
             _viewModel.IsShowcaseVisible = !_viewModel.IsShowcaseVisible;
+
+            // 창 크기 조절
+            if (_viewModel.IsShowcaseVisible)
+            {
+                Height = 500;  // 전체 모드
+            }
+            else
+            {
+                Height = 140;  // 미니 모드 (프로그레스바만)
+            }
         }
         e.Handled = true;
     }

@@ -44,7 +44,7 @@ public class HatchingService
         using var connection = _db.GetConnection();
         var command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT id, name, rarity, sprite_path, description
+            SELECT id, name, rarity, sprite_path, description, age, gender, favorite_food, dislikes, background
             FROM creatures
             WHERE rarity = @rarity
             ORDER BY RANDOM()
@@ -61,7 +61,12 @@ public class HatchingService
                 Name = reader.GetString(1),
                 Rarity = (Rarity)reader.GetInt32(2),
                 SpritePath = reader.GetString(3),
-                Description = reader.GetString(4)
+                Description = reader.GetString(4),
+                Age = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                Gender = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                FavoriteFood = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                Dislikes = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                Background = reader.IsDBNull(9) ? "" : reader.GetString(9)
             };
         }
 
@@ -87,6 +92,7 @@ public class HatchingService
         var command = connection.CreateCommand();
         command.CommandText = @"
             SELECT c.id, c.name, c.rarity, c.sprite_path, c.description,
+                   c.age, c.gender, c.favorite_food, c.dislikes, c.background,
                    COUNT(*) as count, MIN(col.obtained_at) as first_obtained
             FROM collection col
             JOIN creatures c ON col.creature_id = c.id
@@ -104,10 +110,15 @@ public class HatchingService
                 Name = reader.GetString(1),
                 Rarity = (Rarity)reader.GetInt32(2),
                 SpritePath = reader.GetString(3),
-                Description = reader.GetString(4)
+                Description = reader.GetString(4),
+                Age = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                Gender = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                FavoriteFood = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                Dislikes = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                Background = reader.IsDBNull(9) ? "" : reader.GetString(9)
             };
-            var count = reader.GetInt32(5);
-            var firstObtained = DateTime.Parse(reader.GetString(6));
+            var count = reader.GetInt32(10);
+            var firstObtained = DateTime.Parse(reader.GetString(11));
             results.Add((creature, count, firstObtained));
         }
 

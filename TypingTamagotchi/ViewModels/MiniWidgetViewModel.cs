@@ -57,6 +57,14 @@ public partial class MiniWidgetViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isShowcaseVisible = true;
 
+    // 토글 버튼 텍스트
+    public string ToggleButtonText => IsShowcaseVisible ? "▼ 접기" : "▶ 펼치기";
+
+    partial void OnIsShowcaseVisibleChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ToggleButtonText));
+    }
+
     private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
 
     public MiniWidgetViewModel()

@@ -36,7 +36,8 @@
                     Margin="0,0,0,8"
                     HorizontalAlignment="Center"
                     BorderBrush="#D4AF37"
-                    BorderThickness="2">
+                    BorderThickness="2"
+                    IsVisible="{Binding IsShowcaseVisible}">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
                         <GradientStop Color="#8B6914" Offset="0"/>
@@ -82,21 +83,21 @@
                             <GradientStop Color="#3D5A80" Offset="1"/>
                         </LinearGradientBrush>
                     </Border.Background>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="📦 진열장"
-                                   FontSize="12"
-                                   Foreground="White"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
+                    <TextBlock Text="{Binding ToggleButtonText}"
+                               FontSize="12"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
                 </Border>
 
-                <!-- 도감 열기 버튼 -->
+                <!-- 도감 열기 버튼 (전체 모드에서만 표시) -->
                 <Border Grid.Column="1"
                         CornerRadius="8"
                         Padding="10,6"
                         Margin="6,0,0,0"
                         Cursor="Hand"
-                        PointerPressed="OnCollectionTitleClick">
+                        PointerPressed="OnCollectionTitleClick"
+                        IsVisible="{Binding IsShowcaseVisible}">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
                             <GradientStop Color="#B8860B" Offset="0"/>
@@ -142,35 +143,22 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <!-- 각 슬롯 -->
-                            <Border Margin="4"
-                                    Padding="4"
+                            <Border Margin="3"
                                     CornerRadius="6"
                                     Background="#20FFFFFF"
                                     Cursor="Hand">
-                                <Grid RowDefinitions="*,Auto">
-                                    <!-- 크리처 이미지 -->
-                                    <Image Grid.Row="0"
-                                           Source="{Binding CreatureImage}"
+                                <Grid>
+                                    <!-- 크리처 이미지 (1.5배 = 72x72) -->
+                                    <Image Source="{Binding CreatureImage}"
                                            IsVisible="{Binding HasCreature}"
-                                           Width="48" Height="48"
+                                           Width="72" Height="72"
                                            Stretch="Uniform"
                                            HorizontalAlignment="Center"
-                                           VerticalAlignment="Bottom"
-                                           Margin="0,0,0,-8"
-                                           RenderOptions.BitmapInterpolationMode="HighQuality"/>
-
-                                    <!-- 받침대 이미지 -->
-                                    <Image Grid.Row="1"
-                                           Source="{Binding PedestalImage}"
-                                           IsVisible="{Binding HasCreature}"
-                                           Width="70" Height="24"
-                                           Stretch="Uniform"
-                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
                                            RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
                                     <!-- 빈 슬롯 표시 -->
-                                    <Border Grid.RowSpan="2"
-                                            IsVisible="{Binding IsEmpty}"
+                                    <Border IsVisible="{Binding IsEmpty}"
                                             Background="#10FFFFFF"
                                             CornerRadius="4"
                                             Opacity="0.3"/>
@@ -200,7 +188,8 @@
                     CornerRadius="6"
                     Padding="8,4"
                     Margin="0,0,0,8"
-                    HorizontalAlignment="Center">
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding IsShowcaseVisible}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="📦"
                                FontSize="12"
