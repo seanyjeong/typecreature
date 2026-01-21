@@ -112,21 +112,17 @@ public partial class MiniWidgetViewModel : ViewModelBase
         RandomizeEgg(); // 초기 알 종류 설정
     }
 
-    private void RandomizeEgg()
-    {
-        // 5% 확률로 레전더리 알
-        if (_random.Next(100) < 5)
-        {
-            _currentEggTypeIndex = 5; // 전설알
-            _isLegendaryEgg = true;
-        }
-        else
-        {
-            _currentEggTypeIndex = _random.Next(5); // 일반 알 (0-4)
-            _isLegendaryEgg = false;
-        }
+    // 슬롯머신용 알 정보 접근
+    public static int EggTypeCount => EggTypes.Length;
+    public static (string name, string image, string emoji, bool isLegendary) GetEggType(int index) => EggTypes[index];
 
-        var egg = EggTypes[_currentEggTypeIndex];
+    // 슬롯머신에서 선택된 알 설정
+    public void SetEggByIndex(int index)
+    {
+        _currentEggTypeIndex = index;
+        _isLegendaryEgg = EggTypes[index].isLegendary;
+
+        var egg = EggTypes[index];
         EggName = egg.name;
 
         // 알 종류에 따른 속성 설정 (레전더리는 랜덤)
@@ -136,7 +132,7 @@ public partial class MiniWidgetViewModel : ViewModelBase
         }
         else
         {
-            _currentEggElement = _currentEggTypeIndex switch
+            _currentEggElement = index switch
             {
                 0 => Element.Fire,      // 불꽃알
                 1 => Element.Water,     // 물방울알
@@ -157,6 +153,21 @@ public partial class MiniWidgetViewModel : ViewModelBase
         {
             EggImage = null;
         }
+    }
+
+    private void RandomizeEgg()
+    {
+        // 5% 확률로 레전더리 알
+        int index;
+        if (_random.Next(100) < 5)
+        {
+            index = 5; // 전설알
+        }
+        else
+        {
+            index = _random.Next(5); // 일반 알 (0-4)
+        }
+        SetEggByIndex(index);
     }
 
     private void UpdateClock()
@@ -245,9 +256,9 @@ public partial class MiniWidgetViewModel : ViewModelBase
             {
                 LoadDisplayCreatures();
                 UpdateProgress();
-                RandomizeEgg(); // 새로운 알 종류 랜덤 선택
 
                 // 부화 이벤트 발생 (토스트 표시용)
+                // 슬롯머신은 부화 팝업이 닫힌 후 View에서 호출됨
                 CreatureHatched?.Invoke(creature);
             }
         }

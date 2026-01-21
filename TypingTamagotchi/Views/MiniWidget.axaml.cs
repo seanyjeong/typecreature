@@ -218,7 +218,7 @@ public partial class MiniWidget : Window
         // 확인 버튼
         var confirmBtn = new Button
         {
-            Content = "확인",
+            Content = "다음 알 선택",
             HorizontalAlignment = HorizontalAlignment.Center,
             Padding = new Thickness(30, 10),
             Margin = new Thickness(0, 10, 0, 0),
@@ -227,8 +227,186 @@ public partial class MiniWidget : Window
             Foreground = Brushes.Black,
             FontWeight = FontWeight.Bold
         };
-        confirmBtn.Click += (s, e) => popup.Close();
+        confirmBtn.Click += (s, e) =>
+        {
+            popup.Close();
+            ShowEggSlotMachine();
+        };
         mainStack.Children.Add(confirmBtn);
+
+        border.Child = mainStack;
+        popup.Content = border;
+        popup.Show();
+    }
+
+    private void ShowEggSlotMachine()
+    {
+        var popup = new Window
+        {
+            Width = 320,
+            Height = 380,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            SystemDecorations = SystemDecorations.None,
+            Background = Brushes.Transparent,
+            Topmost = true,
+            CanResize = false
+        };
+
+        var border = new Border
+        {
+            CornerRadius = new CornerRadius(16),
+            BorderThickness = new Thickness(3),
+            BorderBrush = new SolidColorBrush(Color.Parse("#FFD700")),
+            Padding = new Thickness(20)
+        };
+
+        border.Background = new LinearGradientBrush
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse("#2C3E50"), 0),
+                new GradientStop(Color.Parse("#1A252F"), 1)
+            }
+        };
+
+        var mainStack = new StackPanel { Spacing = 15 };
+
+        // 타이틀
+        mainStack.Children.Add(new TextBlock
+        {
+            Text = "🎰 다음 알 선택",
+            FontSize = 22,
+            FontWeight = FontWeight.Bold,
+            Foreground = Brushes.White,
+            HorizontalAlignment = HorizontalAlignment.Center
+        });
+
+        // 알 이미지 표시 영역
+        var eggImage = new Image
+        {
+            Width = 80,
+            Height = 80,
+            Stretch = Stretch.Uniform,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        mainStack.Children.Add(eggImage);
+
+        // 알 이름 표시
+        var eggNameText = new TextBlock
+        {
+            Text = "",
+            FontSize = 20,
+            FontWeight = FontWeight.Bold,
+            Foreground = Brushes.White,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        mainStack.Children.Add(eggNameText);
+
+        // 슬롯머신 상태
+        int currentIndex = 0;
+        bool isSpinning = true;
+        int spinSpeed = 50; // ms
+        int slowDownCounter = 0;
+        int finalIndex = -1;
+
+        // 타이머로 알 돌리기
+        var spinTimer = new Timer(spinSpeed);
+        spinTimer.Elapsed += (s, e) =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (!isSpinning) return;
+
+                currentIndex = (currentIndex + 1) % MiniWidgetViewModel.EggTypeCount;
+                var egg = MiniWidgetViewModel.GetEggType(currentIndex);
+
+                // 이미지 로드
+                try
+                {
+                    var uri = new Uri($"avares://TypingTamagotchi/Assets/Eggs/{egg.image}");
+                    eggImage.Source = new Bitmap(Avalonia.Platform.AssetLoader.Open(uri));
+                }
+                catch { }
+
+                eggNameText.Text = $"{egg.emoji} {egg.name}";
+
+                // 느려지는 중이면
+                if (slowDownCounter > 0)
+                {
+                    slowDownCounter--;
+                    spinTimer.Interval = Math.Min(spinTimer.Interval + 30, 500);
+
+                    if (slowDownCounter == 0)
+                    {
+                        isSpinning = false;
+                        spinTimer.Stop();
+
+                        // 최종 선택된 알 설정
+                        _viewModel?.SetEggByIndex(currentIndex);
+
+                        // 버튼 텍스트 변경
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            var btn = mainStack.Children.OfType<Button>().FirstOrDefault();
+                            if (btn != null)
+                            {
+                                btn.Content = "확인";
+                                btn.IsEnabled = true;
+                            }
+                        });
+                    }
+                }
+            });
+        };
+        spinTimer.Start();
+
+        // 멈춤 버튼
+        var stopBtn = new Button
+        {
+            Content = "🛑 멈춤!",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Padding = new Thickness(40, 12),
+            Margin = new Thickness(0, 15, 0, 0),
+            FontSize = 16,
+            Background = new SolidColorBrush(Color.Parse("#E74C3C")),
+            Foreground = Brushes.White,
+            FontWeight = FontWeight.Bold
+        };
+        stopBtn.Click += (s, e) =>
+        {
+            if (isSpinning && slowDownCounter == 0)
+            {
+                // 5% 확률로 레전더리
+                var random = new Random();
+                if (random.Next(100) < 5)
+                {
+                    finalIndex = 5; // 전설알
+                }
+                else
+                {
+                    finalIndex = random.Next(5); // 일반 알
+                }
+
+                // 서서히 멈추기 시작 (8~12번 더 돌림)
+                slowDownCounter = 8 + random.Next(5);
+                stopBtn.IsEnabled = false;
+                stopBtn.Content = "멈추는 중...";
+            }
+            else if (!isSpinning)
+            {
+                popup.Close();
+            }
+        };
+        mainStack.Children.Add(stopBtn);
+
+        // 팝업 닫힐 때 타이머 정리
+        popup.Closed += (s, e) =>
+        {
+            spinTimer.Stop();
+            spinTimer.Dispose();
+        };
 
         border.Child = mainStack;
         popup.Content = border;
