@@ -77,7 +77,16 @@ public partial class MiniWidget : Window
         if (_viewModel != null)
         {
             _viewModel.CreatureHatched += OnCreatureHatched;
+            _viewModel.FirstRunSlotMachineRequested += OnFirstRunSlotMachine;
+
+            // 첫 실행이면 슬롯머신 표시
+            _viewModel.TriggerFirstRunSlotMachine();
         }
+    }
+
+    private void OnFirstRunSlotMachine()
+    {
+        Dispatcher.UIThread.Post(() => ShowEggSlotMachine());
     }
 
     private void OnCreatureHatched(Creature creature)

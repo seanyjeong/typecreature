@@ -109,7 +109,32 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
         LoadDisplayCreatures();
         UpdateProgress();
-        RandomizeEgg(); // 초기 알 종류 설정
+
+        // 첫 실행 체크 (진행상황 0이면 첫 실행)
+        var (keystrokes, clicks) = _hatching.GetCurrentProgress();
+        if (keystrokes == 0 && clicks == 0)
+        {
+            // 첫 실행 - 슬롯머신으로 알 선택 (이벤트는 View에서 구독 후 발생)
+            _isFirstRun = true;
+            // 임시로 기본 알 표시
+            SetEggByIndex(0);
+        }
+        else
+        {
+            RandomizeEgg(); // 기존 사용자는 랜덤 알
+        }
+    }
+
+    private bool _isFirstRun = false;
+
+    // View에서 호출 - 첫 실행 슬롯머신 트리거
+    public void TriggerFirstRunSlotMachine()
+    {
+        if (_isFirstRun)
+        {
+            _isFirstRun = false;
+            FirstRunSlotMachineRequested?.Invoke();
+        }
     }
 
     // 슬롯머신용 알 정보 접근
@@ -219,6 +244,9 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
     // 부화 이벤트 (UI에서 토스트 표시용)
     public event Action<Creature>? CreatureHatched;
+
+    // 첫 실행 시 슬롯머신 요청
+    public event Action? FirstRunSlotMachineRequested;
 
     public void UpdateProgress()
     {
