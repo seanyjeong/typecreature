@@ -26,7 +26,9 @@
       "Bash(source venv/bin/activate)",
       "Bash(export GEMINI_API_KEY=AIzaSyB5l-_YoF-HAe95EIdje7SftzS--7Y6xGA)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(du:*)",
+      "Bash(ls:*)"
     ]
   }
 }
