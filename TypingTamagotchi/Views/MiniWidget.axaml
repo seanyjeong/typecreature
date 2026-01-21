@@ -119,9 +119,9 @@
                     CornerRadius="6"
                     Padding="6,4"
                     Margin="0,0,0,8"
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Stretch"
                     IsVisible="{Binding IsMiniMode}">
-                <ItemsControl ItemsSource="{Binding DisplaySlots}">
+                <ItemsControl ItemsSource="{Binding DisplaySlots}" HorizontalAlignment="Center">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="2"/>
