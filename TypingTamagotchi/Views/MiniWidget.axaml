@@ -113,7 +113,39 @@
                 </Border>
             </Grid>
 
-            <!-- 중앙: 코드 기반 쇼케이스 -->
+            <!-- 미니모드: 크리처 스트립 (접혔을 때만 표시) -->
+            <Border Grid.Row="2"
+                    Background="#15FFFFFF"
+                    CornerRadius="6"
+                    Padding="6,4"
+                    Margin="0,0,0,8"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding IsMiniMode}">
+                <ItemsControl ItemsSource="{Binding DisplaySlots}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="2"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding CreatureImage}"
+                                   IsVisible="{Binding HasCreature}"
+                                   Width="24" Height="24"
+                                   Stretch="Uniform"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                                <ToolTip.Tip>
+                                    <TextBlock Text="{Binding CreatureName}"
+                                               FontWeight="Bold"
+                                               Foreground="{Binding RarityColor}"/>
+                                </ToolTip.Tip>
+                            </Image>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+
+            <!-- 중앙: 코드 기반 쇼케이스 (펼쳤을 때만 표시) -->
             <Border Grid.Row="2"
                     Margin="0,0,0,8"
                     CornerRadius="8"
