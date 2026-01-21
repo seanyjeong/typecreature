@@ -595,15 +595,13 @@ public partial class MiniWidget : Window
         {
             _viewModel.IsShowcaseVisible = !_viewModel.IsShowcaseVisible;
 
-            // 창 크기 조절
-            if (_viewModel.IsShowcaseVisible)
-            {
-                Height = 500;  // 전체 모드
-            }
-            else
-            {
-                Height = 140;  // 미니 모드 (프로그레스바만)
-            }
+            // 창 크기 조절 (아래쪽 고정, 위로 줄어들게)
+            var oldHeight = Height;
+            var newHeight = _viewModel.IsShowcaseVisible ? 500 : 140;
+            var heightDiff = newHeight - oldHeight;
+
+            Height = newHeight;
+            Position = new PixelPoint(Position.X, Position.Y - (int)heightDiff);
         }
         e.Handled = true;
     }
