@@ -15,7 +15,7 @@
         SystemDecorations="None"
         Topmost="True"
         Background="Transparent"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="Manual">
 
     <Window.Styles>
         <Style Selector="Window">

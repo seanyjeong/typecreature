@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using TypingTamagotchi.ViewModels;
@@ -14,6 +15,25 @@ public partial class PlaygroundWindow : Window
         InitializeComponent();
         _viewModel = new PlaygroundViewModel();
         DataContext = _viewModel;
+
+        // 화면 하단(작업표시줄 위)에 위치시키기
+        PositionAtBottom();
+    }
+
+    private void PositionAtBottom()
+    {
+        // 윈도우가 열릴 때 화면 크기를 가져와서 하단에 배치
+        Opened += (_, _) =>
+        {
+            var screen = Screens.Primary;
+            if (screen != null)
+            {
+                var workArea = screen.WorkingArea;
+                var x = (workArea.Width - (int)Width) / 2 + workArea.X;
+                var y = workArea.Height - (int)Height + workArea.Y - 10; // 약간의 여백
+                Position = new PixelPoint(x, y);
+            }
+        };
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

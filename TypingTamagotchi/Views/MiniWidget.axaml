@@ -7,69 +7,69 @@
         x:Class="TypingTamagotchi.Views.MiniWidget"
         x:DataType="vm:MiniWidgetViewModel"
         Title="TypeCreature"
-        Width="340" Height="500"
+        Width="340" Height="540"
         CanResize="False"
         SystemDecorations="None"
         Topmost="True"
         Background="Transparent">
 
-    <Border CornerRadius="16"
-            BorderBrush="#4A5568"
-            BorderThickness="2"
-            Padding="14">
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="#2C3E50" Offset="0"/>
-                <GradientStop Color="#1A252F" Offset="1"/>
-            </LinearGradientBrush>
-        </Border.Background>
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="20" Opacity="0.4" OffsetX="0" OffsetY="6"/>
-        </Border.Effect>
+    <!-- 전체를 감싸는 StackPanel: 시계 + 메인박스 -->
+    <StackPanel Spacing="8">
+        <!-- 상단: 로얄 시계 위젯 (항상 표시, 메인박스 위에 위치) -->
+        <Border CornerRadius="10"
+                Padding="12,6"
+                HorizontalAlignment="Center"
+                BorderBrush="#D4AF37"
+                BorderThickness="2">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                    <GradientStop Color="#8B6914" Offset="0"/>
+                    <GradientStop Color="#D4AF37" Offset="0.3"/>
+                    <GradientStop Color="#FFD700" Offset="0.5"/>
+                    <GradientStop Color="#D4AF37" Offset="0.7"/>
+                    <GradientStop Color="#8B6914" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" Opacity="0.4" OffsetY="2"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="👑"
+                           FontSize="14"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentTime}"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="#1A1A1A"
+                           FontFamily="Consolas, Courier New"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentDate}"
+                           FontSize="10"
+                           Foreground="#3D3D3D"
+                           VerticalAlignment="Center"
+                           Margin="4,0,0,0"/>
+            </StackPanel>
+        </Border>
 
-        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+        <!-- 메인 박스 -->
+        <Border CornerRadius="16"
+                BorderBrush="#4A5568"
+                BorderThickness="2"
+                Padding="14">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#2C3E50" Offset="0"/>
+                    <GradientStop Color="#1A252F" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" Opacity="0.4" OffsetX="0" OffsetY="6"/>
+            </Border.Effect>
 
-            <!-- 상단: 로얄 시계 위젯 -->
-            <Border Grid.Row="0"
-                    CornerRadius="10"
-                    Padding="12,6"
-                    Margin="0,0,0,8"
-                    HorizontalAlignment="Center"
-                    BorderBrush="#D4AF37"
-                    BorderThickness="2"
-                    IsVisible="{Binding IsShowcaseVisible}">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#8B6914" Offset="0"/>
-                        <GradientStop Color="#D4AF37" Offset="0.3"/>
-                        <GradientStop Color="#FFD700" Offset="0.5"/>
-                        <GradientStop Color="#D4AF37" Offset="0.7"/>
-                        <GradientStop Color="#8B6914" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="8" Opacity="0.4" OffsetY="2"/>
-                </Border.Effect>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="👑"
-                               FontSize="14"
-                               VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding CurrentTime}"
-                               FontSize="24"
-                               FontWeight="Bold"
-                               Foreground="#1A1A1A"
-                               FontFamily="Consolas, Courier New"
-                               VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding CurrentDate}"
-                               FontSize="10"
-                               Foreground="#3D3D3D"
-                               VerticalAlignment="Center"
-                               Margin="4,0,0,0"/>
-                </StackPanel>
-            </Border>
+            <Grid RowDefinitions="Auto,*,Auto,Auto">
 
-            <!-- 진열장 토글 버튼 + 도감 열기 + 놀이터 -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
+                <!-- 진열장 토글 버튼 + 도감 열기 + 놀이터 -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8">
                 <!-- 토글 버튼 (진열장 접기/펼치기) -->
                 <Border Grid.Column="0"
                         CornerRadius="8"
@@ -136,7 +136,7 @@
             </Grid>
 
             <!-- 미니모드: 크리처 스트립 (접혔을 때만 표시) -->
-            <Border Grid.Row="2"
+            <Border Grid.Row="1"
                     Background="#15FFFFFF"
                     CornerRadius="6"
                     Padding="6,4"
@@ -168,7 +168,7 @@
             </Border>
 
             <!-- 중앙: 코드 기반 쇼케이스 (펼쳤을 때만 표시) -->
-            <Border Grid.Row="2"
+            <Border Grid.Row="1"
                     Margin="0,0,0,8"
                     CornerRadius="8"
                     BorderThickness="3"
@@ -245,7 +245,7 @@
             </Border>
 
             <!-- 크리쳐 수집 현황 -->
-            <Border Grid.Row="3"
+            <Border Grid.Row="2"
                     Background="#15FFFFFF"
                     CornerRadius="6"
                     Padding="8,4"
@@ -285,7 +285,7 @@
             </Border>
 
             <!-- 하단: 알 진행 상황 -->
-            <Border Grid.Row="4"
+            <Border Grid.Row="3"
                     CornerRadius="8"
                     Padding="10,6">
                 <Border.Background>
@@ -338,6 +338,7 @@
                                VerticalAlignment="Center"/>
                 </Grid>
             </Border>
-        </Grid>
-    </Border>
+            </Grid>
+        </Border>
+    </StackPanel>
 </Window>
