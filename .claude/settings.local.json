@@ -18,7 +18,9 @@
       "Bash(pip install:*)",
       "Bash(python:*)",
       "Bash(ie4uinit.exe -show)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(export GEMINI_API_KEY)",
+      "Bash(grep:*)"
     ]
   }
 }
