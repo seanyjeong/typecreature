@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TypingTamagotchi.Models;
@@ -48,9 +49,37 @@ public partial class PlaygroundCreature : ObservableObject
     // 시각적 Y 위치 (스프라이트 상단 기준)
     public double VisualY => Y - Height;
 
-    // 시각적 X 위치 (Direction에 따른 보정)
-    // ScaleX=-1로 뒤집으면 이미지가 왼쪽으로 48px 이동하므로 보정
-    public double VisualX => Direction < 0 ? X + Width : X;
+    // 원본 스프라이트가 왼쪽을 보는 크리처 ID들
+    private static readonly HashSet<int> LeftFacingCreatures = new()
+    {
+        6, 19, 20, 22, 27, 29, 32, 33, 37, 38, 39, 40, 46, 47, 50
+    };
+
+    // 원본 스프라이트가 오른쪽을 보는 크리처 ID들
+    private static readonly HashSet<int> RightFacingCreatures = new()
+    {
+        41, 42, 48
+    };
+
+    // 실제 렌더링용 Direction (원본 방향 고려)
+    public double RenderDirection
+    {
+        get
+        {
+            if (Creature == null) return Direction;
+
+            // 왼쪽 보는 크리처: 왼쪽 갈 때 안뒤집고(1), 오른쪽 갈 때 뒤집음(-1)
+            if (LeftFacingCreatures.Contains(Creature.Id))
+                return Direction > 0 ? -1 : 1;
+
+            // 오른쪽 보는 크리처: 기본 동작 (오른쪽 갈 때 안뒤집고, 왼쪽 갈 때 뒤집음)
+            // 대칭 크리처도 기본 동작
+            return Direction;
+        }
+    }
+
+    // 시각적 X 위치 (RenderDirection에 따른 보정)
+    public double VisualX => RenderDirection < 0 ? X + Width : X;
 
     partial void OnXChanged(double value)
     {
@@ -70,6 +99,7 @@ public partial class PlaygroundCreature : ObservableObject
 
     partial void OnDirectionChanged(double value)
     {
+        OnPropertyChanged(nameof(RenderDirection));
         OnPropertyChanged(nameof(VisualX));
     }
 

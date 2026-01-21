@@ -68,7 +68,7 @@
                                RenderTransformOrigin="0,1">
                             <Image.RenderTransform>
                                 <TransformGroup>
-                                    <ScaleTransform ScaleX="{Binding Direction}" ScaleY="{Binding ScaleY}"/>
+                                    <ScaleTransform ScaleX="{Binding RenderDirection}" ScaleY="{Binding ScaleY}"/>
                                     <RotateTransform Angle="{Binding Rotation}"/>
                                     <TranslateTransform X="{Binding VisualX}" Y="{Binding VisualY}"/>
                                 </TransformGroup>

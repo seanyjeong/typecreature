@@ -156,7 +156,7 @@
                         <DataTemplate>
                             <Image Source="{Binding CreatureImage}"
                                    IsVisible="{Binding HasCreature}"
-                                   Width="24" Height="24"
+                                   Width="48" Height="48"
                                    Stretch="Uniform"
                                    RenderOptions.BitmapInterpolationMode="HighQuality">
                                 <ToolTip.Tip>
