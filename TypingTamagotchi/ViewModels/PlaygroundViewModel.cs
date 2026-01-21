@@ -54,13 +54,16 @@ public partial class PlaygroundViewModel : ViewModelBase
     private void LoadCreatures()
     {
         var playgroundData = _db.GetPlaygroundCreatures();
+        Console.WriteLine($"[Playground] LoadCreatures: {playgroundData.Count} creatures in DB");
         Creatures.Clear();
 
         foreach (var (slot, creatureId) in playgroundData)
         {
+            Console.WriteLine($"[Playground] Loading slot {slot}, creatureId {creatureId}");
             var creature = GetCreatureById(creatureId);
             if (creature != null)
             {
+                Console.WriteLine($"[Playground] Found creature: {creature.Name}, sprite: {creature.SpritePath}");
                 var pc = new PlaygroundCreature
                 {
                     Creature = creature,
@@ -71,8 +74,14 @@ public partial class PlaygroundViewModel : ViewModelBase
                 };
                 pc.GroundY = GroundY;
                 Creatures.Add(pc);
+                Console.WriteLine($"[Playground] Added creature at X={pc.X}, Y={pc.Y}, GroundY={pc.GroundY}");
+            }
+            else
+            {
+                Console.WriteLine($"[Playground] Creature NOT FOUND for id {creatureId}");
             }
         }
+        Console.WriteLine($"[Playground] Total creatures loaded: {Creatures.Count}");
     }
 
     private void OnGameTick(object? sender, EventArgs e)
