@@ -13,10 +13,11 @@
         Topmost="True"
         Background="Transparent">
 
-    <!-- 전체를 감싸는 StackPanel: 시계 + 메인박스 -->
-    <StackPanel Spacing="8">
+    <!-- 전체를 감싸는 Grid: 시계 + 메인박스 -->
+    <Grid RowDefinitions="Auto,*">
         <!-- 상단: 로얄 시계 위젯 (항상 표시, 메인박스 위에 위치) -->
-        <Border CornerRadius="10"
+        <Border Grid.Row="0"
+                CornerRadius="10"
                 Padding="12,6"
                 HorizontalAlignment="Center"
                 BorderBrush="#D4AF37"
@@ -52,7 +53,9 @@
         </Border>
 
         <!-- 메인 박스 -->
-        <Border CornerRadius="16"
+        <Border Grid.Row="1"
+                Margin="0,8,0,0"
+                CornerRadius="16"
                 BorderBrush="#4A5568"
                 BorderThickness="2"
                 Padding="14">
@@ -340,5 +343,5 @@
             </Border>
             </Grid>
         </Border>
-    </StackPanel>
+    </Grid>
 </Window>
