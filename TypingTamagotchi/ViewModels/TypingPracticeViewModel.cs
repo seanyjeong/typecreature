@@ -21,6 +21,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private readonly HatchingService _hatching;
     private readonly List<string> _koreanSentences = new();
     private readonly List<string> _englishSentences = new();
+    private readonly List<string> _codeSentences = new();
     private readonly Random _random = new();
     private readonly Timer _cpmTimer;
     private readonly Stopwatch _sentenceStopwatch = new();
@@ -43,6 +44,9 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     [ObservableProperty]
     private int _averageCPM = 0;
+
+    [ObservableProperty]
+    private int _maxCPM = 0;
 
     [ObservableProperty]
     private string _accuracyText = "100%";
@@ -70,6 +74,12 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isReadyForNext = false;
+
+    [ObservableProperty]
+    private bool _isCodeMode = false;
+
+    [ObservableProperty]
+    private bool _showEnglishSubToggle = false;
 
     private int _hatchContributionCount = 0;
     private int _requiredForHatch = 1000; // 부화에 필요한 입력 수 (예시)
@@ -136,9 +146,28 @@ public partial class TypingPracticeViewModel : ViewModelBase
             _englishSentences.Add("Actions speak louder than words.");
             _englishSentences.Add("Practice makes perfect.");
         }
+
+        // 코드 문장 로드
+        try
+        {
+            var uri = new Uri("avares://TypingTamagotchi/Assets/typing_sentences_code.json");
+            using var stream = AssetLoader.Open(uri);
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+            var data = JsonSerializer.Deserialize<SentenceData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (data?.Sentences != null) _codeSentences.AddRange(data.Sentences);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load code sentences: {ex.Message}");
+            _codeSentences.Add("const sum = (a, b) => a + b;");
+            _codeSentences.Add("function hello() { return 'world'; }");
+        }
     }
 
-    private List<string> CurrentSentences => IsEnglishMode ? _englishSentences : _koreanSentences;
+    private List<string> CurrentSentences => IsEnglishMode
+        ? (IsCodeMode ? _codeSentences : _englishSentences)
+        : _koreanSentences;
 
     private void NextSentence()
     {
@@ -288,6 +317,11 @@ public partial class TypingPracticeViewModel : ViewModelBase
             if (elapsedMinutes > 0.005) // 최소 0.3초
             {
                 CurrentCPM = (int)(_currentUserInput.Length / elapsedMinutes);
+                // 세션 최고 타수 업데이트
+                if (CurrentCPM > MaxCPM)
+                {
+                    MaxCPM = CurrentCPM;
+                }
             }
         }
 
@@ -304,9 +338,20 @@ public partial class TypingPracticeViewModel : ViewModelBase
     {
         IsEnglishMode = !IsEnglishMode;
         LanguageButtonText = IsEnglishMode ? "🇰🇷 한글" : "🇺🇸 English";
+        ShowEnglishSubToggle = IsEnglishMode;
         InstructionText = IsEnglishMode
-            ? "💡 Type the sentence and press Enter to continue"
+            ? (IsCodeMode ? "💡 Type the code and press Enter to continue" : "💡 Type the sentence and press Enter to continue")
             : "💡 문장을 입력하고 Enter를 누르면 다음 문장으로 넘어갑니다";
+        NextSentence();
+    }
+
+    [RelayCommand]
+    private void ToggleCodeMode()
+    {
+        IsCodeMode = !IsCodeMode;
+        InstructionText = IsCodeMode
+            ? "💡 Type the code and press Enter to continue"
+            : "💡 Type the sentence and press Enter to continue";
         NextSentence();
     }
 

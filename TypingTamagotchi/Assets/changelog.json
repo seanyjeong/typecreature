@@ -1,6 +1,21 @@
 {
   "versions": [
     {
+      "version": "1.2.28",
+      "date": "2025-01-23",
+      "title": "최고 타수 + 코딩 연습",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "세션 최고 타수 표시 추가"
+        },
+        {
+          "type": "feature",
+          "text": "영어 모드에서 코딩 연습 추가 (JS/TS 100개)"
+        }
+      ]
+    },
+    {
       "version": "1.2.27",
       "date": "2025-01-23",
       "title": "타수 측정 버그 수정",

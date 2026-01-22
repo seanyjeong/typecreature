@@ -13,17 +13,32 @@
 
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="20">
 
-        <!-- 상단: 언어 토글 + 통계 -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,10">
-            <Button Grid.Column="0"
-                    Content="{Binding LanguageButtonText}"
+        <!-- 상단: 언어 토글 + 코드 토글 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+            <Button Content="{Binding LanguageButtonText}"
                     Command="{Binding ToggleLanguageCommand}"
                     Padding="12,6"
                     Background="#3D5A80"
                     Foreground="White"
                     FontWeight="Bold"
                     CornerRadius="6"/>
-        </Grid>
+            <!-- 영어 모드일 때만 보이는 서브 토글 -->
+            <Button IsVisible="{Binding ShowEnglishSubToggle}"
+                    Command="{Binding ToggleCodeModeCommand}"
+                    Padding="12,6"
+                    Background="#5C6BC0"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    CornerRadius="6">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <TextBlock Text="📜 격언" IsVisible="{Binding !IsCodeMode}"/>
+                        <TextBlock Text="💻 코딩" IsVisible="{Binding IsCodeMode}"/>
+                        <TextBlock Text="⇄"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
 
         <!-- 통계 바 -->
         <Border Grid.Row="1"
@@ -31,58 +46,69 @@
                 CornerRadius="10"
                 Padding="15"
                 Margin="0,0,0,15">
-            <Grid ColumnDefinitions="*,*,*,*,*">
+            <Grid ColumnDefinitions="*,*,*,*,*,*">
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                     <TextBlock Text="현재 타수"
                                FontSize="11"
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding CurrentCPM}"
-                               FontSize="22"
+                               FontSize="20"
                                FontWeight="Bold"
                                Foreground="#4CAF50"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="최고 타수"
+                               FontSize="11"
+                               Foreground="#888"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding MaxCPM}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#FF6B6B"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                     <TextBlock Text="평균 타수"
                                FontSize="11"
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding AverageCPM}"
-                               FontSize="22"
+                               FontSize="20"
                                FontWeight="Bold"
                                Foreground="#81C784"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                     <TextBlock Text="정확도"
                                FontSize="11"
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding AccuracyText}"
-                               FontSize="22"
+                               FontSize="20"
                                FontWeight="Bold"
                                Foreground="#FFD700"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
                     <TextBlock Text="완료"
                                FontSize="11"
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding CompletedCount}"
-                               FontSize="22"
+                               FontSize="20"
                                FontWeight="Bold"
                                Foreground="#2196F3"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                <StackPanel Grid.Column="5" HorizontalAlignment="Center">
                     <TextBlock Text="부화 기여"
                                FontSize="11"
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding HatchContribution}"
-                               FontSize="18"
+                               FontSize="16"
                                FontWeight="Bold"
                                Foreground="#E040FB"
                                HorizontalAlignment="Center"/>
