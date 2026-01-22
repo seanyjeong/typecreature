@@ -253,26 +253,29 @@ public partial class TypingPracticeViewModel : ViewModelBase
             AccuracyText = $"{accuracy:F0}%";
         }
 
-        // 문장 완료 체크 - Enter 대기
+        // 문장 완료 체크 - Enter 대기 안내 표시
         if (userInput == _currentSentence)
         {
             _sentenceCompleted = true;
             IsReadyForNext = true;
-            _sentenceStopwatch.Stop();
-            _activeTypingStopwatch.Stop(); // 다음 문장 시작 전까지 평균 타수 유지
-
-            // 문장 완료 시점의 타수로 최고 타수 업데이트
-            if (CurrentCPM > MaxCPM)
-            {
-                MaxCPM = CurrentCPM;
-            }
         }
     }
 
     public void OnEnterPressed()
     {
-        if (_sentenceCompleted && IsReadyForNext)
+        // 입력이 있으면 엔터로 다음 문장 이동 (정확도는 떨어질 수 있음)
+        if (_currentUserInput.Length > 0)
         {
+            // 문장 완료 처리
+            _sentenceStopwatch.Stop();
+            _activeTypingStopwatch.Stop();
+
+            // 완벽하게 맞춘 경우에만 최고 타수 업데이트
+            if (_currentUserInput == _currentSentence && CurrentCPM > MaxCPM)
+            {
+                MaxCPM = CurrentCPM;
+            }
+
             OnSentenceComplete(_currentUserInput);
         }
     }

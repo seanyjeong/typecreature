@@ -1,6 +1,21 @@
 {
   "versions": [
     {
+      "version": "1.2.31",
+      "date": "2025-01-23",
+      "title": "타이핑 + 도감 개선",
+      "changes": [
+        {
+          "type": "improvement",
+          "text": "엔터 누르면 정확도 상관없이 다음 문장 이동"
+        },
+        {
+          "type": "improvement",
+          "text": "도감 상세정보 팝업 UI 개선 (부화 팝업 스타일)"
+        }
+      ]
+    },
+    {
       "version": "1.2.30",
       "date": "2025-01-23",
       "title": "도감 상세정보 + UI 개선",
