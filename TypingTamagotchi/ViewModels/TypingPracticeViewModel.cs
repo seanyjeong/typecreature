@@ -260,6 +260,12 @@ public partial class TypingPracticeViewModel : ViewModelBase
             IsReadyForNext = true;
             _sentenceStopwatch.Stop();
             _activeTypingStopwatch.Stop(); // 다음 문장 시작 전까지 평균 타수 유지
+
+            // 문장 완료 시점의 타수로 최고 타수 업데이트
+            if (CurrentCPM > MaxCPM)
+            {
+                MaxCPM = CurrentCPM;
+            }
         }
     }
 
@@ -317,11 +323,6 @@ public partial class TypingPracticeViewModel : ViewModelBase
             if (elapsedMinutes > 0.005) // 최소 0.3초
             {
                 CurrentCPM = (int)(_currentUserInput.Length / elapsedMinutes);
-                // 세션 최고 타수 업데이트
-                if (CurrentCPM > MaxCPM)
-                {
-                    MaxCPM = CurrentCPM;
-                }
             }
         }
 
