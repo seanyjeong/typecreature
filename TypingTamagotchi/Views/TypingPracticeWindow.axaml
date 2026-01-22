@@ -26,7 +26,7 @@
             <Button IsVisible="{Binding ShowEnglishSubToggle}"
                     Command="{Binding ToggleCodeModeCommand}"
                     Padding="12,6"
-                    Background="#5C6BC0"
+                    Background="#E91E63"
                     Foreground="White"
                     FontWeight="Bold"
                     CornerRadius="6">

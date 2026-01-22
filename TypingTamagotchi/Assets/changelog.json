@@ -1,6 +1,21 @@
 {
   "versions": [
     {
+      "version": "1.2.30",
+      "date": "2025-01-23",
+      "title": "도감 상세정보 + UI 개선",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "도감에서 크리처 클릭 시 상세정보 팝업 표시"
+        },
+        {
+          "type": "improvement",
+          "text": "격언/코딩 토글 버튼 색상 개선"
+        }
+      ]
+    },
+    {
       "version": "1.2.29",
       "date": "2025-01-23",
       "title": "최고 타수 수정",

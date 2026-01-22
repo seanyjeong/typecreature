@@ -38,7 +38,10 @@
                                 Background="{Binding Creature.Rarity, Converter={x:Static vm:RarityToColorConverter.Instance}}"
                                 CornerRadius="8"
                                 Opacity="{Binding Opacity}"
-                                Padding="5">
+                                Padding="5"
+                                PointerPressed="OnCreatureClick"
+                                Tag="{Binding}"
+                                Cursor="Hand">
                             <StackPanel VerticalAlignment="Center" Spacing="2">
                                 <!-- 크리처 이미지 -->
                                 <Border Width="50" Height="50"
