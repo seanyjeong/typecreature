@@ -23,16 +23,12 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private readonly Timer _cpmTimer;
 
     private string _currentSentence = "";
-    private DateTime _startTime;
+    private DateTime _sessionStartTime;
     private int _totalCharsTyped = 0;
-    private int _correctChars = 0;
-    private int _totalChars = 0;
-    private bool _isTyping = false;
+    private int _totalCorrectChars = 0;
+    private int _totalTypedChars = 0;
 
     private const double PROGRESS_BAR_MAX_WIDTH = 540.0;
-
-    [ObservableProperty]
-    private string _userInput = "";
 
     [ObservableProperty]
     private ObservableCollection<CharDisplay> _displayChars = new();
@@ -52,11 +48,17 @@ public partial class TypingPracticeViewModel : ViewModelBase
     [ObservableProperty]
     private double _progressWidth = 0;
 
+    [ObservableProperty]
+    private string _currentSentenceText = "";
+
     // 부화 기여도 (타이핑 연습에서 입력한 글자 수)
     private int _hatchContributionCount = 0;
 
     // 문장 완료 이벤트
     public event Action? SentenceCompleted;
+
+    // 입력 필드 초기화 요청 이벤트
+    public event Action? ClearInputRequested;
 
     public TypingPracticeViewModel()
     {
@@ -64,6 +66,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
         _hatching = new HatchingService(_db);
 
         LoadSentences();
+        _sessionStartTime = DateTime.Now;
         NextSentence();
 
         // CPM 업데이트 타이머 (1초마다)
@@ -105,14 +108,15 @@ public partial class TypingPracticeViewModel : ViewModelBase
         if (_sentences.Count == 0) return;
 
         _currentSentence = _sentences[_random.Next(_sentences.Count)];
-        UserInput = "";
-        _startTime = DateTime.Now;
-        _isTyping = false;
+        CurrentSentenceText = _currentSentence;
 
-        UpdateDisplayChars();
+        // 입력 필드 초기화 요청
+        ClearInputRequested?.Invoke();
+
+        UpdateDisplayChars("");
     }
 
-    private void UpdateDisplayChars()
+    private void UpdateDisplayChars(string userInput)
     {
         DisplayChars.Clear();
 
@@ -124,9 +128,9 @@ public partial class TypingPracticeViewModel : ViewModelBase
                 Color = new SolidColorBrush(Color.Parse("#666666")) // 미입력: 회색
             };
 
-            if (i < UserInput.Length)
+            if (i < userInput.Length)
             {
-                if (UserInput[i] == _currentSentence[i])
+                if (i < _currentSentence.Length && userInput[i] == _currentSentence[i])
                 {
                     charDisplay.Color = new SolidColorBrush(Color.Parse("#4CAF50")); // 정확: 녹색
                 }
@@ -135,7 +139,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
                     charDisplay.Color = new SolidColorBrush(Color.Parse("#E57373")); // 오타: 빨강
                 }
             }
-            else if (i == UserInput.Length)
+            else if (i == userInput.Length)
             {
                 charDisplay.Color = new SolidColorBrush(Color.Parse("#FFFFFF")); // 현재 위치: 흰색
             }
@@ -145,49 +149,54 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
         // 진행률 업데이트
         var progress = _currentSentence.Length > 0
-            ? (double)UserInput.Length / _currentSentence.Length
+            ? Math.Min(1.0, (double)userInput.Length / _currentSentence.Length)
             : 0;
         ProgressWidth = progress * PROGRESS_BAR_MAX_WIDTH;
     }
 
-    partial void OnUserInputChanged(string value)
+    // View에서 호출 - 텍스트 변경 시
+    public void OnTextChanged(string userInput)
     {
-        if (!_isTyping && value.Length > 0)
-        {
-            _isTyping = true;
-            _startTime = DateTime.Now;
-        }
+        UpdateDisplayChars(userInput);
 
-        UpdateDisplayChars();
-
-        // 정확도 계산
-        int correct = 0;
-        int total = Math.Min(value.Length, _currentSentence.Length);
-        for (int i = 0; i < total; i++)
+        // 정확도 계산 (현재 입력 기준)
+        if (userInput.Length > 0)
         {
-            if (value[i] == _currentSentence[i])
-                correct++;
-        }
-        _correctChars += (value.Length > 0 ? 1 : 0);
-        _totalChars += (value.Length > 0 ? 1 : 0);
-
-        if (value.Length > 0)
-        {
-            var accuracy = (double)correct / value.Length * 100;
+            int correct = 0;
+            int total = Math.Min(userInput.Length, _currentSentence.Length);
+            for (int i = 0; i < total; i++)
+            {
+                if (userInput[i] == _currentSentence[i])
+                    correct++;
+            }
+            var accuracy = total > 0 ? (double)correct / total * 100 : 100;
             AccuracyText = $"{accuracy:F0}%";
+
+            // 전체 통계 업데이트
+            _totalTypedChars = _totalCharsTyped + userInput.Length;
         }
 
-        // 문장 완료 체크
-        if (value == _currentSentence)
+        // 문장 완료 체크 (정확히 일치할 때만)
+        if (userInput == _currentSentence)
         {
-            OnSentenceComplete();
+            OnSentenceComplete(userInput);
         }
     }
 
-    private void OnSentenceComplete()
+    private void OnSentenceComplete(string userInput)
     {
         CompletedCount++;
+
+        // 정확하게 입력한 글자 수 계산
+        int correctInSentence = 0;
+        for (int i = 0; i < _currentSentence.Length; i++)
+        {
+            if (i < userInput.Length && userInput[i] == _currentSentence[i])
+                correctInSentence++;
+        }
+
         _totalCharsTyped += _currentSentence.Length;
+        _totalCorrectChars += correctInSentence;
 
         // 부화 기여도 증가 (타이핑한 글자 수만큼)
         _hatchContributionCount += _currentSentence.Length;
@@ -199,24 +208,23 @@ public partial class TypingPracticeViewModel : ViewModelBase
             _hatching.RecordInput(isClick: false);
         }
 
+        // 전체 정확도 업데이트
+        if (_totalCharsTyped > 0)
+        {
+            var totalAccuracy = (double)_totalCorrectChars / _totalCharsTyped * 100;
+            AccuracyText = $"{totalAccuracy:F0}%";
+        }
+
         SentenceCompleted?.Invoke();
         NextSentence();
     }
 
     private void UpdateCPM()
     {
-        if (!_isTyping || UserInput.Length == 0)
+        var elapsed = (DateTime.Now - _sessionStartTime).TotalMinutes;
+        if (elapsed > 0.01 && _totalCharsTyped > 0) // 최소 0.6초
         {
-            CurrentCPM = 0;
-            return;
-        }
-
-        var elapsed = (DateTime.Now - _startTime).TotalMinutes;
-        if (elapsed > 0)
-        {
-            // 현재 문장에서의 CPM + 완료한 문장들의 CPM
-            var totalChars = _totalCharsTyped + UserInput.Length;
-            CurrentCPM = (int)(totalChars / elapsed);
+            CurrentCPM = (int)(_totalCharsTyped / elapsed);
         }
     }
 

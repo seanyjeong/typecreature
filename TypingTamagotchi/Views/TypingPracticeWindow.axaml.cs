@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using TypingTamagotchi.ViewModels;
 
@@ -7,16 +6,65 @@ namespace TypingTamagotchi.Views;
 
 public partial class TypingPracticeWindow : Window
 {
+    private TypingPracticeViewModel? _viewModel;
+    private TextBox? _inputTextBox;
+
     public TypingPracticeWindow()
     {
         InitializeComponent();
 
+        _inputTextBox = this.FindControl<TextBox>("InputTextBox");
+
         // 창이 열리면 입력 필드에 포커스
         Opened += (s, e) =>
         {
-            var textBox = this.FindControl<TextBox>("InputTextBox");
-            textBox?.Focus();
+            _inputTextBox?.Focus();
         };
+
+        // TextChanged 이벤트 연결
+        if (_inputTextBox != null)
+        {
+            _inputTextBox.TextChanged += OnInputTextChanged;
+        }
+
+        // DataContext 변경 시 ViewModel 이벤트 구독
+        DataContextChanged += (s, e) =>
+        {
+            if (DataContext is TypingPracticeViewModel vm)
+            {
+                _viewModel = vm;
+                _viewModel.ClearInputRequested += OnClearInputRequested;
+            }
+        };
+
+        Closed += (s, e) =>
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.ClearInputRequested -= OnClearInputRequested;
+            }
+        };
+    }
+
+    private void OnInputTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (_inputTextBox != null && _viewModel != null)
+        {
+            var text = _inputTextBox.Text ?? "";
+            _viewModel.OnTextChanged(text);
+        }
+    }
+
+    private void OnClearInputRequested()
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            if (_inputTextBox != null)
+            {
+                _inputTextBox.Text = "";
+                _inputTextBox.Focus();
+            }
+        });
     }
 
     private void OnCloseClick(object? sender, RoutedEventArgs e)
