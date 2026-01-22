@@ -543,7 +543,7 @@ public class DatabaseService
         countCommand.CommandText = "SELECT COUNT(*) FROM creatures";
         var count = Convert.ToInt32(countCommand.ExecuteScalar());
 
-        // 54종 추가 (렌고쿠)
+        // 54종 추가 (렌고쿠) + 용민이의 선물로 자동 지급
         if (count == 53)
         {
             var insertCommand = connection.CreateCommand();
@@ -556,6 +556,16 @@ public class DatabaseService
             insertCommand.Parameters.AddWithValue("@rarity", (int)Rarity.Epic);
             insertCommand.Parameters.AddWithValue("@element", (int)Element.Fire);
             insertCommand.ExecuteNonQuery();
+
+            // 용민이의 선물: 렌고쿠를 모든 유저 컬렉션에 자동 추가!
+            var giftCommand = connection.CreateCommand();
+            giftCommand.CommandText = @"
+                INSERT OR IGNORE INTO collection (creature_id, obtained_at)
+                VALUES (54, @now)
+            ";
+            giftCommand.Parameters.AddWithValue("@now", DateTime.Now.ToString("o"));
+            giftCommand.ExecuteNonQuery();
+
             count = 54;
         }
 
