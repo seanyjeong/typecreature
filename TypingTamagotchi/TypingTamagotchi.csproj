@@ -6,9 +6,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
-    <Version>1.2.4</Version>
-    <AssemblyVersion>1.2.4</AssemblyVersion>
-    <FileVersion>1.2.4</FileVersion>
+    <Version>1.2.5</Version>
+    <AssemblyVersion>1.2.5</AssemblyVersion>
+    <FileVersion>1.2.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

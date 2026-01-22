@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Sources;
@@ -10,6 +11,22 @@ public class UpdateService
     private readonly UpdateManager _updateManager;
     private UpdateInfo? _updateInfo;
 
+    private static readonly string LogPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "TypingTamagotchi", "update.log"
+    );
+
+    private static void Log(string message)
+    {
+        try
+        {
+            var dir = Path.GetDirectoryName(LogPath);
+            if (dir != null) Directory.CreateDirectory(dir);
+            File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {message}\n");
+        }
+        catch { }
+    }
+
     public event Action<string>? UpdateAvailable;
     public event Action<int>? DownloadProgress;
     public event Action? UpdateReady;
@@ -20,6 +37,8 @@ public class UpdateService
 
     public UpdateService()
     {
+        Log("UpdateService initializing...");
+
         // GitHub Releases를 업데이트 소스로 사용
         var source = new GithubSource(
             "https://github.com/seanyjeong/typecreature",
@@ -27,18 +46,20 @@ public class UpdateService
             false  // prerelease 제외
         );
         _updateManager = new UpdateManager(source);
+
+        Log($"UpdateService initialized. IsInstalled: {_updateManager.IsInstalled}");
     }
 
     public async Task<bool> CheckForUpdatesAsync()
     {
         try
         {
-            Console.WriteLine($"[Update] Current version: {CurrentVersion ?? "unknown"}");
-            Console.WriteLine($"[Update] IsInstalled: {_updateManager.IsInstalled}");
+            Log($"Current version: {CurrentVersion ?? "unknown"}");
+            Log($"IsInstalled: {_updateManager.IsInstalled}");
 
             if (!_updateManager.IsInstalled)
             {
-                Console.WriteLine("[Update] App is not installed via Velopack, skipping update check");
+                Log("App is not installed via Velopack, skipping update check");
                 return false;
             }
 
@@ -47,19 +68,19 @@ public class UpdateService
             if (_updateInfo != null)
             {
                 var newVersion = _updateInfo.TargetFullRelease.Version.ToString();
-                Console.WriteLine($"[Update] New version available: {newVersion}");
+                Log($"New version available: {newVersion}");
                 UpdateAvailable?.Invoke(newVersion);
                 return true;
             }
             else
             {
-                Console.WriteLine("[Update] No updates available");
+                Log("No updates available");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Update] Check failed: {ex.Message}");
-            Console.WriteLine($"[Update] Stack: {ex.StackTrace}");
+            Log($"Check failed: {ex.Message}");
+            Log($"Stack: {ex.StackTrace}");
         }
 
         return false;
