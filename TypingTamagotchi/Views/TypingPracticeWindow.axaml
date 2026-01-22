@@ -146,19 +146,22 @@
                      Padding="10"
                      CornerRadius="6"
                      AcceptsReturn="False"
+                     Background="#1A1A2E"
+                     Foreground="White"
                      CaretBrush="#4CAF50">
                 <TextBox.Styles>
-                    <Style Selector="TextBox">
-                        <Setter Property="Background" Value="#1A1A2E"/>
-                        <Setter Property="Foreground" Value="White"/>
+                    <!-- TextPresenter 직접 스타일링 -->
+                    <Style Selector="TextBox /template/ TextPresenter">
+                        <Setter Property="TextBlock.Foreground" Value="White"/>
                     </Style>
-                    <Style Selector="TextBox:focus">
-                        <Setter Property="Background" Value="#1A1A2E"/>
-                        <Setter Property="Foreground" Value="White"/>
+                    <Style Selector="TextBox:focus /template/ TextPresenter">
+                        <Setter Property="TextBlock.Foreground" Value="White"/>
                     </Style>
-                    <Style Selector="TextBox:pointerover">
+                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
                         <Setter Property="Background" Value="#1A1A2E"/>
-                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="TextBox /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="#1A1A2E"/>
                     </Style>
                 </TextBox.Styles>
             </TextBox>
