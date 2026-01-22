@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,6 +16,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IInputService _inputService;
     private readonly DispatcherTimer _timeProgressTimer;
     private readonly UpdateService _updateService;
+    private readonly ChangelogService _changelogService;
 
     public event Action? OpenCollectionRequested;
     public event Action<bool>? ToggleWidgetRequested;
@@ -55,6 +57,22 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isUpdateReady;
+
+    // 변경 로그 관련
+    [ObservableProperty]
+    private bool _isChangelogVisible;
+
+    [ObservableProperty]
+    private string _changelogVersion = "";
+
+    [ObservableProperty]
+    private string _changelogTitle = "";
+
+    [ObservableProperty]
+    private string _changelogDate = "";
+
+    [ObservableProperty]
+    private List<ChangeItem> _changelogItems = new();
 
     public MainWindowViewModel()
     {
@@ -113,6 +131,26 @@ public partial class MainWindowViewModel : ViewModelBase
 
         // 앱 시작 시 업데이트 체크 (백그라운드)
         _ = CheckForUpdatesAsync();
+
+        // 변경 로그 체크 (업데이트 후 첫 실행 시)
+        _changelogService = new ChangelogService(_db);
+        CheckChangelog();
+    }
+
+    private void CheckChangelog()
+    {
+        if (_changelogService.HasNewChangelog())
+        {
+            var versionInfo = _changelogService.GetCurrentVersionInfo();
+            if (versionInfo != null)
+            {
+                ChangelogVersion = versionInfo.Version ?? "";
+                ChangelogTitle = versionInfo.Title ?? "";
+                ChangelogDate = versionInfo.Date ?? "";
+                ChangelogItems = versionInfo.Changes ?? new List<ChangeItem>();
+                IsChangelogVisible = true;
+            }
+        }
     }
 
     private async System.Threading.Tasks.Task CheckForUpdatesAsync()
@@ -207,5 +245,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private void DismissUpdate()
     {
         IsUpdateAvailable = false;
+    }
+
+    [RelayCommand]
+    private void CloseChangelog()
+    {
+        IsChangelogVisible = false;
+        _changelogService.MarkChangelogSeen();
     }
 }

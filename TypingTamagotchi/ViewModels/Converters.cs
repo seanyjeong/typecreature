@@ -136,3 +136,48 @@ public class BoolToPlaygroundColorConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+public class ChangeTypeToColorConverter : IMultiValueConverter
+{
+    public static readonly ChangeTypeToColorConverter Instance = new();
+
+    public object? Convert(System.Collections.Generic.IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (values.Count > 0 && values[0] is string type)
+        {
+            return type switch
+            {
+                "feature" => new SolidColorBrush(Color.Parse("#4CAF50")),  // 녹색
+                "fix" => new SolidColorBrush(Color.Parse("#FF9800")),      // 주황색
+                "improvement" => new SolidColorBrush(Color.Parse("#2196F3")), // 파란색
+                _ => new SolidColorBrush(Color.Parse("#9E9E9E"))           // 회색
+            };
+        }
+        return new SolidColorBrush(Color.Parse("#9E9E9E"));
+    }
+}
+
+public class ChangeTypeToIconConverter : IValueConverter
+{
+    public static readonly ChangeTypeToIconConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string type)
+        {
+            return type switch
+            {
+                "feature" => "+",
+                "fix" => "!",
+                "improvement" => "^",
+                _ => "•"
+            };
+        }
+        return "•";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

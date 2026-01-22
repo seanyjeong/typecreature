@@ -179,5 +179,87 @@
                 </StackPanel>
             </Border>
         </Border>
+
+        <!-- 변경 로그 팝업 (업데이트 후 첫 실행) -->
+        <Border Grid.RowSpan="2"
+                IsVisible="{Binding IsChangelogVisible}"
+                Background="#80000000"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="25"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MinWidth="320"
+                    MaxWidth="380">
+                <StackPanel Spacing="15">
+                    <!-- 헤더 -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="업데이트 완료!"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#4CAF50"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                            <TextBlock Text="{Binding ChangelogVersion, StringFormat='v{0}'}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="#666"/>
+                            <TextBlock Text="{Binding ChangelogDate}"
+                                       FontSize="14"
+                                       Foreground="#999"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ChangelogTitle}"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#333"/>
+                    </StackPanel>
+
+                    <!-- 변경 내용 리스트 -->
+                    <Border Background="#F5F5F5"
+                            CornerRadius="8"
+                            Padding="15"
+                            MaxHeight="200">
+                        <ScrollViewer>
+                            <ItemsControl ItemsSource="{Binding ChangelogItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+                                            <!-- 타입별 아이콘 -->
+                                            <Border Width="22" Height="22" CornerRadius="11">
+                                                <Border.Background>
+                                                    <MultiBinding Converter="{x:Static vm:ChangeTypeToColorConverter.Instance}">
+                                                        <Binding Path="Type"/>
+                                                    </MultiBinding>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding Type, Converter={x:Static vm:ChangeTypeToIconConverter.Instance}}"
+                                                           FontSize="12"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Text}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="#333"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- 확인 버튼 -->
+                    <Button Content="확인"
+                            Command="{Binding CloseChangelogCommand}"
+                            HorizontalAlignment="Center"
+                            Padding="40,10"
+                            Background="#4CAF50"
+                            Foreground="White"/>
+                </StackPanel>
+            </Border>
+        </Border>
     </Grid>
 </Window>
