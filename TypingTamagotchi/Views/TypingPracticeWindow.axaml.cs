@@ -8,6 +8,7 @@ public partial class TypingPracticeWindow : Window
 {
     private TypingPracticeViewModel? _viewModel;
     private TextBox? _inputTextBox;
+    private bool _isClearing = false; // 초기화 중 플래그
 
     public TypingPracticeWindow()
     {
@@ -48,6 +49,9 @@ public partial class TypingPracticeWindow : Window
 
     private void OnInputTextChanged(object? sender, TextChangedEventArgs e)
     {
+        // 초기화 중이면 무시
+        if (_isClearing) return;
+
         if (_inputTextBox != null && _viewModel != null)
         {
             var text = _inputTextBox.Text ?? "";
@@ -61,7 +65,9 @@ public partial class TypingPracticeWindow : Window
         {
             if (_inputTextBox != null)
             {
+                _isClearing = true;
                 _inputTextBox.Text = "";
+                _isClearing = false;
                 _inputTextBox.Focus();
             }
         });
