@@ -33,18 +33,33 @@ public class UpdateService
     {
         try
         {
+            Console.WriteLine($"[Update] Current version: {CurrentVersion ?? "unknown"}");
+            Console.WriteLine($"[Update] IsInstalled: {_updateManager.IsInstalled}");
+
+            if (!_updateManager.IsInstalled)
+            {
+                Console.WriteLine("[Update] App is not installed via Velopack, skipping update check");
+                return false;
+            }
+
             _updateInfo = await _updateManager.CheckForUpdatesAsync();
 
             if (_updateInfo != null)
             {
                 var newVersion = _updateInfo.TargetFullRelease.Version.ToString();
+                Console.WriteLine($"[Update] New version available: {newVersion}");
                 UpdateAvailable?.Invoke(newVersion);
                 return true;
+            }
+            else
+            {
+                Console.WriteLine("[Update] No updates available");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Update check failed: {ex.Message}");
+            Console.WriteLine($"[Update] Check failed: {ex.Message}");
+            Console.WriteLine($"[Update] Stack: {ex.StackTrace}");
         }
 
         return false;
