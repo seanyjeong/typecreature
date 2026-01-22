@@ -532,6 +532,30 @@ public class DatabaseService
     }
 
     /// <summary>
+    /// 현재 알 정보 가져오기
+    /// </summary>
+    public Egg? GetCurrentEgg()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT name, sprite_path, required_count, current_count FROM current_egg WHERE id = 1";
+
+        using var reader = command.ExecuteReader();
+        if (reader.Read())
+        {
+            return new Egg
+            {
+                Id = 1,
+                Name = reader.GetString(0),
+                SpritePath = reader.GetString(1),
+                RequiredCount = reader.GetInt32(2),
+                CurrentCount = reader.GetInt32(3)
+            };
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 기존 DB에 새로 추가된 크리처를 마이그레이션
     /// </summary>
     public void MigrateNewCreatures()

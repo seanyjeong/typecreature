@@ -7,14 +7,26 @@
         x:Class="TypingTamagotchi.Views.TypingPracticeWindow"
         x:DataType="vm:TypingPracticeViewModel"
         Title="⌨️ 타이핑 연습"
-        Width="600" Height="400"
+        Width="650" Height="480"
         WindowStartupLocation="CenterScreen"
         Background="#1A1A2E">
 
-    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="20">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="20">
 
-        <!-- 상단: 통계 -->
-        <Border Grid.Row="0"
+        <!-- 상단: 언어 토글 + 통계 -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,10">
+            <Button Grid.Column="0"
+                    Content="{Binding LanguageButtonText}"
+                    Command="{Binding ToggleLanguageCommand}"
+                    Padding="12,6"
+                    Background="#3D5A80"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    CornerRadius="6"/>
+        </Grid>
+
+        <!-- 통계 바 -->
+        <Border Grid.Row="1"
                 Background="#2C3E50"
                 CornerRadius="10"
                 Padding="15"
@@ -70,7 +82,7 @@
                                Foreground="#888"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding HatchContribution}"
-                               FontSize="22"
+                               FontSize="18"
                                FontWeight="Bold"
                                Foreground="#E040FB"
                                HorizontalAlignment="Center"/>
@@ -79,7 +91,7 @@
         </Border>
 
         <!-- 중앙: 문장 표시 영역 -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Background="#16213E"
                 CornerRadius="10"
                 Padding="20"
@@ -109,6 +121,15 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <!-- Enter 안내 (문장 완료 시) -->
+                    <TextBlock Text="✓ Enter를 눌러 다음 문장으로!"
+                               FontSize="14"
+                               Foreground="#4CAF50"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,15,0,0"
+                               IsVisible="{Binding IsReadyForNext}"/>
                 </StackPanel>
 
                 <!-- 진행 바 -->
@@ -132,7 +153,7 @@
         </Border>
 
         <!-- 입력 영역 -->
-        <Border Grid.Row="2"
+        <Border Grid.Row="3"
                 Background="#2C3E50"
                 CornerRadius="10"
                 Padding="15"
@@ -168,12 +189,13 @@
         </Border>
 
         <!-- 하단 버튼 -->
-        <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto">
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto">
             <TextBlock Grid.Column="0"
-                       Text="💡 문장을 정확히 입력하면 다음 문장으로 넘어갑니다"
+                       Text="{Binding InstructionText}"
                        FontSize="11"
                        Foreground="#666"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"/>
             <Button Grid.Column="1"
                     Content="🔄 다음 문장"
                     Padding="15,8"
@@ -182,7 +204,7 @@
                     Foreground="White"
                     Command="{Binding SkipCommand}"/>
             <Button Grid.Column="2"
-                    Content="닫기"
+                    Content="그만하기"
                     Padding="15,8"
                     Background="#E57373"
                     Foreground="White"

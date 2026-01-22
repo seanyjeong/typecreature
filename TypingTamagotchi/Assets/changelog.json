@@ -1,6 +1,37 @@
 {
   "versions": [
     {
+      "version": "1.2.26",
+      "date": "2025-01-22",
+      "title": "타이핑 연습 개선",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "영문 타이핑 연습 추가 (영어 속담 100개)"
+        },
+        {
+          "type": "feature",
+          "text": "한/영 전환 토글 버튼 추가"
+        },
+        {
+          "type": "improvement",
+          "text": "타수 측정 정확도 향상 (Stopwatch 기반)"
+        },
+        {
+          "type": "feature",
+          "text": "문장 완료 시 Enter 눌러야 다음으로 이동"
+        },
+        {
+          "type": "feature",
+          "text": "연습 종료 시 결과 요약 팝업 표시"
+        },
+        {
+          "type": "feature",
+          "text": "부화 기여도 퍼센트 표시"
+        }
+      ]
+    },
+    {
       "version": "1.2.25",
       "date": "2025-01-22",
       "title": "메모리 최적화",

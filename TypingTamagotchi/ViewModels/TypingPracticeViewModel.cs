@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -18,16 +19,18 @@ public partial class TypingPracticeViewModel : ViewModelBase
 {
     private readonly DatabaseService _db;
     private readonly HatchingService _hatching;
-    private readonly List<string> _sentences = new();
+    private readonly List<string> _koreanSentences = new();
+    private readonly List<string> _englishSentences = new();
     private readonly Random _random = new();
     private readonly Timer _cpmTimer;
+    private readonly Stopwatch _sentenceStopwatch = new();
 
     private string _currentSentence = "";
     private DateTime _sessionStartTime;
-    private DateTime _sentenceStartTime;
     private int _totalCharsTyped = 0;
     private int _totalCorrectChars = 0;
     private string _currentUserInput = "";
+    private bool _sentenceCompleted = false;
 
     private const double PROGRESS_BAR_MAX_WIDTH = 540.0;
 
@@ -35,10 +38,10 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private ObservableCollection<CharDisplay> _displayChars = new();
 
     [ObservableProperty]
-    private int _currentCPM = 0;  // 현재 문장 타수
+    private int _currentCPM = 0;
 
     [ObservableProperty]
-    private int _averageCPM = 0;  // 평균 타수
+    private int _averageCPM = 0;
 
     [ObservableProperty]
     private string _accuracyText = "100%";
@@ -47,7 +50,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private int _completedCount = 0;
 
     [ObservableProperty]
-    private string _hatchContribution = "+0";
+    private string _hatchContribution = "+0 (0%)";
 
     [ObservableProperty]
     private double _progressWidth = 0;
@@ -55,14 +58,24 @@ public partial class TypingPracticeViewModel : ViewModelBase
     [ObservableProperty]
     private string _currentSentenceText = "";
 
-    // 부화 기여도 (타이핑 연습에서 입력한 글자 수)
+    [ObservableProperty]
+    private bool _isEnglishMode = false;
+
+    [ObservableProperty]
+    private string _languageButtonText = "🇺🇸 English";
+
+    [ObservableProperty]
+    private string _instructionText = "💡 문장을 입력하고 Enter를 누르면 다음 문장으로 넘어갑니다";
+
+    [ObservableProperty]
+    private bool _isReadyForNext = false;
+
     private int _hatchContributionCount = 0;
+    private int _requiredForHatch = 1000; // 부화에 필요한 입력 수 (예시)
 
-    // 문장 완료 이벤트
     public event Action? SentenceCompleted;
-
-    // 입력 필드 초기화 요청 이벤트
     public event Action? ClearInputRequested;
+    public event Action<int, int, string>? SessionEnded; // avgCPM, completedCount, accuracy
 
     public TypingPracticeViewModel()
     {
@@ -71,55 +84,75 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
         LoadSentences();
         _sessionStartTime = DateTime.Now;
+
+        // 현재 알 상태에서 필요 입력 수 가져오기
+        var currentEgg = _db.GetCurrentEgg();
+        if (currentEgg != null)
+        {
+            _requiredForHatch = currentEgg.RequiredCount - (int)currentEgg.CurrentCount;
+            if (_requiredForHatch < 100) _requiredForHatch = 100;
+        }
+
         NextSentence();
 
-        // CPM 업데이트 타이머 (1초마다)
-        _cpmTimer = new Timer(1000);
+        _cpmTimer = new Timer(100); // 100ms로 더 정확한 측정
         _cpmTimer.Elapsed += (s, e) => Dispatcher.UIThread.Post(UpdateCPM);
         _cpmTimer.Start();
     }
 
     private void LoadSentences()
     {
+        // 한글 문장 로드
         try
         {
             var uri = new Uri("avares://TypingTamagotchi/Assets/typing_sentences.json");
             using var stream = AssetLoader.Open(uri);
             using var reader = new StreamReader(stream);
             var json = reader.ReadToEnd();
-
-            var data = JsonSerializer.Deserialize<SentenceData>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (data?.Sentences != null)
-            {
-                _sentences.AddRange(data.Sentences);
-            }
+            var data = JsonSerializer.Deserialize<SentenceData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (data?.Sentences != null) _koreanSentences.AddRange(data.Sentences);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load sentences: {ex.Message}");
-            // 기본 문장 추가
-            _sentences.Add("가는 말이 고와야 오는 말이 곱다");
-            _sentences.Add("천 리 길도 한 걸음부터");
+            Console.WriteLine($"Failed to load Korean sentences: {ex.Message}");
+            _koreanSentences.Add("가는 말이 고와야 오는 말이 곱다");
+            _koreanSentences.Add("천 리 길도 한 걸음부터");
+        }
+
+        // 영어 문장 로드
+        try
+        {
+            var uri = new Uri("avares://TypingTamagotchi/Assets/typing_sentences_en.json");
+            using var stream = AssetLoader.Open(uri);
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+            var data = JsonSerializer.Deserialize<SentenceData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (data?.Sentences != null) _englishSentences.AddRange(data.Sentences);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load English sentences: {ex.Message}");
+            _englishSentences.Add("Actions speak louder than words.");
+            _englishSentences.Add("Practice makes perfect.");
         }
     }
 
+    private List<string> CurrentSentences => IsEnglishMode ? _englishSentences : _koreanSentences;
+
     private void NextSentence()
     {
-        if (_sentences.Count == 0) return;
+        var sentences = CurrentSentences;
+        if (sentences.Count == 0) return;
 
-        _currentSentence = _sentences[_random.Next(_sentences.Count)];
+        _currentSentence = sentences[_random.Next(sentences.Count)];
         CurrentSentenceText = _currentSentence;
-        _sentenceStartTime = DateTime.Now;
         _currentUserInput = "";
-        // CurrentCPM은 다음 문장 첫 입력 시 초기화 (이전 문장 타수 확인 가능)
+        _sentenceCompleted = false;
+        IsReadyForNext = false;
 
-        // 입력 필드 초기화 요청
+        _sentenceStopwatch.Reset();
+
         ClearInputRequested?.Invoke();
-
         UpdateDisplayChars("");
     }
 
@@ -132,49 +165,49 @@ public partial class TypingPracticeViewModel : ViewModelBase
             var charDisplay = new CharDisplay
             {
                 Char = _currentSentence[i].ToString(),
-                Color = new SolidColorBrush(Color.Parse("#666666")) // 미입력: 회색
+                Color = new SolidColorBrush(Color.Parse("#666666"))
             };
 
             if (i < userInput.Length)
             {
                 if (i < _currentSentence.Length && userInput[i] == _currentSentence[i])
                 {
-                    charDisplay.Color = new SolidColorBrush(Color.Parse("#4CAF50")); // 정확: 녹색
+                    charDisplay.Color = new SolidColorBrush(Color.Parse("#4CAF50"));
                 }
                 else
                 {
-                    charDisplay.Color = new SolidColorBrush(Color.Parse("#E57373")); // 오타: 빨강
+                    charDisplay.Color = new SolidColorBrush(Color.Parse("#E57373"));
                 }
             }
             else if (i == userInput.Length)
             {
-                charDisplay.Color = new SolidColorBrush(Color.Parse("#FFFFFF")); // 현재 위치: 흰색
+                charDisplay.Color = new SolidColorBrush(Color.Parse("#FFFFFF"));
             }
 
             DisplayChars.Add(charDisplay);
         }
 
-        // 진행률 업데이트
         var progress = _currentSentence.Length > 0
             ? Math.Min(1.0, (double)userInput.Length / _currentSentence.Length)
             : 0;
         ProgressWidth = progress * PROGRESS_BAR_MAX_WIDTH;
     }
 
-    // View에서 호출 - 텍스트 변경 시
     public void OnTextChanged(string userInput)
     {
-        // 첫 입력 시 문장 시작 시간 기록 + 현재 타수 초기화
+        if (_sentenceCompleted) return;
+
+        // 첫 입력 시 타이머 시작
         if (_currentUserInput.Length == 0 && userInput.Length > 0)
         {
-            _sentenceStartTime = DateTime.Now;
-            CurrentCPM = 0;  // 새 문장 시작 시 초기화
+            _sentenceStopwatch.Start();
+            CurrentCPM = 0;
         }
         _currentUserInput = userInput;
 
         UpdateDisplayChars(userInput);
 
-        // 정확도 계산 (현재 입력 기준)
+        // 정확도 계산
         if (userInput.Length > 0)
         {
             int correct = 0;
@@ -188,10 +221,20 @@ public partial class TypingPracticeViewModel : ViewModelBase
             AccuracyText = $"{accuracy:F0}%";
         }
 
-        // 문장 완료 체크 (정확히 일치할 때만)
+        // 문장 완료 체크 - Enter 대기
         if (userInput == _currentSentence)
         {
-            OnSentenceComplete(userInput);
+            _sentenceCompleted = true;
+            IsReadyForNext = true;
+            _sentenceStopwatch.Stop();
+        }
+    }
+
+    public void OnEnterPressed()
+    {
+        if (_sentenceCompleted && IsReadyForNext)
+        {
+            OnSentenceComplete(_currentUserInput);
         }
     }
 
@@ -199,7 +242,6 @@ public partial class TypingPracticeViewModel : ViewModelBase
     {
         CompletedCount++;
 
-        // 정확하게 입력한 글자 수 계산
         int correctInSentence = 0;
         for (int i = 0; i < _currentSentence.Length; i++)
         {
@@ -210,11 +252,11 @@ public partial class TypingPracticeViewModel : ViewModelBase
         _totalCharsTyped += _currentSentence.Length;
         _totalCorrectChars += correctInSentence;
 
-        // 부화 기여도 증가 (타이핑한 글자 수만큼)
         _hatchContributionCount += _currentSentence.Length;
-        HatchContribution = $"+{_hatchContributionCount}";
+        var xpPercent = Math.Min(100, (double)_hatchContributionCount / _requiredForHatch * 100);
+        HatchContribution = $"+{_hatchContributionCount} ({xpPercent:F1}%)";
 
-        // 실제 부화 게이지에 반영 (글자당 1 입력으로 계산)
+        // 부화 게이지에 반영
         for (int i = 0; i < _currentSentence.Length; i++)
         {
             _hatching.RecordInput(isClick: false);
@@ -233,17 +275,17 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     private void UpdateCPM()
     {
-        // 현재 문장 타수 계산
-        if (_currentUserInput.Length > 0)
+        // 현재 문장 타수 (Stopwatch로 더 정확하게)
+        if (_currentUserInput.Length > 0 && _sentenceStopwatch.IsRunning)
         {
-            var sentenceElapsed = (DateTime.Now - _sentenceStartTime).TotalMinutes;
-            if (sentenceElapsed > 0.01) // 최소 0.6초
+            var elapsedMinutes = _sentenceStopwatch.Elapsed.TotalMinutes;
+            if (elapsedMinutes > 0.005) // 최소 0.3초
             {
-                CurrentCPM = (int)(_currentUserInput.Length / sentenceElapsed);
+                CurrentCPM = (int)(_currentUserInput.Length / elapsedMinutes);
             }
         }
 
-        // 평균 타수 계산 (완료한 문장들 기준)
+        // 평균 타수
         var sessionElapsed = (DateTime.Now - _sessionStartTime).TotalMinutes;
         if (sessionElapsed > 0.01 && _totalCharsTyped > 0)
         {
@@ -252,9 +294,30 @@ public partial class TypingPracticeViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void ToggleLanguage()
+    {
+        IsEnglishMode = !IsEnglishMode;
+        LanguageButtonText = IsEnglishMode ? "🇰🇷 한글" : "🇺🇸 English";
+        InstructionText = IsEnglishMode
+            ? "💡 Type the sentence and press Enter to continue"
+            : "💡 문장을 입력하고 Enter를 누르면 다음 문장으로 넘어갑니다";
+        NextSentence();
+    }
+
+    [RelayCommand]
     private void Skip()
     {
         NextSentence();
+    }
+
+    public (int avgCPM, int completed, string accuracy) GetSessionSummary()
+    {
+        return (AverageCPM, CompletedCount, AccuracyText);
+    }
+
+    public void EndSession()
+    {
+        SessionEnded?.Invoke(AverageCPM, CompletedCount, AccuracyText);
     }
 
     public void Cleanup()
