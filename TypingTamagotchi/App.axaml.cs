@@ -253,22 +253,31 @@ public partial class App : Application
             _updateService = new UpdateService();
             Log($"UpdateService created. CurrentVersion: {_updateService.CurrentVersion}");
 
-            _updateService.UpdateAvailable += version =>
-            {
-                Log($"Update available: {version}");
-                // 미니 위젯에 업데이트 알림 표시
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    _miniWidgetViewModel?.ShowUpdateNotification(version);
-                });
-            };
-
             var hasUpdate = await _updateService.CheckForUpdatesAsync();
             Log($"Update check completed. HasUpdate: {hasUpdate}");
+
+            if (hasUpdate)
+            {
+                var newVersion = _updateService.NewVersion;
+                Log($"Update available: {newVersion}. Starting download...");
+
+                // 미니 위젯에 알림 표시
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    _miniWidgetViewModel?.ShowUpdateNotification(newVersion ?? "new");
+                });
+
+                // 다운로드
+                await _updateService.DownloadUpdateAsync();
+                Log("Download completed. Applying update and restarting...");
+
+                // 설치 및 재시작
+                _updateService.ApplyUpdateAndRestart();
+            }
         }
         catch (Exception ex)
         {
-            Log($"Update check error: {ex.Message}");
+            Log($"Update error: {ex.Message}");
             Log($"Stack: {ex.StackTrace}");
         }
     }
