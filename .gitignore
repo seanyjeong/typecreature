@@ -33,3 +33,6 @@ Thumbs.db
 venv/
 test_slime*.png
 publish/
+
+# Claude Code
+.claude/

@@ -52,7 +52,7 @@ public partial class PlaygroundCreature : ObservableObject
     // 원본 스프라이트가 왼쪽을 보는 크리처 ID들
     private static readonly HashSet<int> LeftFacingCreatures = new()
     {
-        6, 19, 20, 22, 27, 29, 32, 33, 37, 38, 39, 40, 46, 47, 48, 50
+        6, 19, 20, 22, 27, 29, 32, 33, 37, 38, 39, 40, 46, 47, 48, 50, 52
     };
 
     // 원본 스프라이트가 오른쪽을 보는 크리처 ID들

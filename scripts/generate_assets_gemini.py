@@ -82,9 +82,9 @@ CREATURES = [
     (50, "버섯", "mushroom", "cute pixel art mushroom, 64x64 pixels, simple red mushroom with white dots and face, bright pastel tones, game asset, transparent background, tamagotchi style"),
 
     # 추가 크리처 (51-53)
-    (51, "지우개똥", "eraser_poop", "cute pixel art eraser shaped like poop, 64x64 pixels, pink eraser with cute face, eraser shavings around, bright pastel tones, funny and cute, game asset, transparent background, tamagotchi style"),
-    (52, "네시", "nessie", "cute pixel art loch ness monster, 64x64 pixels, long neck sea serpent, green body, cute shy expression, glowing golden border, mysterious legendary aura, water ripples, game asset, transparent background, tamagotchi style"),
-    (53, "빅풋", "bigfoot", "cute pixel art bigfoot sasquatch, 64x64 pixels, fluffy brown fur, big friendly eyes, big cute feet, glowing golden border, mysterious legendary aura, forest theme, game asset, transparent background, tamagotchi style"),
+    (51, "지우개똥", "eraser_poop", "cute pixel art eraser shavings crumbs creature, 64x64 pixels, small gray-pink rubber debris bits with cute face, simple round blob shape, bright pastel tones, game asset, solid transparent background, no background elements, tamagotchi style"),
+    (52, "네시", "nessie", "cute pixel art loch ness monster, 64x64 pixels, long neck sea serpent, green body, cute shy expression, simple design, game asset, solid transparent background, no background elements, tamagotchi style"),
+    (53, "빅풋", "bigfoot", "cute pixel art bigfoot sasquatch, 64x64 pixels, fluffy brown fur, big friendly eyes, big cute feet, simple design, game asset, solid transparent background, no background elements, tamagotchi style"),
 ]
 
 # 알 데이터
@@ -148,18 +148,18 @@ def generate_and_save(prompt: str, output_path: Path) -> bool:
 
 
 def generate_single(index: int):
-    """단일 크리처 생성 (1-50) 또는 알 (51-55)"""
-    if 1 <= index <= 50:
+    """단일 크리처 생성 (1-53) 또는 알 (54-58)"""
+    if 1 <= index <= 53:
         num, name_kr, name_en, prompt = CREATURES[index - 1]
         output_path = CREATURES_DIR / f"{num}.png"
-        print(f"[{num}/50] {name_kr} ({name_en}) 생성 중...")
-    elif 51 <= index <= 55:
-        egg_idx = index - 51
+        print(f"[{num}/53] {name_kr} ({name_en}) 생성 중...")
+    elif 54 <= index <= 58:
+        egg_idx = index - 54
         name_en, name_kr, prompt = EGGS[egg_idx]
         output_path = EGGS_DIR / f"{name_en}.png"
         print(f"[알 {egg_idx+1}/5] {name_kr} ({name_en}) 생성 중...")
     else:
-        print("잘못된 인덱스 (1-55)")
+        print("잘못된 인덱스 (1-58)")
         return False
 
     if generate_and_save(prompt, output_path):
