@@ -52,13 +52,13 @@ public partial class PlaygroundCreature : ObservableObject
     // 원본 스프라이트가 왼쪽을 보는 크리처 ID들
     private static readonly HashSet<int> LeftFacingCreatures = new()
     {
-        6, 19, 20, 22, 27, 29, 32, 33, 37, 38, 39, 40, 46, 47, 50
+        6, 19, 20, 22, 27, 29, 32, 33, 37, 38, 39, 40, 46, 47, 48, 50
     };
 
     // 원본 스프라이트가 오른쪽을 보는 크리처 ID들
     private static readonly HashSet<int> RightFacingCreatures = new()
     {
-        41, 42, 48
+        41, 42
     };
 
     // 실제 렌더링용 Direction (원본 방향 고려)

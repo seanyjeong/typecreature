@@ -1,0 +1,43 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Get version from tag
+        id: get-version
+        shell: bash
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Publish Application
+        run: dotnet publish TypingTamagotchi/TypingTamagotchi.csproj -c Release -o publish -r win-x64 --self-contained true -p:Version=${{ steps.get-version.outputs.version }}
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Download previous release (if exists)
+        run: vpk download github --repoUrl https://github.com/${{ github.repository }} --token ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Create Velopack Release
+        run: vpk pack -u TypingTamagotchi -v ${{ steps.get-version.outputs.version }} -p publish -e TypingTamagotchi.exe
+
+      - name: Upload to GitHub Releases
+        run: vpk upload github --repoUrl https://github.com/${{ github.repository }} --token ${{ secrets.GITHUB_TOKEN }} --publish --releaseName "Typing Tamagotchi ${{ steps.get-version.outputs.version }}" --tag v${{ steps.get-version.outputs.version }}

@@ -35,7 +35,7 @@ public class EggService
                 Name = reader.GetString(1),
                 SpritePath = reader.GetString(2),
                 RequiredCount = reader.GetInt32(3),
-                CurrentCount = reader.GetInt32(4)
+                CurrentCount = reader.GetDouble(4)
             };
         }
         else
@@ -63,7 +63,7 @@ public class EggService
         EggUpdated?.Invoke(_currentEgg);
     }
 
-    public void AddProgress(int amount = 1)
+    public void AddProgress(double amount = 1)
     {
         if (_currentEgg == null) return;
 

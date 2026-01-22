@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TypingTamagotchi.Models;
@@ -12,6 +13,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly EggService _eggService;
     private readonly HatchingService _hatchingService;
     private readonly IInputService _inputService;
+    private readonly DispatcherTimer _timeProgressTimer;
+    private readonly UpdateService _updateService;
 
     public event Action? OpenCollectionRequested;
     public event Action<bool>? ToggleWidgetRequested;
@@ -37,6 +40,22 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isWidgetVisible;
 
+    // 업데이트 관련
+    [ObservableProperty]
+    private bool _isUpdateAvailable;
+
+    [ObservableProperty]
+    private string _updateVersion = "";
+
+    [ObservableProperty]
+    private bool _isDownloading;
+
+    [ObservableProperty]
+    private int _downloadProgress;
+
+    [ObservableProperty]
+    private bool _isUpdateReady;
+
     public MainWindowViewModel()
     {
         _db = new DatabaseService();
@@ -57,6 +76,57 @@ public partial class MainWindowViewModel : ViewModelBase
         UpdateCollectionStatus();
 
         _inputService.Start();
+
+        // 시간 기반 부화율 증가 (초당 0.1)
+        _timeProgressTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _timeProgressTimer.Tick += OnTimeProgressTick;
+        _timeProgressTimer.Start();
+
+        // 업데이트 체크
+        _updateService = new UpdateService();
+        _updateService.UpdateAvailable += version =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                UpdateVersion = version;
+                IsUpdateAvailable = true;
+            });
+        };
+        _updateService.DownloadProgress += progress =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                DownloadProgress = progress;
+            });
+        };
+        _updateService.UpdateReady += () =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                IsDownloading = false;
+                IsUpdateReady = true;
+            });
+        };
+
+        // 앱 시작 시 업데이트 체크 (백그라운드)
+        _ = CheckForUpdatesAsync();
+    }
+
+    private async System.Threading.Tasks.Task CheckForUpdatesAsync()
+    {
+        await _updateService.CheckForUpdatesAsync();
+    }
+
+    private void OnTimeProgressTick(object? sender, EventArgs e)
+    {
+        // 부화 팝업이 떠있지 않을 때만 시간 진행률 추가
+        if (!IsHatchPopupVisible)
+        {
+            _eggService.AddProgress(0.1);
+        }
     }
 
     private void OnInputDetected()
@@ -118,5 +188,24 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         IsWidgetVisible = !IsWidgetVisible;
         ToggleWidgetRequested?.Invoke(IsWidgetVisible);
+    }
+
+    [RelayCommand]
+    private async System.Threading.Tasks.Task DownloadUpdate()
+    {
+        IsDownloading = true;
+        await _updateService.DownloadUpdateAsync();
+    }
+
+    [RelayCommand]
+    private void ApplyUpdate()
+    {
+        _updateService.ApplyUpdateAndRestart();
+    }
+
+    [RelayCommand]
+    private void DismissUpdate()
+    {
+        IsUpdateAvailable = false;
     }
 }

@@ -14,9 +14,75 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid>
+    <Grid RowDefinitions="Auto,*">
+        <!-- 업데이트 알림 (상단) -->
+        <Border Grid.Row="0"
+                IsVisible="{Binding IsUpdateAvailable}"
+                Background="#4CAF50"
+                Padding="10,8">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="새 버전이 있습니다!"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0}'}"
+                               Foreground="White"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- 다운로드 중 -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="10"
+                            IsVisible="{Binding IsDownloading}">
+                    <ProgressBar Value="{Binding DownloadProgress}"
+                                 Minimum="0" Maximum="100"
+                                 Width="100" Height="16"/>
+                    <TextBlock Text="{Binding DownloadProgress, StringFormat='{}{0}%'}"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- 업데이트 준비 완료 -->
+                <Button Grid.Column="1"
+                        Content="재시작"
+                        Command="{Binding ApplyUpdateCommand}"
+                        IsVisible="{Binding IsUpdateReady}"
+                        Background="White"
+                        Foreground="#4CAF50"
+                        Padding="15,5"
+                        Margin="10,0"/>
+
+                <!-- 다운로드 버튼 -->
+                <Button Grid.Column="1"
+                        Content="업데이트"
+                        Command="{Binding DownloadUpdateCommand}"
+                        IsVisible="{Binding !IsDownloading}"
+                        Background="White"
+                        Foreground="#4CAF50"
+                        Padding="15,5"
+                        Margin="10,0">
+                    <Button.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="!IsDownloading"/>
+                            <Binding Path="!IsUpdateReady"/>
+                        </MultiBinding>
+                    </Button.IsVisible>
+                </Button>
+
+                <!-- 닫기 -->
+                <Button Grid.Column="2"
+                        Content="X"
+                        Command="{Binding DismissUpdateCommand}"
+                        Background="Transparent"
+                        Foreground="White"
+                        Padding="5,0"/>
+            </Grid>
+        </Border>
+
         <!-- 메인 화면 -->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
             <!-- 알 이름 -->
             <TextBlock Text="{Binding EggName}"
                        FontSize="24"
@@ -64,7 +130,8 @@
         </StackPanel>
 
         <!-- 부화 팝업 -->
-        <Border IsVisible="{Binding IsHatchPopupVisible}"
+        <Border Grid.RowSpan="2"
+                IsVisible="{Binding IsHatchPopupVisible}"
                 Background="#80000000"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
