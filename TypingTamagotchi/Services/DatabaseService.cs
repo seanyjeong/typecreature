@@ -63,7 +63,7 @@ public class DatabaseService
             );
 
             CREATE TABLE IF NOT EXISTS playground_creatures (
-                slot INTEGER PRIMARY KEY CHECK (slot >= 0 AND slot < 4),
+                slot INTEGER PRIMARY KEY CHECK (slot >= 0 AND slot < 6),
                 creature_id INTEGER NOT NULL,
                 FOREIGN KEY (creature_id) REFERENCES creatures(id)
             );
@@ -208,7 +208,7 @@ public class DatabaseService
         }
 
         int nextSlot = -1;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 6; i++)
         {
             if (!usedSlots.Contains(i))
             {
@@ -475,6 +475,19 @@ public class DatabaseService
             ("시간고양이", Rarity.Legendary, Element.Lightning, "시간을 다루는 신비한 고양이",
                 "???", "여자", "별빛", "소음",
                 "시간의 틈새에서 태어난 고양이. 과거와 미래를 볼 수 있으며, 가끔 시간을 멈추고 낮잠을 잔다."),
+
+            // 추가 크리처 - ID 51~53
+            ("지우개똥", Rarity.Common, Element.Earth, "말랑말랑한 지우개 모양 생물",
+                "1살", "무성", "연필심", "볼펜",
+                "누군가의 실수를 지우다가 생명을 얻었다. 실수를 먹고 자라며, 항상 깨끗한 시작을 응원한다."),
+
+            ("네시", Rarity.Legendary, Element.Water, "스코틀랜드 호수의 전설",
+                "10000살", "여자", "물고기", "카메라",
+                "네스호 깊은 곳에 숨어 사는 전설의 공룡. 수줍음이 많아 사진 찍히는 걸 극도로 싫어한다."),
+
+            ("빅풋", Rarity.Legendary, Element.Earth, "숲속의 거대한 발자국 주인",
+                "???", "남자", "베리", "문명",
+                "깊은 산속에 사는 전설의 거인. 발자국만 남기고 사라지며, 사실은 매우 친절하고 수줍음이 많다."),
         };
 
         var insertCommand = connection.CreateCommand();

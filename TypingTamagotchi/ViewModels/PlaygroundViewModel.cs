@@ -17,12 +17,12 @@ public partial class PlaygroundViewModel : ViewModelBase
     private readonly DispatcherTimer _gameTimer;
     private DateTime _lastUpdate;
 
-    // 놀이터 크기
+    // 놀이터 크기 (초기값)
     [ObservableProperty]
-    private double _playgroundWidth = 500;
+    private double _playgroundWidth = 700;
 
     [ObservableProperty]
-    private double _playgroundHeight = 180;
+    private double _playgroundHeight = 280;
 
     // 바닥 Y 위치 (상대적)
     public double GroundY => PlaygroundHeight - 60;

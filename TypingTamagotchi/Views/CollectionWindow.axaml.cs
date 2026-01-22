@@ -103,7 +103,7 @@ public partial class CollectionWindow : Window
                     ? $"'{item.Creature.Name}'을(를) 놀이터에서 데려왔습니다."
                     : item.IsInPlayground
                         ? $"'{item.Creature.Name}'을(를) 놀이터로 보냈습니다!"
-                        : "놀이터가 가득 찼습니다! (최대 4마리)";
+                        : "놀이터가 가득 찼습니다! (최대 6마리)";
 
                 var msgBox = new Window
                 {

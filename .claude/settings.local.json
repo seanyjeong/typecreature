@@ -30,7 +30,15 @@
       "Bash(du:*)",
       "Bash(ls:*)",
       "Bash(xxd:*)",
-      "Bash(dotnet publish:*)"
+      "Bash(dotnet publish:*)",
+      "Bash(git reset:*)",
+      "Bash(dpkg:*)",
+      "Bash(apt list:*)",
+      "Bash(sudo apt-get:*)",
+      "Bash(DISPLAY= wine:*)",
+      "Bash(xvfb-run:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
     ]
   }
 }

@@ -209,7 +209,7 @@ public class HatchingService
         return results;
     }
 
-    public int GetTotalCreatureCount() => 50;
+    public int GetTotalCreatureCount() => 53;
 
     public int GetOwnedCreatureCount()
     {

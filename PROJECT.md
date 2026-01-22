@@ -41,7 +41,7 @@ typing-tamagotchi/
 
 ## 데이터베이스 스키마 (SQLite)
 
-### creatures - 크리처 정보 (50종)
+### creatures - 크리처 정보 (53종)
 ```sql
 CREATE TABLE creatures (
     id INTEGER PRIMARY KEY,
@@ -92,10 +92,10 @@ CREATE TABLE display_slots (
 );
 ```
 
-### playground_creatures - 놀이터 크리처 (최대 4마리)
+### playground_creatures - 놀이터 크리처 (최대 6마리)
 ```sql
 CREATE TABLE playground_creatures (
-    slot INTEGER PRIMARY KEY CHECK (slot >= 0 AND slot < 4),
+    slot INTEGER PRIMARY KEY CHECK (slot >= 0 AND slot < 6),
     creature_id INTEGER NOT NULL     -- 배치된 크리처 ID (FK)
 );
 ```
@@ -132,12 +132,12 @@ CREATE TABLE settings (
 - 뽑기(슬롯머신) 연출
 
 ### 3. 크리처 수집
-- 50종 크리처 수집
+- 53종 크리처 수집
 - 진열장에 최대 12마리 전시
 - 도감 기능
 
 ### 4. 놀이터
-- 최대 4마리 크리처 배치
+- 최대 6마리 크리처 배치
 - 물리 기반 움직임 (Walk, Float, Bounce, Idle 패턴)
 - 크리처 간 충돌 인터랙션
 - 창 크기 조절 가능
@@ -230,7 +230,7 @@ GitHub Releases에 자동 업로드:
 
 ---
 
-## 크리처 목록 (50종)
+## 크리처 목록 (53종)
 
 ### Common (25종) - ID 1~25
 | ID | 이름 | 속성 | 설명 |
@@ -291,12 +291,19 @@ GitHub Releases에 자동 업로드:
 | 46 | 켈피 | Water | 물속의 신비한 말 |
 | 47 | 바실리스크 | Earth | 눈빛이 무서운 뱀 |
 
-### Legendary (3종) - ID 48~50
+### Legendary (5종) - ID 48~50, 52~53
 | ID | 이름 | 속성 | 설명 |
 |----|------|------|------|
 | 48 | 황금드래곤 | Fire | 전설의 황금빛 용 |
 | 49 | 세계수정령 | Earth | 세계수를 지키는 정령 |
 | 50 | 시간고양이 | Lightning | 시간을 다루는 신비한 고양이 |
+| 52 | 네시 | Water | 스코틀랜드 호수의 전설 |
+| 53 | 빅풋 | Earth | 숲속의 거대한 발자국 주인 |
+
+### 추가 Common (1종) - ID 51
+| ID | 이름 | 속성 | 설명 |
+|----|------|------|------|
+| 51 | 지우개똥 | Earth | 말랑말랑한 지우개 모양 생물 |
 
 ---
 

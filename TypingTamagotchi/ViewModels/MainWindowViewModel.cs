@@ -163,7 +163,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // 부화 팝업이 떠있지 않을 때만 시간 진행률 추가
         if (!IsHatchPopupVisible)
         {
-            _eggService.AddProgress(0.1);
+            _eggService.AddProgress(0.025);
         }
     }
 

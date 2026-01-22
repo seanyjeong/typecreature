@@ -80,6 +80,11 @@ CREATURES = [
     (48, "나뭇가지", "twig", "cute pixel art twig, 64x64 pixels, simple brown stick with face, bright pastel tones, woody, game asset, transparent background, tamagotchi style"),
     (49, "진흙이", "mud_blob", "cute pixel art mud blob, 64x64 pixels, simple brown mud with face, bright pastel tones, squishy, game asset, transparent background, tamagotchi style"),
     (50, "버섯", "mushroom", "cute pixel art mushroom, 64x64 pixels, simple red mushroom with white dots and face, bright pastel tones, game asset, transparent background, tamagotchi style"),
+
+    # 추가 크리처 (51-53)
+    (51, "지우개똥", "eraser_poop", "cute pixel art eraser shaped like poop, 64x64 pixels, pink eraser with cute face, eraser shavings around, bright pastel tones, funny and cute, game asset, transparent background, tamagotchi style"),
+    (52, "네시", "nessie", "cute pixel art loch ness monster, 64x64 pixels, long neck sea serpent, green body, cute shy expression, glowing golden border, mysterious legendary aura, water ripples, game asset, transparent background, tamagotchi style"),
+    (53, "빅풋", "bigfoot", "cute pixel art bigfoot sasquatch, 64x64 pixels, fluffy brown fur, big friendly eyes, big cute feet, glowing golden border, mysterious legendary aura, forest theme, game asset, transparent background, tamagotchi style"),
 ]
 
 # 알 데이터
