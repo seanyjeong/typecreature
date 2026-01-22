@@ -500,6 +500,11 @@ public class DatabaseService
             ("빅풋", Rarity.Legendary, Element.Earth, "숲속의 거대한 발자국 주인",
                 "???", "남자", "베리", "문명",
                 "깊은 산속에 사는 전설의 거인. 발자국만 남기고 사라지며, 사실은 매우 친절하고 수줍음이 많다."),
+
+            // 커스텀 크리처 - ID 54
+            ("렌고쿠", Rarity.Epic, Element.Fire, "불꽃을 다루는 염주",
+                "20살", "남자", "고구마", "나약함",
+                "마음을 불태워라! 타오르는 불꽃의 의지를 가진 검사. 언제나 웃으며 다른 이들을 지키고자 한다."),
         };
 
         var insertCommand = connection.CreateCommand();
@@ -538,8 +543,24 @@ public class DatabaseService
         countCommand.CommandText = "SELECT COUNT(*) FROM creatures";
         var count = Convert.ToInt32(countCommand.ExecuteScalar());
 
-        // 이미 53종이면 마이그레이션 불필요
-        if (count >= 53) return;
+        // 54종 추가 (렌고쿠)
+        if (count == 53)
+        {
+            var insertCommand = connection.CreateCommand();
+            insertCommand.CommandText = @"
+                INSERT INTO creatures (id, name, rarity, element, sprite_path, description, age, gender, favorite_food, dislikes, background)
+                VALUES (54, '렌고쿠', @rarity, @element, 'Creatures/54.png', '불꽃을 다루는 염주',
+                        '20살', '남자', '고구마', '나약함',
+                        '마음을 불태워라! 타오르는 불꽃의 의지를 가진 검사. 언제나 웃으며 다른 이들을 지키고자 한다.')
+            ";
+            insertCommand.Parameters.AddWithValue("@rarity", (int)Rarity.Epic);
+            insertCommand.Parameters.AddWithValue("@element", (int)Element.Fire);
+            insertCommand.ExecuteNonQuery();
+            count = 54;
+        }
+
+        // 이미 54종이면 마이그레이션 불필요
+        if (count >= 54) return;
 
         // 50종만 있으면 51-53 추가
         if (count == 50)
