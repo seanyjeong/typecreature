@@ -115,7 +115,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
         CurrentSentenceText = _currentSentence;
         _sentenceStartTime = DateTime.Now;
         _currentUserInput = "";
-        CurrentCPM = 0;
+        // CurrentCPM은 다음 문장 첫 입력 시 초기화 (이전 문장 타수 확인 가능)
 
         // 입력 필드 초기화 요청
         ClearInputRequested?.Invoke();
@@ -164,10 +164,11 @@ public partial class TypingPracticeViewModel : ViewModelBase
     // View에서 호출 - 텍스트 변경 시
     public void OnTextChanged(string userInput)
     {
-        // 첫 입력 시 문장 시작 시간 기록
+        // 첫 입력 시 문장 시작 시간 기록 + 현재 타수 초기화
         if (_currentUserInput.Length == 0 && userInput.Length > 0)
         {
             _sentenceStartTime = DateTime.Now;
+            CurrentCPM = 0;  // 새 문장 시작 시 초기화
         }
         _currentUserInput = userInput;
 
