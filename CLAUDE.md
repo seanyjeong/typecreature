@@ -6,7 +6,7 @@
 
 | 항목 | 값 |
 |------|-----|
-| **현재 버전** | 1.2.26 |
+| **현재 버전** | 1.2.27 |
 | **스택** | .NET 8 + Avalonia UI 11.3.11 |
 | **DB** | SQLite (Microsoft.Data.Sqlite) |
 | **패턴** | MVVM (CommunityToolkit.Mvvm) |
@@ -87,6 +87,7 @@ dotnet publish -c Release -o publish -r win-x64 --self-contained true
 
 | 버전 | 주요 변경 |
 |------|----------|
+| 1.2.27 | 평균 타수 버그 수정 (대기 시간 제외, 부화 시 멈춤) |
 | 1.2.26 | 영문 타이핑, Enter 확인, 결과 팝업, 부화 기여% |
 | 1.2.25 | 메모리 최적화 (썸네일 캐싱, ~200MB → ~15MB) |
 | 1.2.24 | 용민이의 선물 - 렌고쿠 자동 지급 |

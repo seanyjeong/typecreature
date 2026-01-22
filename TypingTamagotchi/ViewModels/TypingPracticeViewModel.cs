@@ -24,13 +24,14 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private readonly Random _random = new();
     private readonly Timer _cpmTimer;
     private readonly Stopwatch _sentenceStopwatch = new();
+    private readonly Stopwatch _activeTypingStopwatch = new(); // 실제 타이핑 시간만 측정
 
     private string _currentSentence = "";
-    private DateTime _sessionStartTime;
     private int _totalCharsTyped = 0;
     private int _totalCorrectChars = 0;
     private string _currentUserInput = "";
     private bool _sentenceCompleted = false;
+    private bool _isPaused = false; // 부화 팝업 등으로 일시정지
 
     private const double PROGRESS_BAR_MAX_WIDTH = 540.0;
 
@@ -81,9 +82,9 @@ public partial class TypingPracticeViewModel : ViewModelBase
     {
         _db = new DatabaseService();
         _hatching = new HatchingService(_db);
+        _hatching.CreatureHatched += OnCreatureHatched;
 
         LoadSentences();
-        _sessionStartTime = DateTime.Now;
 
         // 현재 알 상태에서 필요 입력 수 가져오기
         var currentEgg = _db.GetCurrentEgg();
@@ -195,12 +196,14 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     public void OnTextChanged(string userInput)
     {
-        if (_sentenceCompleted) return;
+        if (_sentenceCompleted || _isPaused) return;
 
         // 첫 입력 시 타이머 시작
         if (_currentUserInput.Length == 0 && userInput.Length > 0)
         {
             _sentenceStopwatch.Start();
+            if (!_activeTypingStopwatch.IsRunning)
+                _activeTypingStopwatch.Start();
             CurrentCPM = 0;
         }
         _currentUserInput = userInput;
@@ -227,6 +230,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
             _sentenceCompleted = true;
             IsReadyForNext = true;
             _sentenceStopwatch.Stop();
+            _activeTypingStopwatch.Stop(); // 다음 문장 시작 전까지 평균 타수 유지
         }
     }
 
@@ -275,6 +279,8 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     private void UpdateCPM()
     {
+        if (_isPaused) return; // 부화 팝업 중에는 타수 업데이트 안 함
+
         // 현재 문장 타수 (Stopwatch로 더 정확하게)
         if (_currentUserInput.Length > 0 && _sentenceStopwatch.IsRunning)
         {
@@ -285,11 +291,11 @@ public partial class TypingPracticeViewModel : ViewModelBase
             }
         }
 
-        // 평균 타수
-        var sessionElapsed = (DateTime.Now - _sessionStartTime).TotalMinutes;
-        if (sessionElapsed > 0.01 && _totalCharsTyped > 0)
+        // 평균 타수 - 실제 타이핑 시간만 사용 (대기 시간 제외)
+        var activeMinutes = _activeTypingStopwatch.Elapsed.TotalMinutes;
+        if (activeMinutes > 0.01 && _totalCharsTyped > 0)
         {
-            AverageCPM = (int)(_totalCharsTyped / sessionElapsed);
+            AverageCPM = (int)(_totalCharsTyped / activeMinutes);
         }
     }
 
@@ -320,8 +326,24 @@ public partial class TypingPracticeViewModel : ViewModelBase
         SessionEnded?.Invoke(AverageCPM, CompletedCount, AccuracyText);
     }
 
+    private void OnCreatureHatched(TypingTamagotchi.Models.Creature creature)
+    {
+        // 부화 팝업 뜨면 타이머 멈춤
+        _isPaused = true;
+        _sentenceStopwatch.Stop();
+        _activeTypingStopwatch.Stop();
+    }
+
+    public void Resume()
+    {
+        // 부화 팝업 닫으면 재개
+        _isPaused = false;
+        // 타이머는 다음 문장 첫 입력 시 자동으로 재시작됨
+    }
+
     public void Cleanup()
     {
+        _hatching.CreatureHatched -= OnCreatureHatched;
         _cpmTimer.Stop();
         _cpmTimer.Dispose();
     }
