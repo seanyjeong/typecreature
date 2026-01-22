@@ -909,4 +909,12 @@ public partial class MiniWidget : Window
         }
         e.Handled = true;
     }
+
+    private void OnUpdateDismissClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is MiniWidgetViewModel vm)
+        {
+            vm.IsUpdateAvailable = false;
+        }
+    }
 }
