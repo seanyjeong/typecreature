@@ -50,37 +50,51 @@ public class UpdateService
         Log($"UpdateService initialized. IsInstalled: {_updateManager.IsInstalled}");
     }
 
-    public async Task<bool> CheckForUpdatesAsync()
+    public async Task<bool> CheckForUpdatesAsync(int retryCount = 3)
     {
-        try
+        for (int attempt = 1; attempt <= retryCount; attempt++)
         {
-            Log($"Current version: {CurrentVersion ?? "unknown"}");
-            Log($"IsInstalled: {_updateManager.IsInstalled}");
-
-            if (!_updateManager.IsInstalled)
+            try
             {
-                Log("App is not installed via Velopack, skipping update check");
-                return false;
-            }
+                Log($"[Attempt {attempt}/{retryCount}] Current version: {CurrentVersion ?? "unknown"}");
+                Log($"IsInstalled: {_updateManager.IsInstalled}");
 
-            _updateInfo = await _updateManager.CheckForUpdatesAsync();
+                if (!_updateManager.IsInstalled)
+                {
+                    Log("App is not installed via Velopack, skipping update check");
+                    return false;
+                }
 
-            if (_updateInfo != null)
-            {
-                var newVersion = _updateInfo.TargetFullRelease.Version.ToString();
-                Log($"New version available: {newVersion}");
-                UpdateAvailable?.Invoke(newVersion);
-                return true;
+                // 첫 시도가 아니면 잠시 대기
+                if (attempt > 1)
+                {
+                    Log($"Waiting 3 seconds before retry...");
+                    await Task.Delay(3000);
+                }
+
+                _updateInfo = await _updateManager.CheckForUpdatesAsync();
+
+                if (_updateInfo != null)
+                {
+                    var newVersion = _updateInfo.TargetFullRelease.Version.ToString();
+                    Log($"New version available: {newVersion}");
+                    UpdateAvailable?.Invoke(newVersion);
+                    return true;
+                }
+                else
+                {
+                    Log("No updates available");
+                    return false; // 성공적으로 체크했지만 업데이트 없음
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Log("No updates available");
+                Log($"[Attempt {attempt}] Check failed: {ex.Message}");
+                if (attempt == retryCount)
+                {
+                    Log($"All {retryCount} attempts failed. Stack: {ex.StackTrace}");
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            Log($"Check failed: {ex.Message}");
-            Log($"Stack: {ex.StackTrace}");
         }
 
         return false;

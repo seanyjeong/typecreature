@@ -268,6 +268,10 @@ public partial class App : Application
     {
         try
         {
+            // 앱 시작 후 잠시 대기 (네트워크 준비)
+            Log("Waiting 2 seconds for network...");
+            await System.Threading.Tasks.Task.Delay(2000);
+
             Log("Creating UpdateService...");
             _updateService = new UpdateService();
             Log($"UpdateService created. CurrentVersion: {_updateService.CurrentVersion}");
@@ -291,6 +295,10 @@ public partial class App : Application
 
                 // 설치 및 재시작
                 _updateService.ApplyUpdateAndRestart();
+            }
+            else
+            {
+                Log("No update needed, app is up to date.");
             }
         }
         catch (Exception ex)
