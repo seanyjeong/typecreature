@@ -130,12 +130,27 @@
                      Watermark="여기에 입력하세요..."
                      FontSize="20"
                      FontFamily="Malgun Gothic, Segoe UI"
-                     Background="#1A1A2E"
-                     Foreground="White"
-                     BorderThickness="0"
+                     BorderThickness="2"
+                     BorderBrush="#3D5A80"
                      Padding="10"
                      CornerRadius="6"
-                     AcceptsReturn="False"/>
+                     AcceptsReturn="False"
+                     CaretBrush="#4CAF50">
+                <TextBox.Styles>
+                    <Style Selector="TextBox">
+                        <Setter Property="Background" Value="#1A1A2E"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="TextBox:focus">
+                        <Setter Property="Background" Value="#1A1A2E"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="TextBox:pointerover">
+                        <Setter Property="Background" Value="#1A1A2E"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
         </Border>
 
         <!-- 하단 버튼 -->
