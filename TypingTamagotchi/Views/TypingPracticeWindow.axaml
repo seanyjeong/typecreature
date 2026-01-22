@@ -1,0 +1,163 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TypingTamagotchi.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="TypingTamagotchi.Views.TypingPracticeWindow"
+        x:DataType="vm:TypingPracticeViewModel"
+        Title="⌨️ 타이핑 연습"
+        Width="600" Height="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#1A1A2E">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="20">
+
+        <!-- 상단: 통계 -->
+        <Border Grid.Row="0"
+                Background="#2C3E50"
+                CornerRadius="10"
+                Padding="15"
+                Margin="0,0,0,15">
+            <Grid ColumnDefinitions="*,*,*,*">
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="타수 (CPM)"
+                               FontSize="11"
+                               Foreground="#888"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentCPM}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#4CAF50"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="정확도"
+                               FontSize="11"
+                               Foreground="#888"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding AccuracyText}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#FFD700"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="완료 문장"
+                               FontSize="11"
+                               Foreground="#888"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding CompletedCount}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#2196F3"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="부화 기여"
+                               FontSize="11"
+                               Foreground="#888"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding HatchContribution}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#E040FB"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 중앙: 문장 표시 영역 -->
+        <Border Grid.Row="1"
+                Background="#16213E"
+                CornerRadius="10"
+                Padding="20"
+                Margin="0,0,0,15">
+            <Grid RowDefinitions="*,Auto">
+                <!-- 목표 문장 -->
+                <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                    <TextBlock Text="다음 문장을 입력하세요:"
+                               FontSize="12"
+                               Foreground="#666"
+                               Margin="0,0,0,10"/>
+
+                    <!-- 문장 표시 (글자별 색상) -->
+                    <ItemsControl ItemsSource="{Binding DisplayChars}" HorizontalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Char}"
+                                           FontSize="28"
+                                           FontWeight="Bold"
+                                           FontFamily="Malgun Gothic, Segoe UI"
+                                           Foreground="{Binding Color}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- 진행 바 -->
+                <Border Grid.Row="1"
+                        Background="#1A1A2E"
+                        CornerRadius="4"
+                        Height="8"
+                        Margin="0,15,0,0">
+                    <Border CornerRadius="4"
+                            HorizontalAlignment="Left"
+                            Width="{Binding ProgressWidth}">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                                <GradientStop Color="#4CAF50" Offset="0"/>
+                                <GradientStop Color="#81C784" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 입력 영역 -->
+        <Border Grid.Row="2"
+                Background="#2C3E50"
+                CornerRadius="10"
+                Padding="15"
+                Margin="0,0,0,15">
+            <TextBox Name="InputTextBox"
+                     Text="{Binding UserInput, Mode=TwoWay}"
+                     Watermark="여기에 입력하세요..."
+                     FontSize="20"
+                     FontFamily="Malgun Gothic, Segoe UI"
+                     Background="#1A1A2E"
+                     Foreground="White"
+                     BorderThickness="0"
+                     Padding="10"
+                     CornerRadius="6"/>
+        </Border>
+
+        <!-- 하단 버튼 -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="💡 문장을 정확히 입력하면 다음 문장으로 넘어갑니다"
+                       FontSize="11"
+                       Foreground="#666"
+                       VerticalAlignment="Center"/>
+            <Button Grid.Column="1"
+                    Content="🔄 다음 문장"
+                    Padding="15,8"
+                    Margin="0,0,10,0"
+                    Background="#3D5A80"
+                    Foreground="White"
+                    Command="{Binding SkipCommand}"/>
+            <Button Grid.Column="2"
+                    Content="닫기"
+                    Padding="15,8"
+                    Background="#E57373"
+                    Foreground="White"
+                    Click="OnCloseClick"/>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,6 +1,25 @@
 {
   "versions": [
     {
+      "version": "1.2.15",
+      "date": "2025-01-22",
+      "title": "타이핑 연습 추가",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "한글 타이핑 연습 기능 추가 (속담 200개)"
+        },
+        {
+          "type": "feature",
+          "text": "타이핑한 글자 수가 부화 게이지에 반영"
+        },
+        {
+          "type": "feature",
+          "text": "실시간 타수(CPM) 및 정확도 표시"
+        }
+      ]
+    },
+    {
       "version": "1.2.14",
       "date": "2025-01-22",
       "title": "업데이트 UX 개선",

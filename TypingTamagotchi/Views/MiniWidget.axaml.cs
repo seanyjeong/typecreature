@@ -34,6 +34,9 @@ public partial class MiniWidget : Window
     // 놀이터 창 참조 (토글용)
     private PlaygroundWindow? _playgroundWindow;
 
+    // 타이핑 연습 창 참조 (토글용)
+    private TypingPracticeWindow? _typingPracticeWindow;
+
     public MiniWidget()
     {
         InitializeComponent();
@@ -916,5 +919,54 @@ public partial class MiniWidget : Window
         {
             vm.IsUpdateAvailable = false;
         }
+    }
+
+    private void OnTypingPracticeClick(object? sender, PointerPressedEventArgs e)
+    {
+        try
+        {
+            // 타이핑 연습창이 이미 열려있으면 닫기
+            if (_typingPracticeWindow != null)
+            {
+                _typingPracticeWindow.Close();
+                _typingPracticeWindow = null;
+                e.Handled = true;
+                return;
+            }
+
+            // 타이핑 연습 열기
+            var viewModel = new TypingPracticeViewModel();
+
+            // 문장 완료 시 미니위젯 새로고침
+            viewModel.SentenceCompleted += () =>
+            {
+                Dispatcher.UIThread.Post(() => _viewModel?.Refresh());
+            };
+
+            _typingPracticeWindow = new TypingPracticeWindow
+            {
+                DataContext = viewModel
+            };
+
+            _typingPracticeWindow.Closed += (s, args) =>
+            {
+                // 타이머 정리
+                if (_typingPracticeWindow?.DataContext is TypingPracticeViewModel vm)
+                {
+                    vm.Cleanup();
+                }
+                _typingPracticeWindow = null;
+                _viewModel?.Refresh();
+            };
+
+            _typingPracticeWindow.Show();
+            _typingPracticeWindow.Activate();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"타이핑 연습 열기 에러: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
+        e.Handled = true;
     }
 }
