@@ -513,4 +513,62 @@ public class DatabaseService
             insertCommand.ExecuteNonQuery();
         }
     }
+
+    /// <summary>
+    /// 기존 DB에 새로 추가된 크리처를 마이그레이션
+    /// </summary>
+    public void MigrateNewCreatures()
+    {
+        using var connection = GetConnection();
+
+        // 현재 크리처 수 확인
+        var countCommand = connection.CreateCommand();
+        countCommand.CommandText = "SELECT COUNT(*) FROM creatures";
+        var count = Convert.ToInt32(countCommand.ExecuteScalar());
+
+        // 이미 53종이면 마이그레이션 불필요
+        if (count >= 53) return;
+
+        // 50종만 있으면 51-53 추가
+        if (count == 50)
+        {
+            var newCreatures = new List<(int id, string name, Rarity rarity, Element element, string desc, string age, string gender, string food, string dislikes, string background)>
+            {
+                (51, "지우개똥", Rarity.Common, Element.Earth, "말랑말랑한 지우개 모양 생물",
+                    "1살", "무성", "연필심", "볼펜",
+                    "누군가의 실수를 지우다가 생명을 얻었다. 실수를 먹고 자라며, 항상 깨끗한 시작을 응원한다."),
+
+                (52, "네시", Rarity.Legendary, Element.Water, "스코틀랜드 호수의 전설",
+                    "10000살", "여자", "물고기", "카메라",
+                    "네스호 깊은 곳에 숨어 사는 전설의 공룡. 수줍음이 많아 사진 찍히는 걸 극도로 싫어한다."),
+
+                (53, "빅풋", Rarity.Legendary, Element.Earth, "숲속의 거대한 발자국 주인",
+                    "???", "남자", "베리", "문명",
+                    "깊은 산속에 사는 전설의 거인. 발자국만 남기고 사라지며, 사실은 매우 친절하고 수줍음이 많다."),
+            };
+
+            var insertCommand = connection.CreateCommand();
+            insertCommand.CommandText = @"
+                INSERT INTO creatures (id, name, rarity, element, sprite_path, description, age, gender, favorite_food, dislikes, background)
+                VALUES (@id, @name, @rarity, @element, @sprite, @desc, @age, @gender, @food, @dislikes, @background)
+            ";
+
+            foreach (var c in newCreatures)
+            {
+                insertCommand.Parameters.Clear();
+                insertCommand.Parameters.AddWithValue("@id", c.id);
+                insertCommand.Parameters.AddWithValue("@name", c.name);
+                insertCommand.Parameters.AddWithValue("@rarity", (int)c.rarity);
+                insertCommand.Parameters.AddWithValue("@element", (int)c.element);
+                insertCommand.Parameters.AddWithValue("@sprite", $"Creatures/{c.id}.png");
+                insertCommand.Parameters.AddWithValue("@desc", c.desc);
+                insertCommand.Parameters.AddWithValue("@age", c.age);
+                insertCommand.Parameters.AddWithValue("@gender", c.gender);
+                insertCommand.Parameters.AddWithValue("@food", c.food);
+                insertCommand.Parameters.AddWithValue("@dislikes", c.dislikes);
+                insertCommand.Parameters.AddWithValue("@background", c.background);
+                insertCommand.ExecuteNonQuery();
+            }
+        }
+    }
 }

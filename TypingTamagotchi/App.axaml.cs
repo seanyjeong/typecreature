@@ -38,6 +38,7 @@ public partial class App : Application
                 // 데이터베이스 초기화
                 _db = new DatabaseService();
                 _db.SeedCreaturesIfEmpty();
+                _db.MigrateNewCreatures();
 
                 // 디버그: 현재 진열장 상태 출력
                 var displaySlots = _db.GetDisplaySlots();

@@ -78,6 +78,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _db = new DatabaseService();
         _db.SeedCreaturesIfEmpty();
+        _db.MigrateNewCreatures();
 
         _eggService = new EggService(_db);
         _hatchingService = new HatchingService(_db);
