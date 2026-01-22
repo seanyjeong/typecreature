@@ -366,16 +366,16 @@
                                FontWeight="Bold"
                                Foreground="#4CAF50"
                                HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0} 버전이 있습니다!'}"
+                    <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0} 다운로드 중...'}"
                                FontSize="14"
                                Foreground="White"
                                HorizontalAlignment="Center"/>
-                    <TextBlock Text="Update.exe를 실행하여 업데이트하세요"
+                    <TextBlock Text="잠시 후 자동으로 재시작됩니다"
                                FontSize="11"
                                Foreground="#AAA"
                                HorizontalAlignment="Center"
                                TextWrapping="Wrap"/>
-                    <Button Content="확인"
+                    <Button Content="닫기"
                             HorizontalAlignment="Center"
                             Padding="30,8"
                             Background="#4CAF50"
