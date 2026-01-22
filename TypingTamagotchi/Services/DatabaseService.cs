@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Data.Sqlite;
 using TypingTamagotchi.Models;
 
@@ -8,10 +9,21 @@ namespace TypingTamagotchi.Services;
 public class DatabaseService
 {
     private readonly string _connectionString;
+    private static readonly string AppDataFolder = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "TypingTamagotchi"
+    );
 
-    public DatabaseService(string dbPath = "tamagotchi.db")
+    public DatabaseService(string? dbPath = null)
     {
+        // AppData/Local/TypingTamagotchi/ 폴더에 DB 저장 (업데이트해도 유지됨)
+        if (dbPath == null)
+        {
+            Directory.CreateDirectory(AppDataFolder);
+            dbPath = Path.Combine(AppDataFolder, "tamagotchi.db");
+        }
         _connectionString = $"Data Source={dbPath}";
+        Console.WriteLine($"[DB] Path: {dbPath}");
         InitializeDatabase();
     }
 
