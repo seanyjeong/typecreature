@@ -12,6 +12,7 @@
 | **UI** | Avalonia UI | 11.3.11 |
 | **MVVM** | CommunityToolkit.Mvvm | 8.4.0 |
 | **DB** | SQLite (Microsoft.Data.Sqlite) | 10.0.2 |
+| **자동 업데이트** | Velopack | 0.0.1015 |
 | **이미지 생성** | Python + DALL-E 3 / Gemini Imagen | - |
 
 ---
@@ -32,7 +33,7 @@ typing-tamagotchi/
 │   └── Services/              # 비즈니스 로직
 ├── scripts/                   # 이미지 생성 스크립트
 ├── docs/                      # 기획 문서
-├── installer.iss              # Inno Setup 설치파일 설정
+├── .github/workflows/         # GitHub Actions (자동 빌드/배포)
 └── typecreature.sln           # Visual Studio 솔루션
 ```
 
@@ -178,10 +179,54 @@ dotnet run
 
 # 릴리즈 빌드 (Windows x64)
 dotnet publish -c Release -r win-x64 --self-contained
-
-# 설치파일 생성 (Inno Setup 필요)
-iscc installer.iss
 ```
+
+---
+
+## 배포 (GitHub Actions + Velopack)
+
+### 자동 업데이트 시스템
+- **Velopack** 사용 - GitHub Releases 기반 자동 업데이트
+- 설치 경로: `%LocalAppData%\TypingTamagotchi`
+- 관리자 권한 불필요
+
+### 일반 개발 (코드만 푸시)
+```bash
+git add .
+git commit -m "메시지"
+git push
+```
+→ 릴리스 생성 안됨, 코드만 GitHub에 올라감
+
+### 새 버전 배포 (릴리스 생성)
+```bash
+# 1. 변경사항 커밋 & 푸시
+git add .
+git commit -m "feat: 새 기능"
+git push
+
+# 2. 버전 태그 생성 & 푸시
+git tag v1.0.1
+git push origin v1.0.1
+```
+→ GitHub Actions 자동 실행 → 릴리스 생성
+
+### 버전 규칙 (Semantic Versioning)
+| 변경 | 버전 예시 | 설명 |
+|------|-----------|------|
+| 버그 수정 | v1.0.0 → v1.0.1 | 패치 버전 증가 |
+| 기능 추가 | v1.0.1 → v1.1.0 | 마이너 버전 증가 |
+| 큰 변경 | v1.1.0 → v2.0.0 | 메이저 버전 증가 |
+
+### 배포 결과물
+GitHub Releases에 자동 업로드:
+- `Setup.exe` - 설치 프로그램 (사용자 배포용)
+- `RELEASES` - 업데이트 메타데이터
+- `TypingTamagotchi-win-x64.nupkg` - 델타 업데이트 패키지
+
+### 사용자 경험
+1. **첫 설치**: `Setup.exe` 다운로드 → 실행
+2. **이후 업데이트**: 앱 실행 시 자동 체크 → 상단 알림 → 업데이트 버튼 클릭
 
 ---
 
