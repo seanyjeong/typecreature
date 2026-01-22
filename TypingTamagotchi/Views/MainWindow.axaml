@@ -14,7 +14,7 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*,Auto">
         <!-- 업데이트 알림 (상단) -->
         <Border Grid.Row="0"
                 IsVisible="{Binding IsUpdateAvailable}"
@@ -261,5 +261,14 @@
                 </StackPanel>
             </Border>
         </Border>
+
+        <!-- 현재 버전 표시 (하단) -->
+        <TextBlock Grid.Row="2"
+                   Text="{Binding CurrentVersion, StringFormat='v{0}'}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Margin="0,0,10,5"
+                   FontSize="10"
+                   Foreground="#999"/>
     </Grid>
 </Window>

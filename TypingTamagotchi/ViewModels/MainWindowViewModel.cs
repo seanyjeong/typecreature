@@ -50,6 +50,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private string _updateVersion = "";
 
     [ObservableProperty]
+    private string _currentVersion = "";
+
+    [ObservableProperty]
     private bool _isDownloading;
 
     [ObservableProperty]
@@ -156,7 +159,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async System.Threading.Tasks.Task CheckForUpdatesAsync()
     {
-        await _updateService.CheckForUpdatesAsync();
+        // 현재 버전 표시
+        CurrentVersion = _updateService.CurrentVersion ?? "unknown";
+        Console.WriteLine($"[MainWindow] Current version: {CurrentVersion}");
+
+        var hasUpdate = await _updateService.CheckForUpdatesAsync();
+        Console.WriteLine($"[MainWindow] Has update: {hasUpdate}");
     }
 
     private void OnTimeProgressTick(object? sender, EventArgs e)
