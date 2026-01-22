@@ -344,7 +344,7 @@
             </Grid>
         </Border>
 
-        <!-- 업데이트 알림 팝업 (화면 가운데) -->
+        <!-- 업데이트 완료 팝업 (화면 가운데) -->
         <Border Grid.RowSpan="2"
                 IsVisible="{Binding IsUpdateAvailable}"
                 Background="#80000000"
@@ -352,34 +352,70 @@
                 VerticalAlignment="Stretch">
             <Border Background="#2C3E50"
                     CornerRadius="12"
-                    Padding="25"
+                    Padding="20"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    BorderBrush="#4CAF50"
-                    BorderThickness="3">
+                    BorderBrush="#FFD700"
+                    BorderThickness="3"
+                    MaxWidth="300">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" Opacity="0.5" OffsetY="3"/>
                 </Border.Effect>
-                <StackPanel Spacing="15">
-                    <TextBlock Text="🆕 업데이트 알림"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="#4CAF50"
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0} 다운로드 중...'}"
-                               FontSize="14"
-                               Foreground="White"
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="잠시 후 자동으로 재시작됩니다"
-                               FontSize="11"
-                               Foreground="#AAA"
-                               HorizontalAlignment="Center"
-                               TextWrapping="Wrap"/>
-                    <Button Content="닫기"
+                <StackPanel Spacing="12">
+                    <!-- 헤더 -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                        <TextBlock Text="🎉"
+                                   FontSize="20"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="업데이트 완료!"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#FFD700"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- 버전 정보 -->
+                    <Border Background="#1A1A2E"
+                            CornerRadius="6"
+                            Padding="12,8">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0}'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#4CAF50"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding UpdateTitle}"
+                                       FontSize="12"
+                                       Foreground="#AAA"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 변경 사항 목록 -->
+                    <ItemsControl ItemsSource="{Binding ChangelogItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+                                    <TextBlock Text="{Binding TypeIcon}"
+                                               FontSize="12"
+                                               VerticalAlignment="Top"/>
+                                    <TextBlock Text="{Binding Text}"
+                                               FontSize="11"
+                                               Foreground="#DDD"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="220"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- 확인 버튼 -->
+                    <Button Content="확인"
                             HorizontalAlignment="Center"
-                            Padding="30,8"
-                            Background="#4CAF50"
-                            Foreground="White"
+                            Padding="40,8"
+                            Background="#FFD700"
+                            Foreground="#1A1A1A"
                             FontWeight="Bold"
                             Click="OnUpdateDismissClick"/>
                 </StackPanel>

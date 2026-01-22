@@ -91,12 +91,18 @@ public partial class MiniWidgetViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsMiniMode));
     }
 
-    // 업데이트 알림
+    // 업데이트 완료 팝업
     [ObservableProperty]
     private bool _isUpdateAvailable;
 
     [ObservableProperty]
     private string _updateVersion = "";
+
+    [ObservableProperty]
+    private string _updateTitle = "";
+
+    [ObservableProperty]
+    private ObservableCollection<ChangelogItemDisplay> _changelogItems = new();
 
     private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
 
@@ -370,6 +376,53 @@ public partial class MiniWidgetViewModel : ViewModelBase
         UpdateVersion = version;
         IsUpdateAvailable = true;
     }
+
+    public void ShowUpdateCompletePopup(string newVersion)
+    {
+        App.Log($"Showing update complete popup for version: {newVersion}");
+
+        // ChangelogService로 버전 정보 가져오기
+        var changelogService = new ChangelogService(_db);
+        var versionInfo = changelogService.GetCurrentVersionInfo();
+
+        UpdateVersion = newVersion;
+        UpdateTitle = versionInfo?.Title ?? "업데이트 완료";
+
+        ChangelogItems.Clear();
+        if (versionInfo?.Changes != null)
+        {
+            foreach (var change in versionInfo.Changes)
+            {
+                ChangelogItems.Add(new ChangelogItemDisplay
+                {
+                    TypeIcon = change.Type switch
+                    {
+                        "feature" => "✨",
+                        "fix" => "🔧",
+                        "improvement" => "⚡",
+                        _ => "📝"
+                    },
+                    Text = change.Text ?? ""
+                });
+            }
+        }
+
+        // changelog 본 것으로 표시
+        changelogService.MarkChangelogSeen();
+
+        IsUpdateAvailable = true;
+    }
+
+    public void DismissUpdatePopup()
+    {
+        IsUpdateAvailable = false;
+    }
+}
+
+public class ChangelogItemDisplay
+{
+    public string TypeIcon { get; set; } = "";
+    public string Text { get; set; } = "";
 }
 
 public partial class DisplaySlot : ObservableObject

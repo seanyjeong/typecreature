@@ -75,6 +75,9 @@ public partial class App : Application
                 // 미니 위젯 바로 표시
                 ShowMiniWidget();
 
+                // 업데이트 완료 체크 (재시작 후 changelog 표시)
+                CheckForCompletedUpdate();
+
                 // 키보드/마우스 입력 감지 시작
                 StartInputService();
 
@@ -178,6 +181,22 @@ public partial class App : Application
         }
     }
 
+    private void CheckForCompletedUpdate()
+    {
+        var updateInfo = CheckAndClearUpdateMarker();
+        if (updateInfo.HasValue)
+        {
+            var (fromVersion, toVersion) = updateInfo.Value;
+            Log($"Update completed: {fromVersion} -> {toVersion}. Showing changelog...");
+
+            // 미니위젯에 업데이트 완료 팝업 표시
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _miniWidgetViewModel?.ShowUpdateCompletePopup(toVersion);
+            });
+        }
+    }
+
     private void OpenCollectionWindow()
     {
         try
@@ -259,17 +278,16 @@ public partial class App : Application
             if (hasUpdate)
             {
                 var newVersion = _updateService.NewVersion;
-                Log($"Update available: {newVersion}. Starting download...");
+                var currentVersion = _updateService.CurrentVersion;
+                Log($"Update available: {currentVersion} -> {newVersion}. Starting silent download...");
 
-                // 미니 위젯에 알림 표시
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    _miniWidgetViewModel?.ShowUpdateNotification(newVersion ?? "new");
-                });
-
-                // 다운로드
+                // 조용히 다운로드 (팝업 없음)
                 await _updateService.DownloadUpdateAsync();
-                Log("Download completed. Applying update and restarting...");
+                Log("Download completed.");
+
+                // 마커 파일 저장 (재시작 후 changelog 표시용)
+                SaveUpdateMarker(currentVersion ?? "unknown", newVersion ?? "unknown");
+                Log("Update marker saved. Applying update and restarting...");
 
                 // 설치 및 재시작
                 _updateService.ApplyUpdateAndRestart();
@@ -280,5 +298,47 @@ public partial class App : Application
             Log($"Update error: {ex.Message}");
             Log($"Stack: {ex.StackTrace}");
         }
+    }
+
+    private static readonly string UpdateMarkerPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "TypingTamagotchi", "just_updated.txt"
+    );
+
+    private void SaveUpdateMarker(string fromVersion, string toVersion)
+    {
+        try
+        {
+            var dir = Path.GetDirectoryName(UpdateMarkerPath);
+            if (dir != null) Directory.CreateDirectory(dir);
+            File.WriteAllText(UpdateMarkerPath, $"{fromVersion}|{toVersion}");
+        }
+        catch (Exception ex)
+        {
+            Log($"Failed to save update marker: {ex.Message}");
+        }
+    }
+
+    private (string fromVersion, string toVersion)? CheckAndClearUpdateMarker()
+    {
+        try
+        {
+            if (File.Exists(UpdateMarkerPath))
+            {
+                var content = File.ReadAllText(UpdateMarkerPath);
+                File.Delete(UpdateMarkerPath);
+
+                var parts = content.Split('|');
+                if (parts.Length == 2)
+                {
+                    return (parts[0], parts[1]);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"Failed to check update marker: {ex.Message}");
+        }
+        return null;
     }
 }
