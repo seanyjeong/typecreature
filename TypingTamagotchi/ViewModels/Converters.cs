@@ -80,15 +80,30 @@ public class SpritePathToImageConverter : IValueConverter
     {
         if (value is string spritePath && !string.IsNullOrEmpty(spritePath))
         {
-            try
-            {
-                var uri = new Uri($"avares://TypingTamagotchi/Assets/{spritePath}");
-                return new Bitmap(AssetLoader.Open(uri));
-            }
-            catch
-            {
-                return null;
-            }
+            // 썸네일 캐시 사용 (메모리 최적화)
+            return Services.ImageCacheService.Instance.GetThumbnail(spritePath);
+        }
+        return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// 원본 이미지용 컨버터 (상세보기에서 사용)
+/// </summary>
+public class SpritePathToOriginalImageConverter : IValueConverter
+{
+    public static readonly SpritePathToOriginalImageConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string spritePath && !string.IsNullOrEmpty(spritePath))
+        {
+            return Services.ImageCacheService.Instance.GetOriginal(spritePath);
         }
         return null;
     }
