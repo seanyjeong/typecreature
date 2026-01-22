@@ -1,6 +1,17 @@
 {
   "versions": [
     {
+      "version": "1.2.19",
+      "date": "2025-01-22",
+      "title": "타수 표시 개선",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "현재 문장 타수 + 평균 타수 분리 표시"
+        }
+      ]
+    },
+    {
       "version": "1.2.18",
       "date": "2025-01-22",
       "title": "타이핑 연습 UI 개선",

@@ -24,9 +24,10 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     private string _currentSentence = "";
     private DateTime _sessionStartTime;
+    private DateTime _sentenceStartTime;
     private int _totalCharsTyped = 0;
     private int _totalCorrectChars = 0;
-    private int _totalTypedChars = 0;
+    private string _currentUserInput = "";
 
     private const double PROGRESS_BAR_MAX_WIDTH = 540.0;
 
@@ -34,7 +35,10 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private ObservableCollection<CharDisplay> _displayChars = new();
 
     [ObservableProperty]
-    private int _currentCPM = 0;
+    private int _currentCPM = 0;  // 현재 문장 타수
+
+    [ObservableProperty]
+    private int _averageCPM = 0;  // 평균 타수
 
     [ObservableProperty]
     private string _accuracyText = "100%";
@@ -109,6 +113,9 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
         _currentSentence = _sentences[_random.Next(_sentences.Count)];
         CurrentSentenceText = _currentSentence;
+        _sentenceStartTime = DateTime.Now;
+        _currentUserInput = "";
+        CurrentCPM = 0;
 
         // 입력 필드 초기화 요청
         ClearInputRequested?.Invoke();
@@ -157,6 +164,13 @@ public partial class TypingPracticeViewModel : ViewModelBase
     // View에서 호출 - 텍스트 변경 시
     public void OnTextChanged(string userInput)
     {
+        // 첫 입력 시 문장 시작 시간 기록
+        if (_currentUserInput.Length == 0 && userInput.Length > 0)
+        {
+            _sentenceStartTime = DateTime.Now;
+        }
+        _currentUserInput = userInput;
+
         UpdateDisplayChars(userInput);
 
         // 정확도 계산 (현재 입력 기준)
@@ -171,9 +185,6 @@ public partial class TypingPracticeViewModel : ViewModelBase
             }
             var accuracy = total > 0 ? (double)correct / total * 100 : 100;
             AccuracyText = $"{accuracy:F0}%";
-
-            // 전체 통계 업데이트
-            _totalTypedChars = _totalCharsTyped + userInput.Length;
         }
 
         // 문장 완료 체크 (정확히 일치할 때만)
@@ -221,10 +232,21 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
     private void UpdateCPM()
     {
-        var elapsed = (DateTime.Now - _sessionStartTime).TotalMinutes;
-        if (elapsed > 0.01 && _totalCharsTyped > 0) // 최소 0.6초
+        // 현재 문장 타수 계산
+        if (_currentUserInput.Length > 0)
         {
-            CurrentCPM = (int)(_totalCharsTyped / elapsed);
+            var sentenceElapsed = (DateTime.Now - _sentenceStartTime).TotalMinutes;
+            if (sentenceElapsed > 0.01) // 최소 0.6초
+            {
+                CurrentCPM = (int)(_currentUserInput.Length / sentenceElapsed);
+            }
+        }
+
+        // 평균 타수 계산 (완료한 문장들 기준)
+        var sessionElapsed = (DateTime.Now - _sessionStartTime).TotalMinutes;
+        if (sessionElapsed > 0.01 && _totalCharsTyped > 0)
+        {
+            AverageCPM = (int)(_totalCharsTyped / sessionElapsed);
         }
     }
 
