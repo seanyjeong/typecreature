@@ -356,6 +356,13 @@ public partial class MiniWidgetViewModel : ViewModelBase
         LoadDisplayCreatures();
         UpdateProgress();
     }
+
+    public void ShowUpdateNotification(string version)
+    {
+        // TODO: 미니 위젯에 업데이트 알림 표시
+        // 지금은 로그만 남김
+        App.Log($"Update notification received: {version}");
+    }
 }
 
 public partial class DisplaySlot : ObservableObject

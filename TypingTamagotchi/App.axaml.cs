@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -20,6 +21,23 @@ public partial class App : Application
     private MiniWidgetViewModel? _miniWidgetViewModel;
     private DatabaseService? _db;
     private IInputService? _inputService;
+    private UpdateService? _updateService;
+
+    private static readonly string LogPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "TypingTamagotchi", "app.log"
+    );
+
+    public static void Log(string message)
+    {
+        try
+        {
+            var dir = Path.GetDirectoryName(LogPath);
+            if (dir != null) Directory.CreateDirectory(dir);
+            File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss}] {message}\n");
+        }
+        catch { }
+    }
 
     public override void Initialize()
     {
@@ -28,6 +46,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Log("=== App Starting ===");
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
@@ -35,6 +55,7 @@ public partial class App : Application
 
             try
             {
+                Log("Initializing database...");
                 // 데이터베이스 초기화
                 _db = new DatabaseService();
                 _db.SeedCreaturesIfEmpty();
@@ -56,6 +77,10 @@ public partial class App : Application
 
                 // 키보드/마우스 입력 감지 시작
                 StartInputService();
+
+                // 업데이트 체크 (백그라운드)
+                Log("Starting update check...");
+                _ = CheckForUpdatesAsync();
 
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             }
@@ -217,6 +242,34 @@ public partial class App : Application
         foreach (var plugin in dataValidationPluginsToRemove)
         {
             BindingPlugins.DataValidators.Remove(plugin);
+        }
+    }
+
+    private async System.Threading.Tasks.Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            Log("Creating UpdateService...");
+            _updateService = new UpdateService();
+            Log($"UpdateService created. CurrentVersion: {_updateService.CurrentVersion}");
+
+            _updateService.UpdateAvailable += version =>
+            {
+                Log($"Update available: {version}");
+                // 미니 위젯에 업데이트 알림 표시
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    _miniWidgetViewModel?.ShowUpdateNotification(version);
+                });
+            };
+
+            var hasUpdate = await _updateService.CheckForUpdatesAsync();
+            Log($"Update check completed. HasUpdate: {hasUpdate}");
+        }
+        catch (Exception ex)
+        {
+            Log($"Update check error: {ex.Message}");
+            Log($"Stack: {ex.StackTrace}");
         }
     }
 }
