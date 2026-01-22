@@ -13,10 +13,26 @@
         Topmost="True"
         Background="Transparent">
 
-    <!-- 전체를 감싸는 Grid: 시계 + 메인박스 -->
-    <Grid RowDefinitions="Auto,*">
-        <!-- 상단: 로얄 시계 위젯 (항상 표시, 메인박스 위에 위치) -->
+    <!-- 전체를 감싸는 Grid: 업데이트 알림 + 시계 + 메인박스 -->
+    <Grid RowDefinitions="Auto,Auto,*">
+        <!-- 업데이트 알림 (최상단) -->
         <Border Grid.Row="0"
+                IsVisible="{Binding IsUpdateAvailable}"
+                Background="#4CAF50"
+                CornerRadius="8"
+                Padding="10,6"
+                Margin="0,0,0,5"
+                HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="🆕" FontSize="14" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding UpdateVersion, StringFormat='v{0} 업데이트 가능!'}"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+        <!-- 상단: 로얄 시계 위젯 (항상 표시, 메인박스 위에 위치) -->
+        <Border Grid.Row="1"
                 CornerRadius="10"
                 Padding="12,6"
                 HorizontalAlignment="Center"
@@ -53,7 +69,7 @@
         </Border>
 
         <!-- 메인 박스 -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Margin="0,8,0,0"
                 CornerRadius="16"
                 BorderBrush="#4A5568"

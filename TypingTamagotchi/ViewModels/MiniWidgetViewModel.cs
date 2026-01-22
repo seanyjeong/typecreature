@@ -91,6 +91,13 @@ public partial class MiniWidgetViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsMiniMode));
     }
 
+    // 업데이트 알림
+    [ObservableProperty]
+    private bool _isUpdateAvailable;
+
+    [ObservableProperty]
+    private string _updateVersion = "";
+
     private const double COLLECTION_BAR_MAX_WIDTH = 60.0;
 
     public MiniWidgetViewModel()
@@ -359,9 +366,9 @@ public partial class MiniWidgetViewModel : ViewModelBase
 
     public void ShowUpdateNotification(string version)
     {
-        // TODO: 미니 위젯에 업데이트 알림 표시
-        // 지금은 로그만 남김
         App.Log($"Update notification received: {version}");
+        UpdateVersion = version;
+        IsUpdateAvailable = true;
     }
 }
 
