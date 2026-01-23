@@ -20,7 +20,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private readonly DatabaseService _db;
     private readonly HatchingService _hatching;
     private readonly List<string> _koreanSentences = new();
-    private readonly List<string> _englishSentences = new();
+    private readonly List<EnglishSentence> _englishSentences = new();
     private readonly List<string> _codeSentences = new();
     private readonly Random _random = new();
     private readonly Timer _cpmTimer;
@@ -28,6 +28,7 @@ public partial class TypingPracticeViewModel : ViewModelBase
     private readonly Stopwatch _activeTypingStopwatch = new(); // 실제 타이핑 시간만 측정
 
     private string _currentSentence = "";
+    private string _currentTranslationText = "";
     private int _totalCharsTyped = 0;
     private int _totalCorrectChars = 0;
     private string _currentUserInput = "";
@@ -81,6 +82,12 @@ public partial class TypingPracticeViewModel : ViewModelBase
     [ObservableProperty]
     private bool _showEnglishSubToggle = false;
 
+    [ObservableProperty]
+    private string _currentTranslation = "";
+
+    [ObservableProperty]
+    private bool _showTranslation = false;
+
     private int _hatchContributionCount = 0;
     private int _requiredForHatch = 1000; // 부화에 필요한 입력 수 (예시)
 
@@ -130,21 +137,21 @@ public partial class TypingPracticeViewModel : ViewModelBase
             _koreanSentences.Add("천 리 길도 한 걸음부터");
         }
 
-        // 영어 문장 로드
+        // 영어 문장 로드 (번역 포함)
         try
         {
             var uri = new Uri("avares://TypingTamagotchi/Assets/typing_sentences_en.json");
             using var stream = AssetLoader.Open(uri);
             using var reader = new StreamReader(stream);
             var json = reader.ReadToEnd();
-            var data = JsonSerializer.Deserialize<SentenceData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var data = JsonSerializer.Deserialize<EnglishSentenceData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (data?.Sentences != null) _englishSentences.AddRange(data.Sentences);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to load English sentences: {ex.Message}");
-            _englishSentences.Add("Actions speak louder than words.");
-            _englishSentences.Add("Practice makes perfect.");
+            _englishSentences.Add(new EnglishSentence { En = "Actions speak louder than words.", Ko = "행동이 말보다 중요하다." });
+            _englishSentences.Add(new EnglishSentence { En = "Practice makes perfect.", Ko = "연습이 완벽을 만든다." });
         }
 
         // 코드 문장 로드
@@ -165,16 +172,37 @@ public partial class TypingPracticeViewModel : ViewModelBase
         }
     }
 
-    private List<string> CurrentSentences => IsEnglishMode
-        ? (IsCodeMode ? _codeSentences : _englishSentences)
-        : _koreanSentences;
-
     private void NextSentence()
     {
-        var sentences = CurrentSentences;
-        if (sentences.Count == 0) return;
+        if (IsEnglishMode && !IsCodeMode)
+        {
+            // 영어 격언 모드 (번역 포함)
+            if (_englishSentences.Count == 0) return;
+            var sentence = _englishSentences[_random.Next(_englishSentences.Count)];
+            _currentSentence = sentence.En;
+            _currentTranslationText = sentence.Ko;
+            CurrentTranslation = sentence.Ko;
+            ShowTranslation = true;
+        }
+        else if (IsEnglishMode && IsCodeMode)
+        {
+            // 코드 모드
+            if (_codeSentences.Count == 0) return;
+            _currentSentence = _codeSentences[_random.Next(_codeSentences.Count)];
+            _currentTranslationText = "";
+            CurrentTranslation = "";
+            ShowTranslation = false;
+        }
+        else
+        {
+            // 한글 모드
+            if (_koreanSentences.Count == 0) return;
+            _currentSentence = _koreanSentences[_random.Next(_koreanSentences.Count)];
+            _currentTranslationText = "";
+            CurrentTranslation = "";
+            ShowTranslation = false;
+        }
 
-        _currentSentence = sentences[_random.Next(sentences.Count)];
         CurrentSentenceText = _currentSentence;
         _currentUserInput = "";
         _sentenceCompleted = false;
@@ -365,9 +393,9 @@ public partial class TypingPracticeViewModel : ViewModelBase
         NextSentence();
     }
 
-    public (int avgCPM, int completed, string accuracy) GetSessionSummary()
+    public (int avgCPM, int completed, string accuracy, string hatchContrib) GetSessionSummary()
     {
-        return (AverageCPM, CompletedCount, AccuracyText);
+        return (AverageCPM, CompletedCount, AccuracyText, HatchContribution);
     }
 
     public void EndSession()
@@ -407,4 +435,15 @@ public class CharDisplay
 public class SentenceData
 {
     public List<string>? Sentences { get; set; }
+}
+
+public class EnglishSentence
+{
+    public string En { get; set; } = "";
+    public string Ko { get; set; } = "";
+}
+
+public class EnglishSentenceData
+{
+    public List<EnglishSentence>? Sentences { get; set; }
 }

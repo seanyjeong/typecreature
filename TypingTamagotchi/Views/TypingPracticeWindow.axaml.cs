@@ -97,7 +97,7 @@ public partial class TypingPracticeWindow : Window
     {
         if (_viewModel != null)
         {
-            var (avgCPM, completed, accuracy) = _viewModel.GetSessionSummary();
+            var (avgCPM, completed, accuracy, hatchContrib) = _viewModel.GetSessionSummary();
 
             if (completed > 0)
             {
@@ -105,8 +105,8 @@ public partial class TypingPracticeWindow : Window
                 var summaryWindow = new Window
                 {
                     Title = "⌨️ 타이핑 연습 결과",
-                    Width = 300,
-                    Height = 200,
+                    Width = 320,
+                    Height = 240,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Background = Avalonia.Media.Brushes.White,
                     CanResize = false
@@ -142,6 +142,13 @@ public partial class TypingPracticeWindow : Window
                 {
                     Text = $"🎯 정확도: {accuracy}",
                     FontSize = 14
+                });
+
+                panel.Children.Add(new TextBlock
+                {
+                    Text = $"🥚 부화 기여: {hatchContrib}",
+                    FontSize = 14,
+                    Foreground = Avalonia.Media.Brushes.Purple
                 });
 
                 var closeButton = new Button

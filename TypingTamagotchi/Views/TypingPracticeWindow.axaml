@@ -148,6 +148,15 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
+                    <!-- 영어 문장 번역 -->
+                    <TextBlock Text="{Binding CurrentTranslation}"
+                               FontSize="14"
+                               Foreground="#9E9E9E"
+                               FontStyle="Italic"
+                               HorizontalAlignment="Center"
+                               Margin="0,12,0,0"
+                               IsVisible="{Binding ShowTranslation}"/>
+
                     <!-- Enter 안내 (문장 완료 시) -->
                     <TextBlock Text="✓ Enter를 눌러 다음 문장으로!"
                                FontSize="14"
