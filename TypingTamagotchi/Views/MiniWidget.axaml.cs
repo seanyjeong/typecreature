@@ -248,11 +248,17 @@ public partial class MiniWidget : Window
 
         mainStack.Children.Add(infoStack);
 
-        // 확인 버튼
-        var baseColor = Color.Parse(rarityColor);
-        var hatchBaseBrush = new SolidColorBrush(baseColor);
-        var hatchHoverBrush = new SolidColorBrush(Color.FromArgb(220, baseColor.R, baseColor.G, baseColor.B));
-        var hatchPressedBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+        // 확인 버튼 - 등급별 hover/pressed 색상
+        var (hatchHoverColor, hatchPressedColor) = rarityColor switch
+        {
+            "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary
+            "#9C27B0" => ("#BA68C8", "#7B1FA2"),  // Epic
+            "#2196F3" => ("#64B5F6", "#1976D2"),  // Rare
+            _ => ("#81C784", "#388E3C")           // Common
+        };
+        var hatchBaseBrush = new SolidColorBrush(Color.Parse(rarityColor));
+        var hatchHoverBrush = new SolidColorBrush(Color.Parse(hatchHoverColor));
+        var hatchPressedBrush = new SolidColorBrush(Color.Parse(hatchPressedColor));
 
         var confirmBtn = new Button
         {
@@ -776,11 +782,17 @@ public partial class MiniWidget : Window
             LineHeight = 18
         });
 
-        // 닫기 버튼
-        var infoBaseColor = Color.Parse(rarityColor);
-        var infoBaseBrush = new SolidColorBrush(infoBaseColor);
-        var infoHoverBrush = new SolidColorBrush(Color.FromArgb(220, infoBaseColor.R, infoBaseColor.G, infoBaseColor.B));
-        var infoPressedBrush = new SolidColorBrush(Color.FromArgb(180, infoBaseColor.R, infoBaseColor.G, infoBaseColor.B));
+        // 닫기 버튼 - 등급별 hover/pressed 색상
+        var (infoHoverColor, infoPressedColor) = rarityColor switch
+        {
+            "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary: 더 밝은 금색 / 어두운 금색
+            "#9C27B0" => ("#BA68C8", "#7B1FA2"),  // Epic: 밝은 보라 / 어두운 보라
+            "#2196F3" => ("#64B5F6", "#1976D2"),  // Rare: 밝은 파랑 / 어두운 파랑
+            _ => ("#81C784", "#388E3C")           // Common: 밝은 녹색 / 어두운 녹색
+        };
+        var infoBaseBrush = new SolidColorBrush(Color.Parse(rarityColor));
+        var infoHoverBrush = new SolidColorBrush(Color.Parse(infoHoverColor));
+        var infoPressedBrush = new SolidColorBrush(Color.Parse(infoPressedColor));
 
         var closeBtn = new Button
         {

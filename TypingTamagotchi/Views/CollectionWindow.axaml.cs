@@ -232,11 +232,17 @@ public partial class CollectionWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            // 닫기 버튼
-            var baseColor = Color.Parse(rarityColor);
-            var baseBrush = new SolidColorBrush(baseColor);
-            var hoverBrush = new SolidColorBrush(Color.FromArgb(220, baseColor.R, baseColor.G, baseColor.B));
-            var pressedBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+            // 닫기 버튼 - 등급별 hover/pressed 색상
+            var (hoverColor, pressedColor) = rarityColor switch
+            {
+                "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary
+                "#9C27B0" => ("#BA68C8", "#7B1FA2"),  // Epic
+                "#2196F3" => ("#64B5F6", "#1976D2"),  // Rare
+                _ => ("#81C784", "#388E3C")           // Common
+            };
+            var baseBrush = new SolidColorBrush(Color.Parse(rarityColor));
+            var hoverBrush = new SolidColorBrush(Color.Parse(hoverColor));
+            var pressedBrush = new SolidColorBrush(Color.Parse(pressedColor));
 
             var closeBtn = new Button
             {
