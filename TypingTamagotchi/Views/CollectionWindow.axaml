@@ -10,6 +10,16 @@
         Width="600" Height="500"
         WindowStartupLocation="CenterOwner">
 
+    <Window.Styles>
+        <!-- 작은 버튼들 hover/pressed 스타일 -->
+        <Style Selector="Button.small:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#B0BEC5"/>
+        </Style>
+        <Style Selector="Button.small:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#607D8B"/>
+        </Style>
+    </Window.Styles>
+
     <Design.DataContext>
         <vm:CollectionViewModel/>
     </Design.DataContext>
@@ -80,7 +90,8 @@
                                             Spacing="2"
                                             IsVisible="{Binding IsOwned}">
                                     <!-- 진열장 버튼 -->
-                                    <Button Content="진열"
+                                    <Button Classes="small"
+                                            Content="진열"
                                             Click="OnToggleDisplayClick"
                                             Tag="{Binding}"
                                             IsEnabled="{Binding CanSendToDisplay}"
@@ -88,7 +99,8 @@
                                             Padding="4,2"
                                             Background="{Binding IsInDisplay, Converter={x:Static vm:BoolToColorConverter.Instance}}"/>
                                     <!-- 놀이터 버튼 -->
-                                    <Button Content="놀이터"
+                                    <Button Classes="small"
+                                            Content="놀이터"
                                             Click="OnTogglePlaygroundClick"
                                             Tag="{Binding}"
                                             IsEnabled="{Binding CanSendToPlayground}"

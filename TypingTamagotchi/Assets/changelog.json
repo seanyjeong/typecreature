@@ -1,6 +1,17 @@
 {
   "versions": [
     {
+      "version": "1.2.33",
+      "date": "2026-01-23",
+      "title": "버튼 스타일 개선",
+      "changes": [
+        {
+          "type": "fix",
+          "text": "버튼 hover/pressed 상태 색상이 배경과 구분되도록 수정"
+        }
+      ]
+    },
+    {
       "version": "1.2.32",
       "date": "2026-01-23",
       "title": "영어 번역 + 결과 팝업 개선",

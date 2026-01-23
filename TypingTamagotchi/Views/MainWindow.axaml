@@ -10,6 +10,34 @@
         Width="400" Height="300"
         WindowStartupLocation="CenterScreen">
 
+    <Window.Styles>
+        <!-- 흰색 버튼 (업데이트 알림) -->
+        <Style Selector="Button.white:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E0E0E0"/>
+        </Style>
+        <Style Selector="Button.white:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#BDBDBD"/>
+        </Style>
+        <!-- 녹색 버튼 (변경 로그 확인) -->
+        <Style Selector="Button.green">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="Button.green:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#66BB6A"/>
+        </Style>
+        <Style Selector="Button.green:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#388E3C"/>
+        </Style>
+        <!-- 기본 버튼 -->
+        <Style Selector="Button.default:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E0E0E0"/>
+        </Style>
+        <Style Selector="Button.default:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#BDBDBD"/>
+        </Style>
+    </Window.Styles>
+
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
@@ -45,7 +73,8 @@
                 </StackPanel>
 
                 <!-- 업데이트 준비 완료 -->
-                <Button Grid.Column="1"
+                <Button Classes="white"
+                        Grid.Column="1"
                         Content="재시작"
                         Command="{Binding ApplyUpdateCommand}"
                         IsVisible="{Binding IsUpdateReady}"
@@ -55,7 +84,8 @@
                         Margin="10,0"/>
 
                 <!-- 다운로드 버튼 -->
-                <Button Grid.Column="1"
+                <Button Classes="white"
+                        Grid.Column="1"
                         Content="업데이트"
                         Command="{Binding DownloadUpdateCommand}"
                         IsVisible="{Binding !IsDownloading}"
@@ -121,7 +151,8 @@
             </Button>
 
             <!-- 미니 위젯 토글 -->
-            <Button Command="{Binding ToggleWidgetCommand}"
+            <Button Classes="default"
+                    Command="{Binding ToggleWidgetCommand}"
                     HorizontalAlignment="Center"
                     Padding="15,5"
                     Margin="0,5,0,0">
@@ -172,7 +203,8 @@
                                Foreground="Gray"
                                TextWrapping="Wrap"/>
 
-                    <Button Content="확인"
+                    <Button Classes="default"
+                            Content="확인"
                             Command="{Binding CloseHatchPopupCommand}"
                             HorizontalAlignment="Center"
                             Padding="30,10"/>
@@ -252,12 +284,11 @@
                     </Border>
 
                     <!-- 확인 버튼 -->
-                    <Button Content="확인"
+                    <Button Classes="green"
+                            Content="확인"
                             Command="{Binding CloseChangelogCommand}"
                             HorizontalAlignment="Center"
-                            Padding="40,10"
-                            Background="#4CAF50"
-                            Foreground="White"/>
+                            Padding="40,10"/>
                 </StackPanel>
             </Border>
         </Border>

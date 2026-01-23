@@ -21,6 +21,13 @@
         <Style Selector="Window">
             <Setter Property="CornerRadius" Value="12"/>
         </Style>
+        <!-- 반투명 버튼 hover/pressed 스타일 -->
+        <Style Selector="Button.overlay:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#B0000000"/>
+        </Style>
+        <Style Selector="Button.overlay:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#D0000000"/>
+        </Style>
     </Window.Styles>
 
     <Border CornerRadius="12"
@@ -99,7 +106,8 @@
             </ItemsControl>
 
             <!-- 닫기 버튼 -->
-            <Button Content="✕"
+            <Button Classes="overlay"
+                    Content="✕"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="0,4,4,0"
@@ -111,7 +119,8 @@
                     Click="OnCloseClick"/>
 
             <!-- 새로고침 버튼 -->
-            <Button Content="🔄"
+            <Button Classes="overlay"
+                    Content="🔄"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="0,4,32,0"

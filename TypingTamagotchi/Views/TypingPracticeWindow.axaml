@@ -11,25 +11,63 @@
         WindowStartupLocation="CenterScreen"
         Background="#1A1A2E">
 
+    <Window.Styles>
+        <!-- 파란 버튼 (언어 토글, 다음 문장) -->
+        <Style Selector="Button.blue">
+            <Setter Property="Background" Value="#3D5A80"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="Button.blue:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#5D8AC0"/>
+        </Style>
+        <Style Selector="Button.blue:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1E3A5F"/>
+        </Style>
+
+        <!-- 핑크 버튼 (격언/코딩 토글) -->
+        <Style Selector="Button.pink">
+            <Setter Property="Background" Value="#E91E63"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="Button.pink:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#FF6090"/>
+        </Style>
+        <Style Selector="Button.pink:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#AD1457"/>
+        </Style>
+
+        <!-- 빨간 버튼 (그만하기) -->
+        <Style Selector="Button.red">
+            <Setter Property="Background" Value="#E57373"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="Button.red:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#FFAB91"/>
+        </Style>
+        <Style Selector="Button.red:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#B71C1C"/>
+        </Style>
+    </Window.Styles>
+
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="20">
 
         <!-- 상단: 언어 토글 + 코드 토글 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
-            <Button Content="{Binding LanguageButtonText}"
+            <Button Classes="blue"
+                    Content="{Binding LanguageButtonText}"
                     Command="{Binding ToggleLanguageCommand}"
-                    Padding="12,6"
-                    Background="#3D5A80"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    CornerRadius="6"/>
+                    Padding="12,6"/>
             <!-- 영어 모드일 때만 보이는 서브 토글 -->
-            <Button IsVisible="{Binding ShowEnglishSubToggle}"
+            <Button Classes="pink"
+                    IsVisible="{Binding ShowEnglishSubToggle}"
                     Command="{Binding ToggleCodeModeCommand}"
-                    Padding="12,6"
-                    Background="#E91E63"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    CornerRadius="6">
+                    Padding="12,6">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <TextBlock Text="📜 격언" IsVisible="{Binding !IsCodeMode}"/>
@@ -232,17 +270,15 @@
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"/>
             <Button Grid.Column="1"
+                    Classes="blue"
                     Content="🔄 다음 문장"
                     Padding="15,8"
                     Margin="0,0,10,0"
-                    Background="#3D5A80"
-                    Foreground="White"
                     Command="{Binding SkipCommand}"/>
             <Button Grid.Column="2"
+                    Classes="red"
                     Content="그만하기"
                     Padding="15,8"
-                    Background="#E57373"
-                    Foreground="White"
                     Click="OnCloseClick"/>
         </Grid>
     </Grid>
