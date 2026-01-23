@@ -25,7 +25,13 @@ public class WindowsInputService : IInputService
     private IntPtr _keyboardHookId = IntPtr.Zero;
     private IntPtr _mouseHookId = IntPtr.Zero;
 
-    public event Action? InputDetected;
+    public event Action<int>? InputDetected; // int = virtual key code (0 for mouse)
+
+    // 화살표 키 코드
+    private const int VK_LEFT = 0x25;
+    private const int VK_UP = 0x26;
+    private const int VK_RIGHT = 0x27;
+    private const int VK_DOWN = 0x28;
 
     public void Start()
     {
@@ -67,7 +73,15 @@ public class WindowsInputService : IInputService
     {
         if (nCode >= 0 && (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN))
         {
-            InputDetected?.Invoke();
+            int vkCode = Marshal.ReadInt32(lParam);
+
+            // 화살표 키는 무시
+            if (vkCode == VK_LEFT || vkCode == VK_UP || vkCode == VK_RIGHT || vkCode == VK_DOWN)
+            {
+                return CallNextHookEx(_keyboardHookId, nCode, wParam, lParam);
+            }
+
+            InputDetected?.Invoke(vkCode);
         }
         return CallNextHookEx(_keyboardHookId, nCode, wParam, lParam);
     }
@@ -79,7 +93,7 @@ public class WindowsInputService : IInputService
             var msg = (int)wParam;
             if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN)
             {
-                InputDetected?.Invoke();
+                InputDetected?.Invoke(0); // 0 = mouse click
             }
         }
         return CallNextHookEx(_mouseHookId, nCode, wParam, lParam);

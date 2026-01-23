@@ -176,7 +176,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private void OnInputDetected()
+    private void OnInputDetected(int keyCode)
     {
         _eggService.AddProgress(1);
     }

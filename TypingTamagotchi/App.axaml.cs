@@ -245,11 +245,11 @@ public partial class App : Application
         }
     }
 
-    private void OnInputDetected()
+    private void OnInputDetected(int keyCode)
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
-            _miniWidgetViewModel?.OnInput();
+            _miniWidgetViewModel?.OnInput(keyCode);
         });
     }
 

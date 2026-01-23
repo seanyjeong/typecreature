@@ -8,7 +8,8 @@ public class SimulatedInputService : IInputService
 {
     private Timer? _timer;
 
-    public event Action? InputDetected;
+    public event Action<int>? InputDetected;
+    private Random _random = new();
 
     public void Start()
     {
@@ -19,7 +20,8 @@ public class SimulatedInputService : IInputService
 
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        InputDetected?.Invoke();
+        // 랜덤 키 코드 (A-Z: 65-90)
+        InputDetected?.Invoke(_random.Next(65, 91));
     }
 
     public void Stop()

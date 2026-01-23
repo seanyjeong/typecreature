@@ -275,9 +275,30 @@ public partial class MiniWidgetViewModel : ViewModelBase
         ProgressWidth = Progress * PROGRESS_BAR_MAX_WIDTH;
     }
 
-    public void OnInput()
+    // 연속 키 입력 감지용
+    private int _lastKeyCode = -1;
+    private int _consecutiveCount = 0;
+    private const int MAX_CONSECUTIVE = 3; // 같은 키 3번 이상 연속이면 무시
+
+    public void OnInput(int keyCode = 0)
     {
-        _hatching.RecordInput(isClick: false);
+        // 같은 키 연속 입력 감지
+        if (keyCode == _lastKeyCode && keyCode != 0) // 0은 마우스 클릭
+        {
+            _consecutiveCount++;
+            if (_consecutiveCount >= MAX_CONSECUTIVE)
+            {
+                // 같은 키 3번 이상 연속이면 무시 (어뷰징 방지)
+                return;
+            }
+        }
+        else
+        {
+            _lastKeyCode = keyCode;
+            _consecutiveCount = 1;
+        }
+
+        _hatching.RecordInput(isClick: keyCode == 0);
         UpdateProgress();
 
         // 부화 체크
