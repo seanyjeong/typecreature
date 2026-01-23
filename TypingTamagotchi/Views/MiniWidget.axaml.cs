@@ -248,7 +248,7 @@ public partial class MiniWidget : Window
 
         mainStack.Children.Add(infoStack);
 
-        // 확인 버튼 - 등급별 hover/pressed 색상
+        // 확인 버튼 (Border로 구현 - hover 색상 확실히 적용)
         var (hatchHoverColor, hatchPressedColor) = rarityColor switch
         {
             "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary
@@ -260,26 +260,31 @@ public partial class MiniWidget : Window
         var hatchHoverBrush = new SolidColorBrush(Color.Parse(hatchHoverColor));
         var hatchPressedBrush = new SolidColorBrush(Color.Parse(hatchPressedColor));
 
-        var confirmBtn = new Button
+        var confirmBtn = new Border
         {
-            Content = "다음 알 선택",
             HorizontalAlignment = HorizontalAlignment.Center,
             Padding = new Thickness(30, 10),
             Margin = new Thickness(0, 10, 0, 0),
-            FontSize = 14,
             Background = hatchBaseBrush,
-            Foreground = Brushes.Black,
-            FontWeight = FontWeight.Bold
+            CornerRadius = new CornerRadius(4),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Child = new TextBlock
+            {
+                Text = "다음 알 선택",
+                FontSize = 14,
+                Foreground = Brushes.Black,
+                FontWeight = FontWeight.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center
+            }
         };
-        confirmBtn.Click += (s, e) =>
+        confirmBtn.PointerPressed += (s, e) =>
         {
+            confirmBtn.Background = hatchPressedBrush;
             popup.Close();
             ShowEggSlotMachine();
         };
         confirmBtn.PointerEntered += (s, e) => confirmBtn.Background = hatchHoverBrush;
         confirmBtn.PointerExited += (s, e) => confirmBtn.Background = hatchBaseBrush;
-        confirmBtn.PointerPressed += (s, e) => confirmBtn.Background = hatchPressedBrush;
-        confirmBtn.PointerReleased += (s, e) => confirmBtn.Background = hatchBaseBrush;
         mainStack.Children.Add(confirmBtn);
 
         border.Child = mainStack;
@@ -359,6 +364,13 @@ public partial class MiniWidget : Window
         int slowDownCounter = 0;
         int finalIndex = -1;
 
+        // 멈춤 버튼 변수들 (타이머에서 참조하므로 먼저 선언)
+        var stopBaseBrush = new SolidColorBrush(Color.Parse("#E74C3C"));
+        var stopHoverBrush = new SolidColorBrush(Color.Parse("#FF6B5B"));
+        var stopPressedBrush = new SolidColorBrush(Color.Parse("#C0392B"));
+        var stopDisabledBrush = new SolidColorBrush(Color.Parse("#7F8C8D"));
+        bool stopBtnEnabled = true;
+
         // 타이머로 알 돌리기
         var spinTimer = new Timer(spinSpeed);
         spinTimer.Elapsed += (s, e) =>
@@ -395,11 +407,13 @@ public partial class MiniWidget : Window
                         // 버튼 텍스트 변경
                         Dispatcher.UIThread.Post(() =>
                         {
-                            var btn = mainStack.Children.OfType<Button>().FirstOrDefault();
-                            if (btn != null)
+                            var btn = mainStack.Children.OfType<Border>().LastOrDefault();
+                            if (btn?.Child is TextBlock txt)
                             {
-                                btn.Content = "확인";
-                                btn.IsEnabled = true;
+                                txt.Text = "확인";
+                                stopBtnEnabled = true;
+                                btn.Background = stopBaseBrush;
+                                btn.Cursor = new Cursor(StandardCursorType.Hand);
                             }
                         });
                     }
@@ -408,25 +422,29 @@ public partial class MiniWidget : Window
         };
         spinTimer.Start();
 
-        // 멈춤 버튼
-        var stopBaseBrush = new SolidColorBrush(Color.Parse("#E74C3C"));
-        var stopHoverBrush = new SolidColorBrush(Color.Parse("#FF6B5B"));
-        var stopPressedBrush = new SolidColorBrush(Color.Parse("#C0392B"));
-
-        var stopBtn = new Button
+        // 멈춤 버튼 (Border로 구현 - hover 색상 확실히 적용)
+        var stopBtnText = new TextBlock
         {
-            Content = "🛑 멈춤!",
+            Text = "🛑 멈춤!",
+            FontSize = 16,
+            Foreground = Brushes.White,
+            FontWeight = FontWeight.Bold,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        var stopBtn = new Border
+        {
             HorizontalAlignment = HorizontalAlignment.Center,
             Padding = new Thickness(40, 12),
             Margin = new Thickness(0, 15, 0, 0),
-            FontSize = 16,
             Background = stopBaseBrush,
-            Foreground = Brushes.White,
-            FontWeight = FontWeight.Bold
+            CornerRadius = new CornerRadius(4),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Child = stopBtnText
         };
-        stopBtn.Click += (s, e) =>
+        stopBtn.PointerPressed += (s, e) =>
         {
-            if (isSpinning && slowDownCounter == 0)
+            if (isSpinning && slowDownCounter == 0 && stopBtnEnabled)
             {
                 // 5% 확률로 레전더리
                 var random = new Random();
@@ -441,8 +459,10 @@ public partial class MiniWidget : Window
 
                 // 서서히 멈추기 시작 (8~12번 더 돌림)
                 slowDownCounter = 8 + random.Next(5);
-                stopBtn.IsEnabled = false;
-                stopBtn.Content = "멈추는 중...";
+                stopBtnEnabled = false;
+                stopBtn.Background = stopDisabledBrush;
+                stopBtn.Cursor = new Cursor(StandardCursorType.Arrow);
+                stopBtnText.Text = "멈추는 중...";
             }
             else if (!isSpinning && finalIndex >= 0)
             {
@@ -451,10 +471,8 @@ public partial class MiniWidget : Window
                 popup.Close();
             }
         };
-        stopBtn.PointerEntered += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopHoverBrush; };
-        stopBtn.PointerExited += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopBaseBrush; };
-        stopBtn.PointerPressed += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopPressedBrush; };
-        stopBtn.PointerReleased += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopBaseBrush; };
+        stopBtn.PointerEntered += (s, e) => { if (stopBtnEnabled) stopBtn.Background = stopHoverBrush; };
+        stopBtn.PointerExited += (s, e) => { if (stopBtnEnabled) stopBtn.Background = stopBaseBrush; };
         mainStack.Children.Add(stopBtn);
 
         // 팝업 닫힐 때 타이머 정리
@@ -782,7 +800,7 @@ public partial class MiniWidget : Window
             LineHeight = 18
         });
 
-        // 닫기 버튼 - 등급별 hover/pressed 색상
+        // 닫기 버튼 (Border로 구현 - hover 색상 확실히 적용)
         var (infoHoverColor, infoPressedColor) = rarityColor switch
         {
             "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary: 더 밝은 금색 / 어두운 금색
@@ -794,21 +812,25 @@ public partial class MiniWidget : Window
         var infoHoverBrush = new SolidColorBrush(Color.Parse(infoHoverColor));
         var infoPressedBrush = new SolidColorBrush(Color.Parse(infoPressedColor));
 
-        var closeBtn = new Button
+        var closeBtn = new Border
         {
-            Content = "닫기",
             HorizontalAlignment = HorizontalAlignment.Center,
             Padding = new Thickness(30, 8),
             Margin = new Thickness(0, 10, 0, 0),
             Background = infoBaseBrush,
-            Foreground = Brushes.Black,
-            FontWeight = FontWeight.Bold
+            CornerRadius = new CornerRadius(4),
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Child = new TextBlock
+            {
+                Text = "닫기",
+                Foreground = Brushes.Black,
+                FontWeight = FontWeight.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center
+            }
         };
-        closeBtn.Click += (s, e) => popup.Close();
+        closeBtn.PointerPressed += (s, e) => { closeBtn.Background = infoPressedBrush; popup.Close(); };
         closeBtn.PointerEntered += (s, e) => closeBtn.Background = infoHoverBrush;
         closeBtn.PointerExited += (s, e) => closeBtn.Background = infoBaseBrush;
-        closeBtn.PointerPressed += (s, e) => closeBtn.Background = infoPressedBrush;
-        closeBtn.PointerReleased += (s, e) => closeBtn.Background = infoBaseBrush;
         mainStack.Children.Add(closeBtn);
 
         border.Child = mainStack;

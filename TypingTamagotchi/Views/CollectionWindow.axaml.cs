@@ -77,20 +77,24 @@ public partial class CollectionWindow : Window
                 var displayHoverBrush = new SolidColorBrush(Color.Parse("#6A8FC5"));
                 var displayPressedBrush = new SolidColorBrush(Color.Parse("#3A5F85"));
 
-                var closeBtn = new Button
+                var closeBtn = new Border
                 {
-                    Content = "확인",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Padding = new Avalonia.Thickness(30, 8),
                     Background = displayBaseBrush,
-                    Foreground = Brushes.White,
-                    FontWeight = FontWeight.Bold
+                    CornerRadius = new Avalonia.CornerRadius(4),
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    Child = new TextBlock
+                    {
+                        Text = "확인",
+                        Foreground = Brushes.White,
+                        FontWeight = FontWeight.Bold,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
                 };
-                closeBtn.Click += (s, args) => msgBox.Close();
+                closeBtn.PointerPressed += (s, args) => { closeBtn.Background = displayPressedBrush; msgBox.Close(); };
                 closeBtn.PointerEntered += (s, args) => closeBtn.Background = displayHoverBrush;
                 closeBtn.PointerExited += (s, args) => closeBtn.Background = displayBaseBrush;
-                closeBtn.PointerPressed += (s, args) => closeBtn.Background = displayPressedBrush;
-                closeBtn.PointerReleased += (s, args) => closeBtn.Background = displayBaseBrush;
                 stack.Children.Add(closeBtn);
 
                 border.Child = stack;
@@ -232,7 +236,7 @@ public partial class CollectionWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            // 닫기 버튼 - 등급별 hover/pressed 색상
+            // 닫기 버튼 (Border로 구현 - hover 색상 확실히 적용)
             var (hoverColor, pressedColor) = rarityColor switch
             {
                 "#FFD700" => ("#FFEA00", "#DAA520"),  // Legendary
@@ -244,22 +248,26 @@ public partial class CollectionWindow : Window
             var hoverBrush = new SolidColorBrush(Color.Parse(hoverColor));
             var pressedBrush = new SolidColorBrush(Color.Parse(pressedColor));
 
-            var closeBtn = new Button
+            var closeBtn = new Border
             {
-                Content = "확인",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Padding = new Avalonia.Thickness(40, 10),
                 Margin = new Avalonia.Thickness(0, 10, 0, 0),
-                FontSize = 14,
                 Background = baseBrush,
-                Foreground = Brushes.Black,
-                FontWeight = FontWeight.Bold
+                CornerRadius = new Avalonia.CornerRadius(4),
+                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                Child = new TextBlock
+                {
+                    Text = "확인",
+                    FontSize = 14,
+                    Foreground = Brushes.Black,
+                    FontWeight = FontWeight.Bold,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                }
             };
-            closeBtn.Click += (s, args) => popup.Close();
+            closeBtn.PointerPressed += (s, args) => { closeBtn.Background = pressedBrush; popup.Close(); };
             closeBtn.PointerEntered += (s, args) => closeBtn.Background = hoverBrush;
             closeBtn.PointerExited += (s, args) => closeBtn.Background = baseBrush;
-            closeBtn.PointerPressed += (s, args) => closeBtn.Background = pressedBrush;
-            closeBtn.PointerReleased += (s, args) => closeBtn.Background = baseBrush;
             mainStack.Children.Add(closeBtn);
 
             mainBorder.Child = mainStack;
@@ -329,20 +337,24 @@ public partial class CollectionWindow : Window
                 var playHoverBrush = new SolidColorBrush(Color.Parse("#B0FFB0"));
                 var playPressedBrush = new SolidColorBrush(Color.Parse("#60BE60"));
 
-                var closeBtn = new Button
+                var closeBtn = new Border
                 {
-                    Content = "확인",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Padding = new Avalonia.Thickness(30, 8),
                     Background = playBaseBrush,
-                    Foreground = Brushes.Black,
-                    FontWeight = FontWeight.Bold
+                    CornerRadius = new Avalonia.CornerRadius(4),
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    Child = new TextBlock
+                    {
+                        Text = "확인",
+                        Foreground = Brushes.Black,
+                        FontWeight = FontWeight.Bold,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    }
                 };
-                closeBtn.Click += (s, args) => msgBox.Close();
+                closeBtn.PointerPressed += (s, args) => { closeBtn.Background = playPressedBrush; msgBox.Close(); };
                 closeBtn.PointerEntered += (s, args) => closeBtn.Background = playHoverBrush;
                 closeBtn.PointerExited += (s, args) => closeBtn.Background = playBaseBrush;
-                closeBtn.PointerPressed += (s, args) => closeBtn.Background = playPressedBrush;
-                closeBtn.PointerReleased += (s, args) => closeBtn.Background = playBaseBrush;
                 stack.Children.Add(closeBtn);
 
                 border.Child = stack;
