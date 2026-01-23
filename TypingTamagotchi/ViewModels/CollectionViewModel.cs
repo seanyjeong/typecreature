@@ -18,6 +18,10 @@ public partial class CollectionViewModel : ViewModelBase
     // 놀이터 변경 이벤트
     public static event Action? PlaygroundChanged;
 
+    // 외부에서 이벤트 발생시킬 수 있는 메서드
+    public static void NotifyPlaygroundChanged() => PlaygroundChanged?.Invoke();
+    public static void NotifyDisplayChanged() => DisplayChanged?.Invoke();
+
     [ObservableProperty]
     private ObservableCollection<CollectionItem> _items = new();
 
@@ -110,6 +114,28 @@ public partial class CollectionViewModel : ViewModelBase
 
         // 진열장 실시간 업데이트
         DisplayChanged?.Invoke();
+    }
+
+    [RelayCommand]
+    private void ClearAllDisplay()
+    {
+        _db.ClearAllFromDisplay();
+        foreach (var item in Items)
+        {
+            item.IsInDisplay = false;
+        }
+        DisplayChanged?.Invoke();
+    }
+
+    [RelayCommand]
+    private void ClearAllPlayground()
+    {
+        _db.ClearAllFromPlayground();
+        foreach (var item in Items)
+        {
+            item.IsInPlayground = false;
+        }
+        PlaygroundChanged?.Invoke();
     }
 
     [RelayCommand]

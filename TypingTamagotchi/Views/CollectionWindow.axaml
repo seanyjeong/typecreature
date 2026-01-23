@@ -26,11 +26,34 @@
 
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- 헤더 -->
-        <Border Grid.Row="0" Background="#F5F5F5" Padding="20">
-            <TextBlock Text="{Binding CollectionStatus}"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Center"/>
+        <Border Grid.Row="0" Background="#F5F5F5" Padding="15,10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- 왼쪽: 초기화 버튼들 -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+                    <Button Classes="small"
+                            Content="진열장 비우기"
+                            Command="{Binding ClearAllDisplayCommand}"
+                            FontSize="11"
+                            Padding="8,4"
+                            Background="#FFCDD2"
+                            ToolTip.Tip="진열장에서 모든 크리처 제거"/>
+                    <Button Classes="small"
+                            Content="놀이터 비우기"
+                            Command="{Binding ClearAllPlaygroundCommand}"
+                            FontSize="11"
+                            Padding="8,4"
+                            Background="#C8E6C9"
+                            ToolTip.Tip="놀이터에서 모든 크리처 제거"/>
+                </StackPanel>
+
+                <!-- 가운데: 수집 상태 -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding CollectionStatus}"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Grid>
         </Border>
 
         <!-- 크리처 그리드 -->

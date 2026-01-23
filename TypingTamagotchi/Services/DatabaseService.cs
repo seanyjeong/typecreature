@@ -264,6 +264,22 @@ public class DatabaseService
         return Convert.ToInt32(command.ExecuteScalar());
     }
 
+    public void ClearAllFromPlayground()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM playground_creatures";
+        command.ExecuteNonQuery();
+    }
+
+    public void ClearAllFromDisplay()
+    {
+        using var connection = GetConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM display_slots";
+        command.ExecuteNonQuery();
+    }
+
     public SqliteConnection GetConnection()
     {
         var connection = new SqliteConnection(_connectionString);

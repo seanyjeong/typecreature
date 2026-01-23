@@ -232,6 +232,14 @@ public partial class PlaygroundViewModel : ViewModelBase
         LoadCreatures();
     }
 
+    [RelayCommand]
+    private void ClearAll()
+    {
+        _db.ClearAllFromPlayground();
+        Creatures.Clear();
+        CollectionViewModel.NotifyPlaygroundChanged();
+    }
+
     public void Stop()
     {
         _gameTimer.Stop();

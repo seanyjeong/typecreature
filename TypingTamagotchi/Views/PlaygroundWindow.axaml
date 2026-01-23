@@ -132,6 +132,20 @@
                     Click="OnRefreshClick"
                     ToolTip.Tip="새로고침"/>
 
+            <!-- 모두 돌려보내기 버튼 -->
+            <Button Classes="overlay"
+                    Content="🏠"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,4,60,0"
+                    Width="24" Height="24"
+                    FontSize="12"
+                    Background="#80000000"
+                    Foreground="White"
+                    CornerRadius="12"
+                    Command="{Binding ClearAllCommand}"
+                    ToolTip.Tip="모두 돌려보내기"/>
+
             <!-- 리사이즈 핸들들 -->
             <!-- 좌하단 -->
             <Border Width="16" Height="16"
