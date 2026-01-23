@@ -1,6 +1,17 @@
 {
   "versions": [
     {
+      "version": "1.2.34",
+      "date": "2026-01-23",
+      "title": "팝업 버튼 스타일 개선",
+      "changes": [
+        {
+          "type": "fix",
+          "text": "모든 팝업 버튼 hover/pressed 상태 색상 개선"
+        }
+      ]
+    },
+    {
       "version": "1.2.33",
       "date": "2026-01-23",
       "title": "버튼 스타일 개선",

@@ -13,6 +13,21 @@
         Topmost="True"
         Background="Transparent">
 
+    <Window.Styles>
+        <!-- 금색 버튼 hover/pressed 스타일 -->
+        <Style Selector="Button.gold">
+            <Setter Property="Background" Value="#FFD700"/>
+            <Setter Property="Foreground" Value="#1A1A1A"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style Selector="Button.gold:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#FFEA00"/>
+        </Style>
+        <Style Selector="Button.gold:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#DAA520"/>
+        </Style>
+    </Window.Styles>
+
     <!-- 전체를 감싸는 Grid: 시계 + 메인박스 -->
     <Grid RowDefinitions="Auto,*">
         <!-- 상단: 로얄 시계 위젯 (항상 표시, 메인박스 위에 위치) -->
@@ -433,12 +448,10 @@
                     </ItemsControl>
 
                     <!-- 확인 버튼 -->
-                    <Button Content="확인"
+                    <Button Classes="gold"
+                            Content="확인"
                             HorizontalAlignment="Center"
                             Padding="40,8"
-                            Background="#FFD700"
-                            Foreground="#1A1A1A"
-                            FontWeight="Bold"
                             Click="OnUpdateDismissClick"/>
                 </StackPanel>
             </Border>

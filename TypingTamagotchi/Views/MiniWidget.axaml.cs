@@ -249,6 +249,11 @@ public partial class MiniWidget : Window
         mainStack.Children.Add(infoStack);
 
         // 확인 버튼
+        var baseColor = Color.Parse(rarityColor);
+        var hatchBaseBrush = new SolidColorBrush(baseColor);
+        var hatchHoverBrush = new SolidColorBrush(Color.FromArgb(220, baseColor.R, baseColor.G, baseColor.B));
+        var hatchPressedBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+
         var confirmBtn = new Button
         {
             Content = "다음 알 선택",
@@ -256,7 +261,7 @@ public partial class MiniWidget : Window
             Padding = new Thickness(30, 10),
             Margin = new Thickness(0, 10, 0, 0),
             FontSize = 14,
-            Background = new SolidColorBrush(Color.Parse(rarityColor)),
+            Background = hatchBaseBrush,
             Foreground = Brushes.Black,
             FontWeight = FontWeight.Bold
         };
@@ -265,6 +270,10 @@ public partial class MiniWidget : Window
             popup.Close();
             ShowEggSlotMachine();
         };
+        confirmBtn.PointerEntered += (s, e) => confirmBtn.Background = hatchHoverBrush;
+        confirmBtn.PointerExited += (s, e) => confirmBtn.Background = hatchBaseBrush;
+        confirmBtn.PointerPressed += (s, e) => confirmBtn.Background = hatchPressedBrush;
+        confirmBtn.PointerReleased += (s, e) => confirmBtn.Background = hatchBaseBrush;
         mainStack.Children.Add(confirmBtn);
 
         border.Child = mainStack;
@@ -394,6 +403,10 @@ public partial class MiniWidget : Window
         spinTimer.Start();
 
         // 멈춤 버튼
+        var stopBaseBrush = new SolidColorBrush(Color.Parse("#E74C3C"));
+        var stopHoverBrush = new SolidColorBrush(Color.Parse("#FF6B5B"));
+        var stopPressedBrush = new SolidColorBrush(Color.Parse("#C0392B"));
+
         var stopBtn = new Button
         {
             Content = "🛑 멈춤!",
@@ -401,7 +414,7 @@ public partial class MiniWidget : Window
             Padding = new Thickness(40, 12),
             Margin = new Thickness(0, 15, 0, 0),
             FontSize = 16,
-            Background = new SolidColorBrush(Color.Parse("#E74C3C")),
+            Background = stopBaseBrush,
             Foreground = Brushes.White,
             FontWeight = FontWeight.Bold
         };
@@ -432,6 +445,10 @@ public partial class MiniWidget : Window
                 popup.Close();
             }
         };
+        stopBtn.PointerEntered += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopHoverBrush; };
+        stopBtn.PointerExited += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopBaseBrush; };
+        stopBtn.PointerPressed += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopPressedBrush; };
+        stopBtn.PointerReleased += (s, e) => { if (stopBtn.IsEnabled) stopBtn.Background = stopBaseBrush; };
         mainStack.Children.Add(stopBtn);
 
         // 팝업 닫힐 때 타이머 정리
@@ -760,17 +777,26 @@ public partial class MiniWidget : Window
         });
 
         // 닫기 버튼
+        var infoBaseColor = Color.Parse(rarityColor);
+        var infoBaseBrush = new SolidColorBrush(infoBaseColor);
+        var infoHoverBrush = new SolidColorBrush(Color.FromArgb(220, infoBaseColor.R, infoBaseColor.G, infoBaseColor.B));
+        var infoPressedBrush = new SolidColorBrush(Color.FromArgb(180, infoBaseColor.R, infoBaseColor.G, infoBaseColor.B));
+
         var closeBtn = new Button
         {
             Content = "닫기",
             HorizontalAlignment = HorizontalAlignment.Center,
             Padding = new Thickness(30, 8),
             Margin = new Thickness(0, 10, 0, 0),
-            Background = new SolidColorBrush(Color.Parse(rarityColor)),
+            Background = infoBaseBrush,
             Foreground = Brushes.Black,
             FontWeight = FontWeight.Bold
         };
         closeBtn.Click += (s, e) => popup.Close();
+        closeBtn.PointerEntered += (s, e) => closeBtn.Background = infoHoverBrush;
+        closeBtn.PointerExited += (s, e) => closeBtn.Background = infoBaseBrush;
+        closeBtn.PointerPressed += (s, e) => closeBtn.Background = infoPressedBrush;
+        closeBtn.PointerReleased += (s, e) => closeBtn.Background = infoBaseBrush;
         mainStack.Children.Add(closeBtn);
 
         border.Child = mainStack;

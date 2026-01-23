@@ -73,16 +73,24 @@ public partial class CollectionWindow : Window
                     TextAlignment = TextAlignment.Center
                 });
 
+                var displayBaseBrush = new SolidColorBrush(Color.Parse("#4A6FA5"));
+                var displayHoverBrush = new SolidColorBrush(Color.Parse("#6A8FC5"));
+                var displayPressedBrush = new SolidColorBrush(Color.Parse("#3A5F85"));
+
                 var closeBtn = new Button
                 {
                     Content = "확인",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Padding = new Avalonia.Thickness(30, 8),
-                    Background = new SolidColorBrush(Color.Parse("#4A6FA5")),
+                    Background = displayBaseBrush,
                     Foreground = Brushes.White,
                     FontWeight = FontWeight.Bold
                 };
                 closeBtn.Click += (s, args) => msgBox.Close();
+                closeBtn.PointerEntered += (s, args) => closeBtn.Background = displayHoverBrush;
+                closeBtn.PointerExited += (s, args) => closeBtn.Background = displayBaseBrush;
+                closeBtn.PointerPressed += (s, args) => closeBtn.Background = displayPressedBrush;
+                closeBtn.PointerReleased += (s, args) => closeBtn.Background = displayBaseBrush;
                 stack.Children.Add(closeBtn);
 
                 border.Child = stack;
@@ -225,6 +233,11 @@ public partial class CollectionWindow : Window
             });
 
             // 닫기 버튼
+            var baseColor = Color.Parse(rarityColor);
+            var baseBrush = new SolidColorBrush(baseColor);
+            var hoverBrush = new SolidColorBrush(Color.FromArgb(220, baseColor.R, baseColor.G, baseColor.B));
+            var pressedBrush = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+
             var closeBtn = new Button
             {
                 Content = "확인",
@@ -232,11 +245,15 @@ public partial class CollectionWindow : Window
                 Padding = new Avalonia.Thickness(40, 10),
                 Margin = new Avalonia.Thickness(0, 10, 0, 0),
                 FontSize = 14,
-                Background = new SolidColorBrush(Color.Parse(rarityColor)),
+                Background = baseBrush,
                 Foreground = Brushes.Black,
                 FontWeight = FontWeight.Bold
             };
             closeBtn.Click += (s, args) => popup.Close();
+            closeBtn.PointerEntered += (s, args) => closeBtn.Background = hoverBrush;
+            closeBtn.PointerExited += (s, args) => closeBtn.Background = baseBrush;
+            closeBtn.PointerPressed += (s, args) => closeBtn.Background = pressedBrush;
+            closeBtn.PointerReleased += (s, args) => closeBtn.Background = baseBrush;
             mainStack.Children.Add(closeBtn);
 
             mainBorder.Child = mainStack;
@@ -302,16 +319,24 @@ public partial class CollectionWindow : Window
                     TextAlignment = TextAlignment.Center
                 });
 
+                var playBaseBrush = new SolidColorBrush(Color.Parse("#90EE90"));
+                var playHoverBrush = new SolidColorBrush(Color.Parse("#B0FFB0"));
+                var playPressedBrush = new SolidColorBrush(Color.Parse("#60BE60"));
+
                 var closeBtn = new Button
                 {
                     Content = "확인",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Padding = new Avalonia.Thickness(30, 8),
-                    Background = new SolidColorBrush(Color.Parse("#90EE90")),
+                    Background = playBaseBrush,
                     Foreground = Brushes.Black,
                     FontWeight = FontWeight.Bold
                 };
                 closeBtn.Click += (s, args) => msgBox.Close();
+                closeBtn.PointerEntered += (s, args) => closeBtn.Background = playHoverBrush;
+                closeBtn.PointerExited += (s, args) => closeBtn.Background = playBaseBrush;
+                closeBtn.PointerPressed += (s, args) => closeBtn.Background = playPressedBrush;
+                closeBtn.PointerReleased += (s, args) => closeBtn.Background = playBaseBrush;
                 stack.Children.Add(closeBtn);
 
                 border.Child = stack;
