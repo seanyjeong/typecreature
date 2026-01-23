@@ -267,17 +267,27 @@ public partial class TypingPracticeViewModel : ViewModelBase
 
         UpdateDisplayChars(userInput);
 
-        // 정확도 계산
+        // 정확도 계산 (실시간 누적 - 이전 문장들 + 현재 문장)
         if (userInput.Length > 0)
         {
-            int correct = 0;
-            int total = Math.Min(userInput.Length, _currentSentence.Length);
-            for (int i = 0; i < total; i++)
+            int correctInCurrent = 0;
+            int totalInCurrent = Math.Min(userInput.Length, _currentSentence.Length);
+            for (int i = 0; i < totalInCurrent; i++)
             {
                 if (userInput[i] == _currentSentence[i])
-                    correct++;
+                    correctInCurrent++;
             }
-            var accuracy = total > 0 ? (double)correct / total * 100 : 100;
+
+            // 누적 정확도: (이전 문장들의 정답 + 현재 문장 정답) / (이전 문장들 총 글자 + 현재 입력 글자)
+            int totalCorrect = _totalCorrectChars + correctInCurrent;
+            int totalTyped = _totalCharsTyped + userInput.Length;
+            var accuracy = totalTyped > 0 ? (double)totalCorrect / totalTyped * 100 : 100;
+            AccuracyText = $"{accuracy:F0}%";
+        }
+        else if (_totalCharsTyped > 0)
+        {
+            // 입력 없을 때는 이전 누적 정확도 유지
+            var accuracy = (double)_totalCorrectChars / _totalCharsTyped * 100;
             AccuracyText = $"{accuracy:F0}%";
         }
 

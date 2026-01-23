@@ -1,6 +1,17 @@
 {
   "versions": [
     {
+      "version": "1.2.37",
+      "date": "2026-01-23",
+      "title": "정확도 실시간 누적 표시",
+      "changes": [
+        {
+          "type": "improvement",
+          "text": "정확도가 문장 시작/끝 상관없이 실시간으로 누적 계산되어 표시"
+        }
+      ]
+    },
+    {
       "version": "1.2.36",
       "date": "2026-01-23",
       "title": "팝업 버튼 hover 완전 수정",
